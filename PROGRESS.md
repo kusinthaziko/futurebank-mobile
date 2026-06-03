@@ -32,19 +32,41 @@ All specs are in `../specs/app/`. Read them before touching any feature.
 ## Completed
 - [x] Flutter scaffold (Android + iOS)
 - [x] Package ID set to com.futurebank.app
+- [x] pubspec.yaml — all 2026 dependencies, flutter pub get succeeded
+- [x] Folder structure (core/, features/)
+- [x] Design system — colors, dimensions, typography, theme, FBButton, FBCard, FBInput, FBSkeletonLoader, FBAvatar
+- [x] GraphQL client with WebSocket support and Riverpod provider
+- [x] Router — all routes, bottom nav shell, auth redirect guards
+- [x] Auth provider — JWT secure storage, login/logout
+- [x] Onboarding screen — 3 slides, dot indicator
+- [x] Login screen — email/password, error handling
+- [x] Register screen — full validation, inline errors
+- [x] Dashboard screen — balance card, quick actions, health score, recent transactions
+- [x] Accounts screen — list with gradient savings card
+- [x] Transaction history screen — list with credit/debit colors
+- [x] Loans screen — eligibility card, loan list with status
+- [x] Loan apply screen — 3-step wizard (amount, period, review)
+- [x] Social screen — groups tab + challenges tab
+- [x] AI Coach screen — chat interface, voice input, suggested prompts
+- [x] Profile screen — health score breakdown, blockchain DID, logout
+- [x] flutter analyze — 0 errors
 
-## Next Steps (in order)
-1. Add all dependencies to pubspec.yaml
-2. Set up folder structure (core/, features/, assets/)
-3. Implement design system (tokens, components)
-4. Implement auth feature
-5. Implement onboarding
-6. Implement dashboard
-7. Implement accounts + transactions
-8. Implement loans
-9. Implement social + challenges
-10. Implement AI coach with GenUI
-11. Implement profile + passport
+## Next Steps
+1. Download and add fonts (ClashDisplay, Inter) to assets/fonts/
+2. Point API_URL to backend (use --dart-define at run time)
+3. Test on device: `flutter run --dart-define=API_URL=http://YOUR_IP:4000/api/graphql`
+4. Add Cloudinary KYC upload flow
+5. Add real-time subscriptions (balance, notifications)
+
+## Run Commands
+```bash
+# Development
+flutter run --dart-define=API_URL=http://localhost:4000/api/graphql \
+            --dart-define=WS_URL=ws://localhost:4000/socket/websocket
+
+# Start backend first
+cd ../backend && mix phx.server
+```
 
 ## Architecture Rules (READ BEFORE CODING)
 - Feature-first folder structure: `features/{name}/data|domain|presentation`
