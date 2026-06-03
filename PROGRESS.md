@@ -33,23 +33,22 @@ All specs are in `../specs/app/`. Read them before touching any feature.
 - [x] Flutter scaffold (Android + iOS)
 - [x] Package ID set to com.futurebank.app
 - [x] pubspec.yaml — all 2026 dependencies, flutter pub get succeeded
-- [x] Folder structure (core/, features/)
-- [x] Design system — colors, dimensions, typography, theme, FBButton, FBCard, FBInput, FBSkeletonLoader, FBAvatar
-- [x] GraphQL client with WebSocket support and Riverpod provider
-- [x] Router — all routes, bottom nav shell, auth redirect guards
-- [x] Auth provider — JWT secure storage, login/logout
-- [x] Onboarding screen — 3 slides, dot indicator
-- [x] Login screen — email/password, error handling
-- [x] Register screen — full validation, inline errors
-- [x] Dashboard screen — balance card, quick actions, health score, recent transactions
-- [x] Accounts screen — list with gradient savings card
-- [x] Transaction history screen — list with credit/debit colors
-- [x] Loans screen — eligibility card, loan list with status
-- [x] Loan apply screen — 3-step wizard (amount, period, review)
-- [x] Social screen — groups tab + challenges tab
-- [x] AI Coach screen — chat interface, voice input, suggested prompts
-- [x] Profile screen — health score breakdown, blockchain DID, logout
+- [x] Design system — colors, dimensions, typography, theme, components, fonts
+- [x] GraphQL client, auth provider, router with all routes + guards
+- [x] All screens implemented
+- [x] GenUI AI Coach — catalog (4 financial widgets), CoachBloc, CoachRepository, CoachView
+- [x] Proper feature-first architecture with data/domain/presentation layers:
+  - Dashboard: queries, freezed models, repository, Riverpod providers, 4 widgets, thin screen
+  - Loans: queries, freezed models, repository, providers, widgets, screens
+  - Accounts: queries, freezed models, repository, providers
+  - Social: queries, freezed models, repository, providers
+  - Profile: queries, freezed models, repository, providers
 - [x] flutter analyze — 0 errors
+
+## Next Steps
+1. Download fonts if missing (ClashDisplay, Inter) — see assets/fonts/
+2. Run: `flutter run --dart-define=API_URL=http://YOUR_IP:4000/api/graphql --dart-define=WS_URL=ws://YOUR_IP:4000/socket/websocket --dart-define=GEMINI_KEY=YOUR_KEY`
+3. Start backend: `cd ../backend && mix phx.server`
 
 ## Next Steps
 1. Download and add fonts (ClashDisplay, Inter) to assets/fonts/
