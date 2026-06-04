@@ -16,7 +16,7 @@ class TransactionHistoryScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Transactions')),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('$e')),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.refresh(provider)),
         data: (txs) => txs.isEmpty
             ? Center(child: Text('No transactions.',
                 style: AppTextStyles.bodyMedium.copyWith(color: gray500)))

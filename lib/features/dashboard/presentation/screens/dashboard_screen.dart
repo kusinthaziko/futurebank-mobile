@@ -20,7 +20,7 @@ class DashboardScreen extends ConsumerWidget {
       body: SafeArea(
         child: dashboardAsync.when(
           loading: () => _buildSkeleton(),
-          error: (e, _) => Center(child: Text('$e')),
+          error: (e, _) => ErrorView(error: e, onRetry: () => ref.refresh(provider)),
           data: (data) => RefreshIndicator(
             onRefresh: () => ref.refresh(dashboardProvider.future),
             child: ListView(

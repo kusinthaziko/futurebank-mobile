@@ -24,7 +24,7 @@ class LoanDetailScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Loan Details')),
       body: loansAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('$e')),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.refresh(provider)),
         data: (data) {
           final loan = data.loans.firstWhere(
             (l) => l.id == loanId,

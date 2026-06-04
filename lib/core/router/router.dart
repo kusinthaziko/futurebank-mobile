@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
+import '../providers/subscription_providers.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/kyc_screen.dart';
@@ -17,6 +18,8 @@ import '../../features/social/presentation/screens/social_detail_screens.dart';
 import '../../features/ai_coach/presentation/screens/coach_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/admin/presentation/screens/admin_screen.dart';
+import '../../features/accounts/presentation/screens/deposit_screen.dart';
+import '../../features/accounts/presentation/screens/transfer_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -57,16 +60,28 @@ final routerProvider = Provider<GoRouter>((ref) {
           builder: (_, s) => LoanDetailScreen(loanId: s.pathParameters['id']!)),
       GoRoute(path: '/coach',  builder: (_, __) => const CoachScreen()),
       GoRoute(path: '/admin',  builder: (_, __) => const AdminScreen()),
+      GoRoute(path: '/deposit',  builder: (_, __) => const DepositScreen()),
+      GoRoute(path: '/transfer', builder: (_, __) => const TransferScreen()),
     ],
   );
 });
 
-class MainShell extends StatelessWidget {
+class MainShell extends ConsumerWidget {
   final Widget child;
   const MainShell({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Listen for real-time notifications app-wide
+    ref.listen(notificationSubscriptionProvider, (_, next) {
+      next.whenData((n) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('${n['title']}: ${n['body']}'),
+          duration: const Duration(seconds: 4),
+        ));
+      });
+    });
+
     final loc = GoRouterState.of(context).matchedLocation;
     final idx = ['/home', '/accounts', '/social', '/profile']
         .indexWhere((r) => loc.startsWith(r))

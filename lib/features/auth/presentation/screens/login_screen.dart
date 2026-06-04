@@ -22,14 +22,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _loading = false;
   String? _error;
 
-  Future<void> _login() async {
+  Future<void> login(String email, String password) async {
     setState(() { _loading = true; _error = null; });
     try {
       final result = await AuthMutations.login(
         ref, email: _email.text, password: _password.text);
       if (result != null) {
         await ref.read(authProvider.notifier).login(
-          result['accessToken'], result['refreshToken'], result['user']['id']);
+          result['accessToken'],
+          result['refreshToken'],
+          result['user']['id'],
+          institutionId: result['user']['institution_id'],
+        );
         if (mounted) context.go('/home');
       }
     } catch (e) {

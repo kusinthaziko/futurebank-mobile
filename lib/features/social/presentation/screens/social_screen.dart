@@ -17,7 +17,8 @@ class SocialScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(socialProvider(_placeholderInstitutionId));
+    final institutionId = ref.watch(authProvider).institutionId ?? '';
+    final async = ref.watch(socialProvider(institutionId));
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -27,7 +28,7 @@ class SocialScreen extends ConsumerWidget {
         ),
         body: async.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text('$e')),
+          error: (e, _) => ErrorView(error: e, onRetry: () => ref.refresh(provider)),
           data: (data) => TabBarView(children: [
             _GroupsTab(groups: data.groups),
             _ChallengesTab(challenges: data.challenges),

@@ -18,7 +18,7 @@ class AccountsScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Accounts')),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('$e')),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.refresh(provider)),
         data: (data) => ListView(
           padding: const EdgeInsets.all(sp16),
           children: [
