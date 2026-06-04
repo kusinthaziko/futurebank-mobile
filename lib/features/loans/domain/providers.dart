@@ -1,12 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/services/cache_service.dart';
 import '../../../core/graphql/client.dart';
 import '../../auth/domain/auth_state.dart';
 import '../data/models/loan_models.dart';
 import '../data/repository.dart';
 
 final loanRepositoryProvider = Provider.family<LoanRepository, String?>(
-  (ref, token) => LoanRepository(ref.read(graphQLClientProvider(token))),
+  (ref, token) => LoanRepository(
+    ref.read(graphQLClientProvider(token)),
+    ref.read(cacheServiceProvider),
+  ),
 );
 
 final loansProvider = FutureProvider.autoDispose<

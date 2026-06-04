@@ -9,6 +9,7 @@ import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/graphql/client.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../features/auth/domain/auth_state.dart';
 import '../../domain/providers.dart';
@@ -33,20 +34,10 @@ class _DepositScreenState extends ConsumerState<DepositScreen> {
   bool _loading = false, _success = false;
   String? _error;
 
-  bool _isValidAmount(String text) {
-    final parsed = RegExp(r'^\d+(\.\d{1,2})?$');
-    return parsed.hasMatch(text);
-  }
-
   Future<void> _submit() async {
-    final text = _amount.text.trim();
-    if (text.isEmpty || !_isValidAmount(text)) {
-      setState(() => _error = 'Enter a valid amount (positive, max 2 decimal places)');
-      return;
-    }
-    final amt = double.tryParse(text);
-    if (amt == null || amt <= 0) {
-      setState(() => _error = 'Amount must be positive');
+    final err = validateAmount(_amount.text);
+    if (err != null) {
+      setState(() => _error = err);
       return;
     }
     setState(() { _loading = true; _error = null; });
@@ -58,7 +49,7 @@ class _DepositScreenState extends ConsumerState<DepositScreen> {
       final client = ref.read(graphQLClientProvider(token));
       final r = await client.mutate(MutationOptions(
         document: gql(_depositMutation),
-        variables: {'accountId': accountId, 'amount': text,
+        variables: {'accountId': accountId, 'amount': _amount.text.trim(),
                     'description': _desc.text.trim().isEmpty ? null : _desc.text.trim()},
       ));
       if (r.hasException) throw r.exception!;
@@ -103,6 +94,7 @@ class _DepositScreenState extends ConsumerState<DepositScreen> {
             hint: '5000',
             controller: _amount,
             keyboardType: TextInputType.number,
+            error: _amount.text.isNotEmpty ? validateAmount(_amount.text) : null,
             suffix: Container(
               padding: const EdgeInsets.symmetric(horizontal: sp8),
               alignment: Alignment.center,

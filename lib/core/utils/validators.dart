@@ -36,3 +36,10 @@ String? validateRequired(String? value, String fieldName) {
   if (value == null || value.trim().isEmpty) return '$fieldName is required';
   return null;
 }
+
+String? validatePhone(String? value) {
+  if (value == null || value.trim().isEmpty) return 'Phone number is required';
+  final phoneRegex = RegExp(r'^\+?[\d\s\-()]{7,15}$');
+  if (!phoneRegex.hasMatch(value.trim())) return 'Enter a valid phone number';
+  return null;
+}

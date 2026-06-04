@@ -11,6 +11,7 @@ import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/graphql/client.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../features/auth/domain/auth_state.dart';
 import '../../domain/providers.dart';
@@ -174,6 +175,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 label: 'Recipient Student ID',
                 hint: '2024/CS/001',
                 controller: _recipientId,
+                error: _recipientId.text.isNotEmpty ? validateStudentId(_recipientId.text) : null,
                 onChanged: _lookupRecipient,
               ),
             ),
@@ -205,6 +207,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
             hint: '1000',
             controller: _amount,
             keyboardType: TextInputType.number,
+            error: _amount.text.isNotEmpty ? validateAmount(_amount.text) : null,
           ),
           if (exceedsBalance) ...[
             const SizedBox(height: sp4),

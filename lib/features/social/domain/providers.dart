@@ -1,11 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/services/cache_service.dart';
 import '../../../core/graphql/client.dart';
 import '../data/models/social_models.dart';
 import '../data/repository.dart';
 
 final socialRepositoryProvider = Provider.family<SocialRepository, String?>(
-  (ref, token) => SocialRepository(ref.read(graphQLClientProvider(token))),
+  (ref, token) => SocialRepository(
+    ref.read(graphQLClientProvider(token)),
+    ref.read(cacheServiceProvider),
+  ),
 );
 
 final socialProvider = FutureProvider.autoDispose.family<

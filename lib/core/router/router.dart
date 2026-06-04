@@ -16,6 +16,7 @@ import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/accounts/presentation/screens/accounts_screen.dart';
 import '../../features/transactions/presentation/screens/transaction_history_screen.dart';
 import '../../features/loans/presentation/screens/loans_screen.dart';
+import '../../features/loans/presentation/screens/loan_history_screen.dart';
 import '../../features/loans/presentation/screens/loan_apply_screen.dart';
 import '../../features/loans/presentation/screens/loan_detail_screen.dart';
 import '../../features/social/presentation/screens/social_screen.dart';
@@ -49,6 +50,12 @@ final routerProvider = Provider<GoRouter>((ref) {
           loc == '/onboarding';
       if (!isAuth && !isPublic) return '/auth/login';
       if (isAuth && (isPublic && loc != '/')) return '/home';
+      if (isAuth && loc.startsWith('/admin')) {
+        final role = authState is Authenticated ? authState.role : null;
+        if (role == null || !['finance_manager', 'auditor', 'admin', 'super_admin'].contains(role)) {
+          return '/home';
+        }
+      }
       return null;
     },
     routes: [
@@ -98,6 +105,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           builder: (_, __) => const PassportScreen()),
       GoRoute(path: '/loans',       builder: (_, __) => const LoansScreen()),
       GoRoute(path: '/loans/apply', builder: (_, __) => const LoanApplyScreen()),
+      GoRoute(path: '/loans/history', builder: (_, __) => const LoanHistoryScreen()),
       GoRoute(path: '/loans/:id',
           builder: (_, s) => LoanDetailScreen(loanId: s.pathParameters['id']!)),
       GoRoute(path: '/coach',  builder: (_, __) => const CoachScreen()),

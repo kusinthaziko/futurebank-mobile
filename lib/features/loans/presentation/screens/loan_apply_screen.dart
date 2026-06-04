@@ -180,6 +180,9 @@ class _LoanApplyScreenState extends ConsumerState<LoanApplyScreen> {
         FBInput(
           label: 'Describe purpose',
           hint: 'Enter details...',
+          error: _customDescription.length > 200
+              ? 'Maximum 200 characters'
+              : null,
           onChanged: (v) => _customDescription = v,
         ),
       ],

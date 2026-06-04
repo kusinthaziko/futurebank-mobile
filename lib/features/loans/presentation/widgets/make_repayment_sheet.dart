@@ -7,6 +7,7 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../features/auth/domain/auth_state.dart';
 import '../../domain/providers.dart';
 
@@ -65,7 +66,23 @@ class _MakeRepaymentSheetState extends ConsumerState<MakeRepaymentSheet> {
 
   double get _amountValue => double.tryParse(_amountCtrl.text) ?? 0;
   double get _balanceValue => double.tryParse(widget.walletBalance) ?? 0;
-  bool get _sufficient => _amountValue <= _balanceValue && _amountValue > 0;
+  double get _nextInstalmentValue => double.tryParse(widget.nextAmount) ?? 0;
+
+  bool get _sufficient =>
+      _amountValue > 0 &&
+      _amountValue <= _balanceValue &&
+      _amountValue <= _nextInstalmentValue;
+
+  String? _validateRepaymentAmount() {
+    if (_amountCtrl.text.isEmpty) return null;
+    final err = validateAmount(_amountCtrl.text);
+    if (err != null) return err;
+    if (_amountValue > _nextInstalmentValue) {
+      return 'Cannot exceed next instalment of MWK ${widget.nextAmount}';
+    }
+    if (_amountValue > _balanceValue) return 'Insufficient wallet balance';
+    return null;
+  }
 
   Future<void> _submit() async {
     if (!_sufficient) return;
@@ -144,6 +161,7 @@ class _MakeRepaymentSheetState extends ConsumerState<MakeRepaymentSheet> {
             hint: 'Enter repayment amount',
             controller: _amountCtrl,
             keyboardType: TextInputType.number,
+            error: _validateRepaymentAmount(),
             onChanged: (_) => setState(() {}),
             suffix: TextButton(
               onPressed: () {
@@ -153,13 +171,6 @@ class _MakeRepaymentSheetState extends ConsumerState<MakeRepaymentSheet> {
               child: const Text('Full'),
             ),
           ),
-          if (!_sufficient && _amountCtrl.text.isNotEmpty) ...[
-            const SizedBox(height: sp4),
-            Text(
-              'Insufficient balance or invalid amount.',
-              style: AppTextStyles.caption.copyWith(color: error500),
-            ),
-          ],
           const SizedBox(height: sp8),
           Text(
             'Next instalment: MWK ${widget.nextAmount}',

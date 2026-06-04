@@ -1,6 +1,7 @@
 // Single responsibility: Riverpod providers — bridge between data and UI
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/services/cache_service.dart';
 import '../../../core/graphql/client.dart';
 import '../../../features/auth/domain/auth_state.dart';
 import '../data/models/dashboard_data.dart';
@@ -14,13 +15,23 @@ String? _token(AuthState auth) => switch (auth) {
   _ => null,
 };
 
+String? _userId(AuthState auth) => switch (auth) {
+  Authenticated(:final userId) => userId,
+  _ => null,
+};
+
 final dashboardRepositoryProvider = Provider.family<DashboardRepository, String?>(
-  (ref, token) => DashboardRepository(ref.read(graphQLClientProvider(token))),
+  (ref, token) => DashboardRepository(
+    ref.read(graphQLClientProvider(token)),
+    ref.read(cacheServiceProvider),
+  ),
 );
 
 final dashboardProvider = FutureProvider.autoDispose<DashboardData>((ref) async {
-  final token = _token(ref.watch(authProvider));
-  return ref.read(dashboardRepositoryProvider(token)).fetchDashboard();
+  final auth = ref.watch(authProvider);
+  final token = _token(auth);
+  final userId = _userId(auth) ?? '';
+  return ref.read(dashboardRepositoryProvider(token)).fetchDashboard(userId);
 });
 
 final recentTransactionsProvider =

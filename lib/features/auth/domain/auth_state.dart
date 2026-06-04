@@ -12,11 +12,13 @@ class Authenticated extends AuthState {
   final String accessToken;
   final String userId;
   final String? institutionId;
+  final String? role;
 
   const Authenticated({
     required this.accessToken,
     required this.userId,
     this.institutionId,
+    this.role,
   });
 }
 

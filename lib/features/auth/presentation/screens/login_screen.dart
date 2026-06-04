@@ -10,6 +10,7 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/error_view.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -51,6 +52,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           result['refreshToken'],
           result['user']['id'],
           institutionId: result['user']['institution_id'],
+          role: result['user']['role'],
         );
         if (mounted) context.go('/home');
       }
@@ -94,10 +96,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   style: AppTextStyles.bodyLarge.copyWith(color: gray500)),
               const SizedBox(height: sp32),
               FBInput(label: 'Email', hint: 'your@university.ac.mw',
-                  controller: _email, keyboardType: TextInputType.emailAddress),
+                  controller: _email, keyboardType: TextInputType.emailAddress,
+                  error: _email.text.isNotEmpty ? validateEmail(_email.text) : null),
               const SizedBox(height: sp16),
               FBInput(label: 'Password', hint: '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022',
-                  controller: _password, obscure: true),
+                  controller: _password, obscure: true,
+                  error: _password.text.isNotEmpty ? validatePassword(_password.text) : null),
               if (_error != null) ...[
                 const SizedBox(height: sp8),
                 Text(_error!, style: AppTextStyles.caption.copyWith(color: error500)),

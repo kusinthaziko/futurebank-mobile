@@ -9,6 +9,7 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../widgets/institution_picker.dart';
 
@@ -75,6 +76,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           result['accessToken'],
           result['refreshToken'],
           result['user']['id'],
+          institutionId: result['user']['institution_id'],
+          role: result['user']['role'],
         );
         if (mounted) context.go('/auth/verify-email');
       }
@@ -156,20 +159,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
               const SizedBox(height: sp16),
               FBInput(label: 'Full Name', controller: _fullName,
+                  error: _fullName.text.isNotEmpty ? validateRequired(_fullName.text, 'Full name') : null,
                   onChanged: (_) => setState(() {})),
               const SizedBox(height: sp16),
               FBInput(label: 'Student ID', hint: 'e.g. 2021/CS/001',
-                  controller: _studentId, onChanged: (_) => setState(() {})),
+                  controller: _studentId,
+                  error: _studentId.text.isNotEmpty ? validateStudentId(_studentId.text) : null,
+                  onChanged: (_) => setState(() {})),
               const SizedBox(height: sp16),
               FBInput(label: 'Email',
                   controller: _email,
                   keyboardType: TextInputType.emailAddress,
-                  error: _email.text.isNotEmpty && !_domainValid
-                      ? 'Must end with @$_institutionDomain' : null,
+                  error: _email.text.isNotEmpty
+                      ? (validateEmail(_email.text) ??
+                          (!_domainValid ? 'Must end with @$_institutionDomain' : null))
+                      : null,
                   onChanged: (_) => setState(() {})),
               const SizedBox(height: sp16),
               FBInput(label: 'Password', controller: _password,
                   obscure: true,
+                  error: _password.text.isNotEmpty ? validatePassword(_password.text) : null,
                   onChanged: (_) => setState(() {})),
               if (strength >= 0) ...[
                 const SizedBox(height: sp8),

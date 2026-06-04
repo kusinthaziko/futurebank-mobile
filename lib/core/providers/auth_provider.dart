@@ -13,11 +13,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final token = await _storage.read(key: 'access_token');
     final userId = await _storage.read(key: 'user_id');
     final institutionId = await _storage.read(key: 'institution_id');
+    final role = await _storage.read(key: 'role');
     if (token != null && userId != null) {
       state = Authenticated(
         accessToken: token,
         userId: userId,
         institutionId: institutionId,
+        role: role,
       );
     } else {
       state = const Unauthenticated();
@@ -27,6 +29,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> login(
     String accessToken, String refreshToken, String userId, {
     String? institutionId,
+    String? role,
   }) async {
     await _storage.write(key: 'access_token', value: accessToken);
     await _storage.write(key: 'refresh_token', value: refreshToken);
@@ -34,10 +37,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (institutionId != null) {
       await _storage.write(key: 'institution_id', value: institutionId);
     }
+    if (role != null) {
+      await _storage.write(key: 'role', value: role);
+    }
     state = Authenticated(
       accessToken: accessToken,
       userId: userId,
       institutionId: institutionId,
+      role: role,
     );
   }
 
@@ -66,5 +73,11 @@ final userIdProvider = Provider<String?>((ref) {
 final institutionIdProvider = Provider<String?>((ref) {
   final auth = ref.watch(authProvider);
   if (auth is Authenticated) return auth.institutionId;
+  return null;
+});
+
+final roleProvider = Provider<String?>((ref) {
+  final auth = ref.watch(authProvider);
+  if (auth is Authenticated) return auth.role;
   return null;
 });

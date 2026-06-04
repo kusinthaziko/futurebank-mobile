@@ -13,6 +13,8 @@ class CacheService {
     'loans': Duration(seconds: 30),
     'transactions': Duration(seconds: 60),
     'profile': Duration(minutes: 5),
+    'dashboard': Duration(seconds: 30),
+    'social': Duration(seconds: 30),
   };
 
   Duration ttl(String key) =>
@@ -54,6 +56,58 @@ class CacheService {
     }
   }
 
+  Future<T?> getFreshValue<T>(
+    String key,
+    String id,
+    T Function(Map<String, dynamic>) fromJson,
+  ) async {
+    final cached = await _getCachedRaw(key, id);
+    if (cached == null) return null;
+    if (!_isFresh(cached.cachedAt, ttl(key))) return null;
+    try {
+      return fromJson(jsonDecode(cached.json) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<T?> getStaleValue<T>(
+    String key,
+    String id,
+    T Function(Map<String, dynamic>) fromJson,
+  ) async {
+    final cached = await _getCachedRaw(key, id);
+    if (cached == null) return null;
+    try {
+      return fromJson(jsonDecode(cached.json) as Map<String, dynamic>);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> cacheJson(String key, String id, String json) async {
+    switch (key) {
+      case 'accounts':
+        await _db.cacheAccount(id, json);
+      case 'transactions':
+        final items = jsonDecode(json)['items'] as List;
+        await _db.clearCachedTxs(id);
+        for (final item in items) {
+          await _db.cacheTx(item['id'], id, jsonEncode(item));
+        }
+      case 'loans':
+        final items = jsonDecode(json)['items'] as List;
+        await _db.clearCachedLoans();
+        for (final item in items) {
+          await _db.cacheLoan(item['id'], jsonEncode(item));
+        }
+      case 'profile':
+        await _db.cacheProfile(id, json);
+      default:
+        await _db.cacheAccount('__${key}_$id', json);
+    }
+  }
+
   Future<({String json, DateTime cachedAt})?> _getCachedRaw(
       String key, String id) async {
     switch (key) {
@@ -61,13 +115,26 @@ class CacheService {
         final r = await _db.getCachedAccount(id);
         if (r != null) return (json: r.json, cachedAt: r.cachedAt);
       case 'transactions':
-        final r = await _db.getCachedAccount(id);
-        if (r != null) return (json: r.json, cachedAt: r.cachedAt);
+        final rows = await _db.getCachedTxs(id);
+        if (rows.isNotEmpty) {
+          final items = rows.map((r) => jsonDecode(r.json)).toList();
+          final latest =
+              rows.map((r) => r.cachedAt).reduce((a, b) => a.isAfter(b) ? a : b);
+          return (json: jsonEncode({'items': items}), cachedAt: latest);
+        }
       case 'loans':
-        final r = await _db.getCachedAccount(id);
-        if (r != null) return (json: r.json, cachedAt: r.cachedAt);
+        final rows = await _db.getCachedLoans();
+        if (rows.isNotEmpty) {
+          final items = rows.map((r) => jsonDecode(r.json)).toList();
+          final latest =
+              rows.map((r) => r.cachedAt).reduce((a, b) => a.isAfter(b) ? a : b);
+          return (json: jsonEncode({'items': items}), cachedAt: latest);
+        }
       case 'profile':
         final r = await _db.getCachedProfile(id);
+        if (r != null) return (json: r.json, cachedAt: r.cachedAt);
+      default:
+        final r = await _db.getCachedAccount('__${key}_$id');
         if (r != null) return (json: r.json, cachedAt: r.cachedAt);
     }
     return null;

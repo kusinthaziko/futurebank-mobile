@@ -21,7 +21,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(profileProvider);
     final badgesAsync = ref.watch(badgesProvider);
-    const role = ''; // TODO: read from auth provider when available
+    final role = ref.watch(roleProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -59,6 +59,17 @@ class ProfileScreen extends ConsumerWidget {
                     style: AppTextStyles.labelMedium.copyWith(
                         color: data.user.kycLevel >= 2 ? success500 : warning500)),
               ),
+              if (role != null) ...[
+                const SizedBox(height: sp4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: sp12, vertical: sp4),
+                  decoration: BoxDecoration(
+                      color: primary100,
+                      borderRadius: radiusPill),
+                  child: Text(role.replaceAll('_', ' ').toUpperCase(),
+                      style: AppTextStyles.labelMedium.copyWith(color: primary500)),
+                ),
+              ],
             ])),
             const SizedBox(height: sp24),
 

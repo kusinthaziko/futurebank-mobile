@@ -63,6 +63,11 @@ class AppDatabase extends _$AppDatabase {
 
   Future<List<CachedLoan>> getCachedLoans() => select(cachedLoans).get();
 
+  Future<void> clearCachedTxs(String accountId) =>
+      (delete(cachedTransactions)..where((t) => t.accountId.equals(accountId))).go();
+
+  Future<void> clearCachedLoans() => delete(cachedLoans).go();
+
   // CachedProfile table → accessor: cachedProfile, data class: CachedProfileData
   Future<void> cacheProfile(String userId, String json) =>
       into(cachedProfile).insertOnConflictUpdate(

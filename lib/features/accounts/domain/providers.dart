@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/services/cache_service.dart';
 import '../../../core/graphql/client.dart';
 import '../../../features/auth/domain/auth_state.dart';
 import '../data/models/account_models.dart';
@@ -11,7 +12,10 @@ String? _token(AuthState auth) => switch (auth) {
 };
 
 final accountRepositoryProvider = Provider.family<AccountRepository, String?>(
-  (ref, token) => AccountRepository(ref.read(graphQLClientProvider(token))),
+  (ref, token) => AccountRepository(
+    ref.read(graphQLClientProvider(token)),
+    ref.read(cacheServiceProvider),
+  ),
 );
 
 final accountsProvider = FutureProvider.autoDispose<
