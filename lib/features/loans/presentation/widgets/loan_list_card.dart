@@ -37,7 +37,7 @@ class LoanListCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: sp8, vertical: sp4),
               decoration: BoxDecoration(
-                color: _statusColor.withOpacity(0.1),
+                color: _statusColor.withValues(alpha: 0.1),
                 borderRadius: radiusPill,
               ),
               child: Text(loan.status.toUpperCase(),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
@@ -24,11 +25,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         'Build a verifiable financial identity that travels with you.'),
   ];
 
-  void _next() {
+  Future<void> _next() async {
     if (_page < 2) {
       _ctrl.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
     } else {
-      context.go('/auth/register');
+      await const FlutterSecureStorage().write(key: 'onboarding_seen', value: 'true');
+      if (mounted) context.go('/auth/register');
     }
   }
 
@@ -41,7 +43,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           Align(
             alignment: Alignment.topRight,
             child: TextButton(
-              onPressed: () => context.go('/auth/login'),
+              onPressed: () async {
+                await const FlutterSecureStorage().write(key: 'onboarding_seen', value: 'true');
+                if (context.mounted) context.go('/auth/login');
+              },
               child: Text('Skip', style: AppTextStyles.labelMedium.copyWith(color: gray500)),
             ),
           ),

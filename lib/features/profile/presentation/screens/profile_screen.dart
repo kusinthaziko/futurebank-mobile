@@ -12,6 +12,7 @@ import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../domain/providers.dart';
+import '../../../../core/widgets/error_view.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -20,6 +21,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(profileProvider);
     final badgesAsync = ref.watch(badgesProvider);
+    const role = ''; // TODO: read from auth provider when available
 
     return Scaffold(
       appBar: AppBar(
@@ -27,19 +29,22 @@ class ProfileScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            onPressed: () => _showSettings(context, ref),
+            onPressed: () => context.push('/settings'),
           ),
         ],
       ),
       body: profileAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(error: e, onRetry: () => ref.refresh(provider)),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.refresh(profileProvider)),
         data: (data) => ListView(
           padding: const EdgeInsets.all(sp16),
           children: [
-            // Avatar + info
             Center(child: Column(children: [
-              FBAvatar(name: data.user.fullName, imageUrl: data.user.avatarUrl, size: 80),
+              GestureDetector(
+                onTap: () => context.push('/passport'),
+                child: FBAvatar(name: data.user.fullName,
+                    imageUrl: data.user.avatarUrl, size: 80),
+              ),
               const SizedBox(height: sp12),
               Text(data.user.fullName, style: AppTextStyles.titleLarge),
               Text(data.user.email,
@@ -57,59 +62,73 @@ class ProfileScreen extends ConsumerWidget {
             ])),
             const SizedBox(height: sp24),
 
-            // Health score with arc gauge
-            FBCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Financial Health', style: AppTextStyles.titleMedium),
-              const SizedBox(height: sp16),
-              Center(child: FBHealthScoreMeter(score: data.healthScore.score, size: 140)),
-              const SizedBox(height: sp16),
-              _ScoreBar('Savings consistency', data.healthScore.savingsConsistency),
-              _ScoreBar('Loan repayment', data.healthScore.loanRepaymentRate),
-              _ScoreBar('Challenges', data.healthScore.challengeCompletions / 5),
-              _ScoreBar('KYC level', data.healthScore.kycLevel / 3),
-            ])),
-            const SizedBox(height: sp16),
-
-            // Badges
-            badgesAsync.when(
-              loading: () => const FBSkeletonLoader(height: 60),
-              error: (_, __) => const SizedBox(),
-              data: (badges) => badges.isEmpty ? const SizedBox() : FBCard(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('Badges (${badges.length})', style: AppTextStyles.titleMedium),
-                  const SizedBox(height: sp12),
-                  Wrap(spacing: sp8, children: badges.map((b) =>
-                      Chip(label: Text(b.name, style: AppTextStyles.labelMedium))).toList()),
+            // Health score - tappable to health score screen
+            GestureDetector(
+              onTap: () => context.push('/health-score'),
+              child: FBCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                  Text('Financial Health', style: AppTextStyles.titleMedium),
+                  Icon(Icons.chevron_right, color: gray500),
                 ]),
-              ),
+                const SizedBox(height: sp16),
+                Center(child: FBHealthScoreMeter(score: data.healthScore.score, size: 140)),
+                const SizedBox(height: sp16),
+                _ScoreBar('Savings consistency', data.healthScore.savingsConsistency),
+                _ScoreBar('Loan repayment', data.healthScore.loanRepaymentRate),
+                _ScoreBar('Challenges', data.healthScore.challengeCompletions / 5),
+                _ScoreBar('KYC level', data.healthScore.kycLevel / 3),
+              ])),
             ),
             const SizedBox(height: sp16),
 
-            // Financial Passport
+            // Badges - tappable
+            badgesAsync.when(
+              loading: () => const FBSkeletonLoader(height: 60),
+              error: (_, __) => const SizedBox(),
+              data: (badges) => badges.isEmpty ? const SizedBox() : GestureDetector(
+                onTap: () => context.push('/passport'),
+                child: FBCard(
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Text('Badges (${badges.length})', style: AppTextStyles.titleMedium),
+                    const Icon(Icons.chevron_right, color: gray500),
+                  ]),
+                ),
+              ),
+            ),
+            if (badgesAsync.asData?.value.isNotEmpty ?? false)
+              const SizedBox(height: sp16),
+
+            // Financial Passport - tappable
             if (data.user.blockchainDid != null)
-              FBCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Row(children: [
-                  const Icon(Icons.badge, color: gold500),
-                  const SizedBox(width: sp8),
-                  Text('Financial Passport', style: AppTextStyles.titleMedium),
-                ]),
-                const SizedBox(height: sp12),
-                Center(child: QrImageView(data: data.user.blockchainDid!, size: 120)),
-                const SizedBox(height: sp8),
-                Row(children: [
-                  Expanded(child: Text(
-                    _truncateDid(data.user.blockchainDid!),
-                    style: AppTextStyles.caption.copyWith(color: primary500),
-                  )),
-                  IconButton(
-                    icon: const Icon(Icons.copy, size: 16, color: primary500),
-                    onPressed: () => Clipboard.setData(
-                        ClipboardData(text: data.user.blockchainDid!)),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-                ]),
-              ])),
+              GestureDetector(
+                onTap: () => context.push('/passport'),
+                child: FBCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  const Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                    Row(children: [
+                      Icon(Icons.badge, color: gold500),
+                      SizedBox(width: sp8),
+                      Text('Financial Passport', style: AppTextStyles.titleMedium),
+                    ]),
+                    Icon(Icons.chevron_right, color: gray500),
+                  ]),
+                  const SizedBox(height: sp12),
+                  Center(child: QrImageView(data: data.user.blockchainDid!, size: 120)),
+                  const SizedBox(height: sp8),
+                  Row(children: [
+                    Expanded(child: Text(
+                      _truncateDid(data.user.blockchainDid!),
+                      style: AppTextStyles.caption.copyWith(color: primary500),
+                    )),
+                    IconButton(
+                      icon: const Icon(Icons.copy, size: 16, color: primary500),
+                      onPressed: () => Clipboard.setData(
+                          ClipboardData(text: data.user.blockchainDid!)),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ]),
+                ])),
+              ),
 
             // KYC upgrade prompt
             if (data.user.kycLevel < 2) ...[
@@ -118,7 +137,7 @@ class ProfileScreen extends ConsumerWidget {
                 const Icon(Icons.verified_user_outlined, color: warning500),
                 const SizedBox(width: sp12),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('Upgrade KYC', style: AppTextStyles.labelLarge),
+                  const Text('Upgrade KYC', style: AppTextStyles.labelLarge),
                   Text('Unlock higher limits and loans',
                       style: AppTextStyles.caption.copyWith(color: gray500)),
                 ])),
@@ -127,8 +146,23 @@ class ProfileScreen extends ConsumerWidget {
                     child: const Text('Verify')),
               ])),
             ],
-            const SizedBox(height: sp24),
 
+            // Admin panel link (shown for admin roles)
+            if (role == 'admin' || role == 'super_admin' || role == 'finance_manager') ...[
+              const SizedBox(height: sp16),
+              FBCard(
+                onTap: () => context.push('/admin'),
+                child: const Row(children: [
+                  Icon(Icons.admin_panel_settings, color: primary500),
+                  SizedBox(width: sp12),
+                  Text('Admin Panel', style: AppTextStyles.labelLarge),
+                  Spacer(),
+                  Icon(Icons.chevron_right, color: gray500),
+                ]),
+              ),
+            ],
+
+            const SizedBox(height: sp24),
             FBButton(
               label: 'Sign Out',
               variant: FBButtonVariant.ghost,
@@ -147,16 +181,6 @@ class ProfileScreen extends ConsumerWidget {
     final parts = did.split(':');
     if (parts.length < 4) return did;
     return 'did:fb:${parts[2]}:****${parts.last.substring(parts.last.length.clamp(4, parts.last.length) - 4)}';
-  }
-
-  void _showSettings(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-      builder: (_) => _SettingsSheet(),
-    );
   }
 }
 
@@ -182,48 +206,6 @@ class _ScoreBar extends StatelessWidget {
             backgroundColor: gray100,
             valueColor: const AlwaysStoppedAnimation(primary500)),
       ),
-    ]),
-  );
-}
-
-class _SettingsSheet extends ConsumerStatefulWidget {
-  @override
-  ConsumerState<_SettingsSheet> createState() => _SettingsSheetState();
-}
-
-class _SettingsSheetState extends ConsumerState<_SettingsSheet> {
-  bool _blurBalance = false;
-  bool _showOnLeaderboard = true;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.all(sp24),
-    child: Column(mainAxisSize: MainAxisSize.min, children: [
-      Container(width: 40, height: 4,
-          decoration: BoxDecoration(color: gray300, borderRadius: radius4)),
-      const SizedBox(height: sp16),
-      Text('Settings', style: AppTextStyles.titleLarge),
-      const SizedBox(height: sp24),
-      SwitchListTile(
-        title: const Text('Blur balance on home'),
-        value: _blurBalance,
-        onChanged: (v) => setState(() => _blurBalance = v),
-        contentPadding: EdgeInsets.zero,
-      ),
-      SwitchListTile(
-        title: const Text('Show on leaderboard'),
-        value: _showOnLeaderboard,
-        onChanged: (v) => setState(() => _showOnLeaderboard = v),
-        contentPadding: EdgeInsets.zero,
-      ),
-      const Divider(),
-      ListTile(
-        contentPadding: EdgeInsets.zero,
-        title: const Text('Help & FAQ'),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () {},
-      ),
-      const SizedBox(height: sp24),
     ]),
   );
 }

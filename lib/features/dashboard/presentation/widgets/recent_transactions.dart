@@ -19,7 +19,7 @@ class RecentTransactions extends ConsumerWidget {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text('Recent', style: AppTextStyles.titleMedium),
+        const Text('Recent', style: AppTextStyles.titleMedium),
         TextButton(
           onPressed: () => context.push('/accounts/$accountId/history'),
           child: Text('See all',

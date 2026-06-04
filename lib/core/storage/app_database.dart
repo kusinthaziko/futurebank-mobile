@@ -29,6 +29,7 @@ class CachedLoans extends Table {
   @override Set<Column> get primaryKey => {id};
 }
 
+// Drift names this table's data class CachedProfileData, accessor cachedProfile
 class CachedProfile extends Table {
   TextColumn get userId => text()();
   TextColumn get json => text()();
@@ -62,18 +63,20 @@ class AppDatabase extends _$AppDatabase {
 
   Future<List<CachedLoan>> getCachedLoans() => select(cachedLoans).get();
 
+  // CachedProfile table → accessor: cachedProfile, data class: CachedProfileData
   Future<void> cacheProfile(String userId, String json) =>
-      into(cachedProfiles).insertOnConflictUpdate(
-          CachedProfilesCompanion.insert(userId: userId, json: json, cachedAt: DateTime.now()));
+      into(cachedProfile).insertOnConflictUpdate(
+          CachedProfileCompanion.insert(
+              userId: userId, json: json, cachedAt: DateTime.now()));
 
-  Future<CachedProfile?> getCachedProfile(String userId) =>
-      (select(cachedProfiles)..where((t) => t.userId.equals(userId))).getSingleOrNull();
+  Future<CachedProfileData?> getCachedProfile(String userId) =>
+      (select(cachedProfile)..where((t) => t.userId.equals(userId))).getSingleOrNull();
 
   Future<void> clearAll() async {
     await delete(cachedAccounts).go();
     await delete(cachedTransactions).go();
     await delete(cachedLoans).go();
-    await delete(cachedProfiles).go();
+    await delete(cachedProfile).go();
   }
 }
 

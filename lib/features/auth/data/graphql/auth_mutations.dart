@@ -8,7 +8,7 @@ class AuthMutations {
       login(input: { email: $email, password: $password }) {
         accessToken
         refreshToken
-        user { id full_name email kyc_level role }
+        user { id full_name email kyc_level role institution_id }
       }
     }
   ''';
@@ -18,13 +18,47 @@ class AuthMutations {
       register(input: $input) {
         accessToken
         refreshToken
-        user { id full_name email kyc_level role }
+        user { id full_name email kyc_level role institution_id }
+      }
+    }
+  ''';
+
+  static const _forgotPasswordMutation = r'''
+    mutation ForgotPassword($email: String!) {
+      forgotPassword(input: { email: $email })
+    }
+  ''';
+
+  static const _verifyEmailMutation = r'''
+    mutation VerifyEmail($code: String!, $email: String) {
+      verifyEmail(input: { code: $code, email: $email }) {
+        success
+      }
+    }
+  ''';
+
+  static const _resendVerificationMutation = r'''
+    mutation ResendVerificationCode($email: String) {
+      resendVerificationCode(input: { email: $email }) {
+        success
+      }
+    }
+  ''';
+
+  static const _submitKYCMutation = r'''
+    mutation SubmitKYC($input: KYCInput!) {
+      submitKYC(input: $input) {
+        kyc_level
+        status
       }
     }
   ''';
 
   static Future<Map<String, dynamic>?> login(
-      WidgetRef ref, {required String email, required String password}) async {
+    WidgetRef ref, {
+    required String email,
+    required String password,
+  }) async {
     final client = ref.read(graphQLClientProvider(null));
     final result = await client.mutate(MutationOptions(
       document: gql(_loginMutation),
@@ -35,7 +69,8 @@ class AuthMutations {
   }
 
   static Future<Map<String, dynamic>?> register(
-      WidgetRef ref, Map<String, dynamic> input) async {
+    WidgetRef ref, Map<String, dynamic> input,
+  ) async {
     final client = ref.read(graphQLClientProvider(null));
     final result = await client.mutate(MutationOptions(
       document: gql(_registerMutation),
@@ -43,5 +78,48 @@ class AuthMutations {
     ));
     if (result.hasException) throw result.exception!;
     return result.data?['register'];
+  }
+
+  static Future<void> forgotPassword(
+    WidgetRef ref, {required String email}) async {
+    final client = ref.read(graphQLClientProvider(null));
+    final result = await client.mutate(MutationOptions(
+      document: gql(_forgotPasswordMutation),
+      variables: {'email': email},
+    ));
+    if (result.hasException) throw result.exception!;
+  }
+
+  static Future<void> verifyEmail(
+    WidgetRef ref, {required String code, String? email}) async {
+    final client = ref.read(graphQLClientProvider(null));
+    final result = await client.mutate(MutationOptions(
+      document: gql(_verifyEmailMutation),
+      variables: {'code': code, 'email': email},
+    ));
+    if (result.hasException) throw result.exception!;
+  }
+
+  static Future<void> resendVerificationCode(
+    WidgetRef ref, {String? email}) async {
+    final client = ref.read(graphQLClientProvider(null));
+    final result = await client.mutate(MutationOptions(
+      document: gql(_resendVerificationMutation),
+      variables: {'email': email},
+    ));
+    if (result.hasException) throw result.exception!;
+  }
+
+  static Future<void> submitKYC(
+    WidgetRef ref, {required String documentType, required String cloudinaryPublicId}) async {
+    final client = ref.read(graphQLClientProvider(null));
+    final result = await client.mutate(MutationOptions(
+      document: gql(_submitKYCMutation),
+      variables: {'input': {
+        'document_type': documentType,
+        'cloudinary_public_id': cloudinaryPublicId,
+      }},
+    ));
+    if (result.hasException) throw result.exception!;
   }
 }

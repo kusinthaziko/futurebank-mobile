@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/design_system/components/fb_card_input.dart';
-import '../../../../core/design_system/components/fb_misc.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../domain/providers.dart';
+import '../../../../core/widgets/error_view.dart';
 
 class AccountsScreen extends ConsumerWidget {
   const AccountsScreen({super.key});
@@ -18,7 +18,7 @@ class AccountsScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Accounts')),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(error: e, onRetry: () => ref.refresh(provider)),
+        error: (e, _) => ErrorView(error: e, onRetry: () => ref.refresh(accountsProvider)),
         data: (data) => ListView(
           padding: const EdgeInsets.all(sp16),
           children: [
@@ -26,7 +26,7 @@ class AccountsScreen extends ConsumerWidget {
               padding: const EdgeInsets.only(bottom: sp12),
               child: FBCard(
                 gradient: a.accountType == 'savings',
-                onTap: () => context.push('/accounts/${a.id}/history'),
+                onTap: () => context.push('/accounts/detail/${a.id}'),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(a.accountType.toUpperCase(),
                       style: AppTextStyles.labelMedium.copyWith(
@@ -45,7 +45,7 @@ class AccountsScreen extends ConsumerWidget {
             )),
             if (data.goals.isNotEmpty) ...[
               const SizedBox(height: sp8),
-              Text('Savings Goals', style: AppTextStyles.titleMedium),
+              const Text('Savings Goals', style: AppTextStyles.titleMedium),
               const SizedBox(height: sp8),
               ...data.goals.map((g) => Padding(
                 padding: const EdgeInsets.only(bottom: sp8),
@@ -53,7 +53,7 @@ class AccountsScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                     Text(g.name, style: AppTextStyles.labelLarge),
-                    Text('${g.category}',
+                    Text(g.category,
                         style: AppTextStyles.caption.copyWith(color: gray500)),
                   ]),
                   const SizedBox(height: sp8),

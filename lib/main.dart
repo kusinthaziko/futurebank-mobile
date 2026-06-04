@@ -4,7 +4,9 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'core/design_system/theme.dart';
 import 'core/router/router.dart';
 import 'core/providers/auth_provider.dart';
+import 'core/providers/security_provider.dart';
 import 'core/graphql/client.dart';
+import 'features/auth/domain/auth_state.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +20,13 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
-    final token = ref.watch(authProvider).accessToken;
+    final authState = ref.watch(authProvider);
+    final token = switch (authState) {
+      Authenticated(:final accessToken) => accessToken,
+      _ => null,
+    };
+
+    ref.listen(autoLockProvider, (_, __) {});
 
     return GraphQLProvider(
       client: ValueNotifier(ref.watch(graphQLClientProvider(token))),

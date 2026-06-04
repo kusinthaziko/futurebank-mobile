@@ -3,10 +3,15 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import '../providers/subscription_providers.dart';
+import '../../features/auth/domain/auth_state.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/kyc_screen.dart';
+import '../../features/auth/presentation/screens/forgot_password_screen.dart';
+import '../../features/auth/presentation/screens/verify_email_screen.dart';
+import '../../features/auth/presentation/screens/biometric_setup_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
+import '../../features/splash/presentation/splash_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/accounts/presentation/screens/accounts_screen.dart';
 import '../../features/transactions/presentation/screens/transaction_history_screen.dart';
@@ -15,30 +20,51 @@ import '../../features/loans/presentation/screens/loan_apply_screen.dart';
 import '../../features/loans/presentation/screens/loan_detail_screen.dart';
 import '../../features/social/presentation/screens/social_screen.dart';
 import '../../features/social/presentation/screens/social_detail_screens.dart';
+import '../../features/social/presentation/screens/create_group_screen.dart';
+import '../../features/social/presentation/screens/leaderboard_screen.dart';
+import '../../features/social/presentation/screens/badge_earned_screen.dart';
 import '../../features/ai_coach/presentation/screens/coach_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/profile/presentation/screens/health_score_screen.dart';
+import '../../features/profile/presentation/screens/settings_screen.dart';
+import '../../features/profile/presentation/screens/passport_screen.dart';
 import '../../features/admin/presentation/screens/admin_screen.dart';
 import '../../features/accounts/presentation/screens/deposit_screen.dart';
 import '../../features/accounts/presentation/screens/transfer_screen.dart';
+import '../../features/accounts/presentation/screens/account_detail_screen.dart';
+import '../../features/accounts/presentation/screens/receipt_screen.dart';
+import '../../features/accounts/presentation/screens/create_goal_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
 
   return GoRouter(
-    initialLocation: '/onboarding',
+    initialLocation: '/',
     redirect: (context, state) {
+      if (authState is Loading) return null;
       final isAuth = authState.isAuthenticated;
-      final isPublic = state.matchedLocation.startsWith('/auth') ||
-          state.matchedLocation == '/onboarding';
+      final loc = state.matchedLocation;
+      final isPublic = loc == '/' ||
+          loc.startsWith('/auth') ||
+          loc == '/onboarding';
       if (!isAuth && !isPublic) return '/auth/login';
-      if (isAuth && isPublic) return '/home';
+      if (isAuth && (isPublic && loc != '/')) return '/home';
       return null;
     },
     routes: [
+      GoRoute(path: '/', builder: (_, __) => const SplashScreen()),
       GoRoute(path: '/onboarding', builder: (_, __) => const OnboardingScreen()),
-      GoRoute(path: '/auth/login',    builder: (_, __) => const LoginScreen()),
-      GoRoute(path: '/auth/register', builder: (_, __) => const RegisterScreen()),
-      GoRoute(path: '/auth/kyc',      builder: (_, __) => const KycScreen()),
+      GoRoute(path: '/auth/login',      builder: (_, __) => const LoginScreen()),
+      GoRoute(path: '/auth/register',   builder: (_, __) => const RegisterScreen()),
+      GoRoute(path: '/auth/kyc',        builder: (_, __) => const KycScreen()),
+      GoRoute(path: '/auth/forgot-password',
+          builder: (_, __) => const ForgotPasswordScreen()),
+      GoRoute(path: '/auth/verify-email',
+          builder: (_, s) => VerifyEmailScreen(
+            email: s.uri.queryParameters['email'],
+          )),
+      GoRoute(path: '/auth/biometric-setup',
+          builder: (_, __) => const BiometricSetupScreen()),
       ShellRoute(
         builder: (_, __, child) => MainShell(child: child),
         routes: [
@@ -54,6 +80,22 @@ final routerProvider = Provider<GoRouter>((ref) {
           builder: (_, s) => GroupDetailScreen(groupId: s.pathParameters['id']!)),
       GoRoute(path: '/social/challenges/:id',
           builder: (_, s) => ChallengeDetailScreen(challengeId: s.pathParameters['id']!)),
+      GoRoute(path: '/social/create-group',
+          builder: (_, __) => const CreateGroupScreen()),
+      GoRoute(path: '/leaderboard',
+          builder: (_, __) => const LeaderboardScreen()),
+      GoRoute(path: '/badge-earned',
+          builder: (_, s) => BadgeEarnedScreen(
+            badgeName: s.uri.queryParameters['name'] ?? 'Achievement',
+            badgeType: s.uri.queryParameters['type'] ?? 'achievement',
+            pointsAdded: int.tryParse(s.uri.queryParameters['points'] ?? '') ?? 150,
+          )),
+      GoRoute(path: '/health-score',
+          builder: (_, __) => const HealthScoreScreen()),
+      GoRoute(path: '/settings',
+          builder: (_, __) => const SettingsScreen()),
+      GoRoute(path: '/passport',
+          builder: (_, __) => const PassportScreen()),
       GoRoute(path: '/loans',       builder: (_, __) => const LoansScreen()),
       GoRoute(path: '/loans/apply', builder: (_, __) => const LoanApplyScreen()),
       GoRoute(path: '/loans/:id',
@@ -62,6 +104,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/admin',  builder: (_, __) => const AdminScreen()),
       GoRoute(path: '/deposit',  builder: (_, __) => const DepositScreen()),
       GoRoute(path: '/transfer', builder: (_, __) => const TransferScreen()),
+      GoRoute(
+        path: '/accounts/detail/:id',
+        builder: (_, s) => AccountDetailScreen(accountId: s.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/receipt/:id',
+        builder: (_, s) => ReceiptScreen(receiptId: s.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/accounts/create-goal',
+        builder: (_, __) => const CreateGoalScreen(),
+      ),
     ],
   );
 });
@@ -72,7 +126,6 @@ class MainShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Listen for real-time notifications app-wide
     ref.listen(notificationSubscriptionProvider, (_, next) {
       next.whenData((n) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

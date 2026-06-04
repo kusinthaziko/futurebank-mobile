@@ -1,7 +1,11 @@
 // Single responsibility: fetch and map dashboard data — no UI
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'graphql/queries.dart';
+import 'graphql/queries_ext.dart';
 import 'models/dashboard_data.dart';
+import 'models/savings_goal_model.dart';
+import 'models/challenge_model.dart';
+import 'models/ai_insight_model.dart';
 
 class DashboardRepository {
   final GraphQLClient _client;
@@ -65,5 +69,60 @@ class DashboardRepository {
               'insertedAt': t['inserted_at'],
             }))
         .toList();
+  }
+
+  Future<List<SavingsGoalModel>> fetchSavingsGoals() async {
+    final result = await _client.query(QueryOptions(
+      document: gql(dashboardExtrasQuery),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    ));
+
+    if (result.hasException) throw result.exception!;
+
+    return (result.data!['savingsGoals'] as List)
+        .cast<Map<String, dynamic>>()
+        .map((g) => SavingsGoalModel.fromJson(g))
+        .toList();
+  }
+
+  Future<ChallengeModel?> fetchActiveChallenge() async {
+    final result = await _client.query(QueryOptions(
+      document: gql(dashboardExtrasQuery),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    ));
+
+    if (result.hasException) throw result.exception!;
+
+    final challenges = (result.data!['activeChallenges'] as List)
+        .cast<Map<String, dynamic>>();
+    if (challenges.isEmpty) return null;
+    return ChallengeModel.fromJson(challenges.first);
+  }
+
+  Future<AiInsightModel?> fetchAiInsight() async {
+    final result = await _client.query(QueryOptions(
+      document: gql(dashboardExtrasQuery),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    ));
+
+    if (result.hasException) throw result.exception!;
+
+    final raw = result.data!['aiInsight'] as Map<String, dynamic>?;
+    if (raw == null) return null;
+    return AiInsightModel.fromJson(raw);
+  }
+
+  Future<double?> fetchMonthlyDelta(String accountId) async {
+    final result = await _client.query(QueryOptions(
+      document: gql(monthlyDeltaQuery),
+      variables: {'accountId': accountId},
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    ));
+
+    if (result.hasException) return null;
+
+    final raw = result.data!['balanceChange'] as Map<String, dynamic>?;
+    if (raw == null) return null;
+    return (raw['percentage'] as num?)?.toDouble();
   }
 }

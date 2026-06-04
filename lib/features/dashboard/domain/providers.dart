@@ -2,22 +2,51 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/graphql/client.dart';
+import '../../../features/auth/domain/auth_state.dart';
 import '../data/models/dashboard_data.dart';
+import '../data/models/savings_goal_model.dart';
+import '../data/models/challenge_model.dart';
+import '../data/models/ai_insight_model.dart';
 import '../data/repository.dart';
+
+String? _token(AuthState auth) => switch (auth) {
+  Authenticated(:final accessToken) => accessToken,
+  _ => null,
+};
 
 final dashboardRepositoryProvider = Provider.family<DashboardRepository, String?>(
   (ref, token) => DashboardRepository(ref.read(graphQLClientProvider(token))),
 );
 
 final dashboardProvider = FutureProvider.autoDispose<DashboardData>((ref) async {
-  final token = ref.watch(authProvider).accessToken;
+  final token = _token(ref.watch(authProvider));
   return ref.read(dashboardRepositoryProvider(token)).fetchDashboard();
 });
 
 final recentTransactionsProvider =
     FutureProvider.autoDispose<List<TransactionModel>>((ref) async {
   final dashboard = await ref.watch(dashboardProvider.future);
-  final token = ref.watch(authProvider).accessToken;
+  final token = _token(ref.watch(authProvider));
   return ref.read(dashboardRepositoryProvider(token))
       .fetchRecentTransactions(dashboard.primaryAccount.id);
+});
+
+final savingsGoalsProvider = FutureProvider.autoDispose<List<SavingsGoalModel>>((ref) async {
+  final token = _token(ref.watch(authProvider));
+  return ref.read(dashboardRepositoryProvider(token)).fetchSavingsGoals();
+});
+
+final activeChallengeProvider = FutureProvider.autoDispose<ChallengeModel?>((ref) async {
+  final token = _token(ref.watch(authProvider));
+  return ref.read(dashboardRepositoryProvider(token)).fetchActiveChallenge();
+});
+
+final aiInsightProvider = FutureProvider.autoDispose<AiInsightModel?>((ref) async {
+  final token = _token(ref.watch(authProvider));
+  return ref.read(dashboardRepositoryProvider(token)).fetchAiInsight();
+});
+
+final monthlyDeltaProvider = FutureProvider.autoDispose.family<double?, String>((ref, accountId) async {
+  final token = _token(ref.watch(authProvider));
+  return ref.read(dashboardRepositoryProvider(token)).fetchMonthlyDelta(accountId);
 });

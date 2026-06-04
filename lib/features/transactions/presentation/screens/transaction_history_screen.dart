@@ -1,56 +1,299 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/design_system/components/fb_misc.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
-import '../../../accounts/domain/providers.dart';
+import '../../../../core/providers/subscription_providers.dart';
+import '../../../../core/widgets/error_view.dart';
+import '../../domain/providers.dart';
+import '../../domain/transaction_notifier.dart';
+import '../widgets/ai_search.dart';
+import '../widgets/transaction_detail_sheet.dart';
 
-class TransactionHistoryScreen extends ConsumerWidget {
+class TransactionHistoryScreen extends ConsumerStatefulWidget {
   final String accountId;
   const TransactionHistoryScreen({super.key, required this.accountId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(transactionsProvider(accountId));
-    return Scaffold(
-      appBar: AppBar(title: const Text('Transactions')),
-      body: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(error: e, onRetry: () => ref.refresh(provider)),
-        data: (txs) => txs.isEmpty
-            ? Center(child: Text('No transactions.',
-                style: AppTextStyles.bodyMedium.copyWith(color: gray500)))
-            : ListView.separated(
-                padding: const EdgeInsets.all(sp16),
-                itemCount: txs.length,
-                separatorBuilder: (_, __) => const Divider(height: 1),
-                itemBuilder: (_, i) {
-                  final tx = txs[i];
-                  final isCredit = tx.transactionType == 'deposit' ||
-                      tx.transactionType == 'interest_credit';
-                  return ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Container(
-                      width: 40, height: 40,
-                      decoration: BoxDecoration(
-                          color: isCredit ? success100 : error100,
-                          borderRadius: radius12),
-                      child: Icon(
-                          isCredit ? Icons.arrow_downward : Icons.arrow_upward,
-                          color: isCredit ? success500 : error500, size: 18),
-                    ),
-                    title: Text(tx.description ?? tx.transactionType,
-                        style: AppTextStyles.bodyMedium),
-                    subtitle: Text(tx.reference,
-                        style: AppTextStyles.caption.copyWith(color: gray500)),
-                    trailing: Text(
-                        '${isCredit ? '+' : '-'}MWK ${tx.amount}',
-                        style: AppTextStyles.labelLarge.copyWith(
-                            color: isCredit ? success500 : error500)),
-                  );
-                },
-              ),
+  ConsumerState<TransactionHistoryScreen> createState() =>
+      _TransactionHistoryScreenState();
+}
+
+class _TransactionHistoryScreenState
+    extends ConsumerState<TransactionHistoryScreen>
+    with SingleTickerProviderStateMixin {
+  final _scrollController = ScrollController();
+  late AnimationController _slideCtrl;
+  late Animation<Offset> _slideAnim;
+
+  static const _filters = [
+    'All', 'Deposits', 'Withdrawals', 'Transfers', 'Loans',
+  ];
+  String? _activeFilter;
+
+  @override
+  void initState() {
+    super.initState();
+    _slideCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _slideAnim = Tween<Offset>(
+      begin: const Offset(0, -1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _slideCtrl, curve: Curves.easeOutCubic));
+    _scrollController.addListener(_onScroll);
+    Future.microtask(() => ref.read(txPageProvider(widget.accountId).notifier).refresh());
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _slideCtrl.dispose();
+    super.dispose();
+  }
+
+  TxPageNotifier get _notifier => ref.read(txPageProvider(widget.accountId).notifier);
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _notifier.loadMore();
+    }
+  }
+
+  String _filterValue(String label) {
+    switch (label) {
+      case 'Deposits': return 'deposit';
+      case 'Withdrawals': return 'withdrawal';
+      case 'Transfers': return 'transfer';
+      case 'Loans': return 'loan_disbursement';
+      default: return 'All';
+    }
+  }
+
+  Future<void> _pickDateRange() async {
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      builder: (_, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(primary: primary500),
+        ),
+        child: child!,
       ),
     );
+    if (picked != null) {
+      _notifier.setDateRange(
+        picked.start.toIso8601String().split('T')[0],
+        picked.end.toIso8601String().split('T')[0],
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(txPageProvider(widget.accountId));
+
+    ref.listen(transactionSubscriptionProvider(widget.accountId),
+        (_, next) {
+      next.whenData((tx) {
+        _slideCtrl.forward(from: 0);
+        _notifier.prependTransaction(tx);
+      });
+    });
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Transactions'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.date_range, size: 20),
+            onPressed: _pickDateRange,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          AISearchInput(
+            onSubmitted: (q) => _notifier.search(q),
+            onClear: () => ref.read(txPageProvider(widget.accountId).notifier).search(''),
+            isSearching: state.isLoading && state.searchQuery != null,
+          ),
+          SizedBox(
+            height: 44,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: sp16),
+              itemCount: _filters.length,
+              separatorBuilder: (_, __) => const SizedBox(width: sp8),
+              itemBuilder: (_, i) {
+                final f = _filters[i];
+                final sel = (f == 'All' && _activeFilter == null) ||
+                    _activeFilter == _filterValue(f);
+                return ChoiceChip(
+                  label: Text(f, style: AppTextStyles.labelMedium),
+                  selected: sel,
+                  selectedColor: primary500,
+                  labelStyle: TextStyle(color: sel ? white : gray700),
+                  onSelected: (_) {
+                    setState(() {
+                      _activeFilter = f == 'All' ? null : _filterValue(f);
+                    });
+                    _notifier.setFilter(_activeFilter);
+                  },
+                );
+              },
+            ),
+          ),
+          Expanded(child: _buildList(state)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildList(TxPageState state) {
+    if (state.isLoading && state.transactions.isEmpty) {
+      return ListView.builder(
+        padding: const EdgeInsets.all(sp16),
+        itemCount: 6,
+        itemBuilder: (_, __) => Padding(
+          padding: const EdgeInsets.only(bottom: sp12),
+          child: FBSkeletonLoader(height: 64, borderRadius: BorderRadius.circular(12)),
+        ),
+      );
+    }
+
+    if (state.error != null && state.transactions.isEmpty) {
+      return ErrorView(
+        error: state.error!,
+        onRetry: () => _notifier.refresh(),
+      );
+    }
+
+    if (state.transactions.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.receipt_long_outlined, size: 48, color: gray300),
+            const SizedBox(height: sp12),
+            Text('No transactions found.',
+                style: AppTextStyles.bodyMedium.copyWith(color: gray500)),
+          ],
+        ),
+      );
+    }
+
+    return AnimatedBuilder(
+      animation: _slideAnim,
+      builder: (_, __) => ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.all(sp16),
+        itemCount: state.transactions.length + (state.hasMore ? 1 : 0),
+        itemBuilder: (_, i) {
+          if (i >= state.transactions.length) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: sp12),
+              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            );
+          }
+
+          final tx = state.transactions[i];
+          final isNew = state.page == 1 && i == 0;
+
+          final isCredit = tx.transactionType == 'deposit' ||
+              tx.transactionType == 'interest_credit' ||
+              tx.transactionType == 'loan_disbursement';
+
+          final statusColor = switch (tx.status) {
+            'completed' => success500,
+            'pending' || 'processing' => warning500,
+            _ => error500,
+          };
+          final statusBg = switch (tx.status) {
+            'completed' => success100,
+            'pending' || 'processing' => warning100,
+            _ => error100,
+          };
+
+          final tile = GestureDetector(
+            onTap: () => showTransactionDetailSheet(context, tx),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: sp4),
+              child: SizedBox(
+                height: 64,
+                child: Row(children: [
+                  Container(
+                    width: 40, height: 40,
+                    decoration: BoxDecoration(
+                      color: isCredit ? success100 : error100,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      isCredit ? Icons.arrow_downward : Icons.arrow_upward,
+                      color: isCredit ? success500 : error500, size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(tx.description ?? tx.transactionType,
+                            style: AppTextStyles.bodyMedium,
+                            maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text(_timeAgo(tx.insertedAt),
+                            style: AppTextStyles.caption.copyWith(color: gray500)),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text('${isCredit ? '+' : '-'}MWK ${tx.amount}',
+                          style: AppTextStyles.labelLarge.copyWith(
+                              color: isCredit ? success500 : error500)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: statusBg,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(tx.status.toUpperCase(),
+                            style: AppTextStyles.caption.copyWith(
+                                color: statusColor, fontSize: 9)),
+                      ),
+                    ],
+                  ),
+                ]),
+              ),
+            ),
+          );
+
+          return isNew
+              ? SlideTransition(position: _slideAnim, child: tile)
+              : tile;
+        },
+      ),
+    );
+  }
+
+  String _timeAgo(String insertedAt) {
+    try {
+      final dt = DateTime.parse(insertedAt);
+      final diff = DateTime.now().difference(dt);
+      if (diff.inMinutes < 1) return 'Just now';
+      if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+      if (diff.inHours < 24) return '${diff.inHours}h ago';
+      if (diff.inDays < 7) return '${diff.inDays}d ago';
+      return '${dt.day}/${dt.month}/${dt.year}';
+    } catch (_) {
+      return insertedAt;
+    }
   }
 }

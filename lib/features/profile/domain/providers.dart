@@ -9,11 +9,11 @@ final profileRepositoryProvider = Provider.family<ProfileRepository, String?>(
 );
 
 final profileProvider = FutureProvider.autoDispose<ProfileData>((ref) async {
-  final token = ref.watch(authProvider).accessToken;
+  final token = ref.watch(accessTokenProvider);
   return ref.read(profileRepositoryProvider(token)).fetchProfile();
 });
 
 final badgesProvider = FutureProvider.autoDispose<List<BadgeModel>>((ref) async {
-  final token = ref.watch(authProvider).accessToken;
+  final token = ref.watch(accessTokenProvider);
   return ref.read(profileRepositoryProvider(token)).fetchBadges();
 });

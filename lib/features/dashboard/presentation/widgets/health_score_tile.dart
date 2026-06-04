@@ -18,7 +18,7 @@ class HealthScoreTile extends StatelessWidget {
         FBHealthScoreMeter(score: healthScore.score, size: 64),
         const SizedBox(width: sp12),
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Financial Health', style: AppTextStyles.labelLarge),
+          const Text('Financial Health', style: AppTextStyles.labelLarge),
           Text(_tier(healthScore.score),
               style: AppTextStyles.labelMedium.copyWith(color: success500)),
         ]),
