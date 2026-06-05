@@ -35,22 +35,9 @@ android {
         }
     }
 
-    signingConfigs {
-        create("release") {
-            storeFile = System.getenv("FB_KEYSTORE_PATH")?.takeIf { it.isNotBlank() }?.let { file(it) }
-            storePassword = System.getenv("FB_KEYSTORE_PASSWORD") ?: ""
-            keyAlias = System.getenv("FB_KEY_ALIAS") ?: ""
-            keyPassword = System.getenv("FB_KEY_PASSWORD") ?: ""
-        }
-    }
-
     buildTypes {
         release {
-            signingConfig = if (System.getenv("FB_KEYSTORE_PATH")?.isNotBlank() == true) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
-            }
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 }
