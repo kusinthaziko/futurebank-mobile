@@ -49,9 +49,11 @@ jobs:
         run: flutter test
 
       - name: Decode keystore
-        if: ${{ secrets.FB_KEYSTORE_BASE64 != '' }}
+        env:
+          KEYSTORE_BASE64: ${{ secrets.FB_KEYSTORE_BASE64 }}
+        if: env.KEYSTORE_BASE64 != ''
         run: |
-          echo "${{ secrets.FB_KEYSTORE_BASE64 }}" | base64 -d > android/key.jks
+          echo "$KEYSTORE_BASE64" | base64 -d > android/key.jks
 
       - name: Build universal APK
         run: flutter build apk --release
