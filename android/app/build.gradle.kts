@@ -46,7 +46,7 @@ android {
 
     buildTypes {
         release {
-            signingConfig = if (System.getenv("FB_KEYSTORE_PATH") != null) {
+            signingConfig = if (System.getenv("FB_KEYSTORE_PATH")?.isNotBlank() == true) {
                 signingConfigs.getByName("release")
             } else {
                 signingConfigs.getByName("debug")
