@@ -37,7 +37,7 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = System.getenv("FB_KEYSTORE_PATH")?.let { file(it) }
+            storeFile = System.getenv("FB_KEYSTORE_PATH")?.takeIf { it.isNotBlank() }?.let { file(it) }
             storePassword = System.getenv("FB_KEYSTORE_PASSWORD") ?: ""
             keyAlias = System.getenv("FB_KEY_ALIAS") ?: ""
             keyPassword = System.getenv("FB_KEY_PASSWORD") ?: ""
