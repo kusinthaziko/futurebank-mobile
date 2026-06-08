@@ -101,8 +101,8 @@ class BalanceCard extends ConsumerWidget {
                               .state = !blurred,
                           child: Icon(
                             blurred
-                                ? Icons.visibility_off_outlined
-                                : Icons.visibility_outlined,
+                                ? Icons.visibility_off
+                                : Icons.visibility,
                             color: white.withValues(alpha: 0.7),
                             size: 18,
                           ),
@@ -129,10 +129,9 @@ class BalanceCard extends ConsumerWidget {
                   const Spacer(),
                   Row(children: [
                     Text(
-                      '•••• ${account.accountNumber.length >= 4 ? account.accountNumber.substring(account.accountNumber.length - 4) : account.accountNumber}',
+                      account.accountNumber,
                       style: AppTextStyles.caption.copyWith(
-                          color: white.withValues(alpha: 0.55),
-                          letterSpacing: 2),
+                          color: white.withValues(alpha: 0.55)),
                     ),
                     const Spacer(),
                     if (delta != null)

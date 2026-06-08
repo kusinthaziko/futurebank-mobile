@@ -46,7 +46,7 @@ void main() {
       ),
     );
 
-    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 700));
 
     expect(find.textContaining('MWK'), findsOneWidget);
     expect(find.text('MWK 24500.00'), findsOneWidget);
@@ -71,7 +71,7 @@ void main() {
       ),
     );
 
-    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 700));
     expect(find.text('MWK 24500.00'), findsOneWidget);
     expect(find.byIcon(Icons.visibility), findsOneWidget);
 
@@ -85,7 +85,7 @@ void main() {
     // Tap again to unblur
     await tester.tap(find.byIcon(Icons.visibility_off));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 700));
 
     expect(find.text('MWK 24500.00'), findsOneWidget);
   });
