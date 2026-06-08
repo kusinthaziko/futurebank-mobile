@@ -22,3 +22,9 @@ final badgesProvider = FutureProvider.autoDispose<List<BadgeModel>>((ref) async 
   final token = ref.watch(accessTokenProvider);
   return ref.read(profileRepositoryProvider(token)).fetchBadges();
 });
+
+final updateAvatarProvider = FutureProvider.family<void, String>((ref, avatarUrl) async {
+  final token = ref.watch(accessTokenProvider);
+  await ref.read(profileRepositoryProvider(token)).updateAvatar(avatarUrl);
+  ref.invalidate(profileProvider);
+});

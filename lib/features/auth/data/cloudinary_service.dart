@@ -68,6 +68,57 @@ class CloudinaryService {
     }
   }
 
+  /// Upload an image and return the full secure URL.
+  /// Used by the profile picture flow (KYC uses uploadImage for public_id).
+  static Future<String?> uploadImageAndGetUrl(String imagePath) async {
+    final sign = await _getSignature();
+    if (sign == null) return null;
+
+    final bytes = File(imagePath).readAsBytesSync();
+    final boundary =
+        '----FormBoundary${DateTime.now().millisecondsSinceEpoch}';
+
+    final buf = BytesBuilder();
+    void w(String s) => buf.add(utf8.encode(s));
+    void field(String name, String value) {
+      w('--$boundary\r\n');
+      w('Content-Disposition: form-data; name="$name"\r\n\r\n');
+      w('$value\r\n');
+    }
+
+    field('api_key', sign.apiKey);
+    field('timestamp', sign.timestamp);
+    field('signature', sign.signature);
+
+    w('--$boundary\r\n');
+    w('Content-Disposition: form-data; name="file"; filename="avatar.jpg"\r\n');
+    w('Content-Type: image/jpeg\r\n\r\n');
+    buf.add(bytes);
+    w('\r\n--$boundary--\r\n');
+
+    final client = HttpClient();
+    try {
+      final uri = Uri.parse(
+          'https://api.cloudinary.com/v1_1/${sign.cloudName}/image/upload');
+      final request = await client.postUrl(uri);
+      request.headers.set(
+          'Content-Type', 'multipart/form-data; boundary=$boundary');
+      request.contentLength = buf.length;
+      request.add(buf.toBytes());
+      final response = await request.close();
+      final responseBody = await response.transform(utf8.decoder).join();
+
+      if (response.statusCode != 200) return null;
+
+      final data = jsonDecode(responseBody) as Map<String, dynamic>;
+      return data['secure_url'] as String?;
+    } catch (_) {
+      return null;
+    } finally {
+      client.close();
+    }
+  }
+
   static Future<_CloudinarySignature?> _getSignature() async {
     final client = HttpClient();
     try {

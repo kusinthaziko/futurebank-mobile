@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../../../core/design_system/components/fb_button.dart';
 import '../../../../core/design_system/components/fb_card_input.dart';
@@ -12,11 +13,72 @@ import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/services/screenshot_protected_screen.dart';
+import '../../../../features/auth/data/cloudinary_service.dart';
 import '../../domain/providers.dart';
 import '../../../../core/widgets/error_view.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
+
+  Future<void> _showPhotoPicker(BuildContext context, WidgetRef ref) async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          ListTile(
+            leading: const Icon(Icons.camera_alt),
+            title: const Text('Take Photo'),
+            onTap: () => Navigator.pop(context, ImageSource.camera),
+          ),
+          ListTile(
+            leading: const Icon(Icons.photo_library),
+            title: const Text('Choose from Gallery'),
+            onTap: () => Navigator.pop(context, ImageSource.gallery),
+          ),
+        ]),
+      ),
+    );
+    if (source == null || !context.mounted) return;
+
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: source, maxWidth: 512, maxHeight: 512);
+    if (picked == null || !context.mounted) return;
+
+    // Show loading
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Uploading photo...'), duration: Duration(minutes: 1)),
+    );
+
+    try {
+      final imageUrl = await CloudinaryService.uploadImageAndGetUrl(picked.path);
+      if (imageUrl == null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Upload failed. Try again.')),
+          );
+        }
+        return;
+      }
+
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      await ref.read(updateAvatarProvider(imageUrl).future);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Photo updated!'), duration: Duration(seconds: 2)),
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Something went wrong. Try again.')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,11 +104,27 @@ class ProfileScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(sp16),
           children: [
             Center(child: Column(children: [
-              GestureDetector(
-                onTap: () => context.push('/passport'),
-                child: FBAvatar(name: data.user.fullName,
-                    imageUrl: data.user.avatarUrl, size: 80),
-              ),
+              Stack(children: [
+                GestureDetector(
+                  onTap: () => _showPhotoPicker(context, ref),
+                  child: FBAvatar(name: data.user.fullName,
+                      imageUrl: data.user.avatarUrl, size: 80),
+                ),
+                Positioned(
+                  bottom: 0, right: 0,
+                  child: GestureDetector(
+                    onTap: () => _showPhotoPicker(context, ref),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: primary500,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.camera_alt, size: 16, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ]),
               const SizedBox(height: sp12),
               Text(data.user.fullName, style: AppTextStyles.titleLarge),
               Text(data.user.email,

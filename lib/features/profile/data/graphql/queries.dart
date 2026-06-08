@@ -18,3 +18,11 @@ const String myBadgesQuery = r'''
     }
   }
 ''';
+
+const String updateProfileMutation = r'''
+  mutation UpdateProfile($avatarUrl: String!) {
+    updateProfile(avatarUrl: $avatarUrl) {
+      id avatar_url
+    }
+  }
+''';

@@ -75,4 +75,12 @@ class ProfileRepository {
               'badgeId': b['badge_id'], 'name': b['name'], 'awardedAt': b['awarded_at'],
             })).toList();
   }
+
+  Future<void> updateAvatar(String avatarUrl) async {
+    final r = await _client.mutate(MutationOptions(
+      document: gql(updateProfileMutation),
+      variables: {'avatarUrl': avatarUrl},
+    ));
+    if (r.hasException) throw r.exception!;
+  }
 }
