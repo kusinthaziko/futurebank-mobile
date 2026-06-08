@@ -16,7 +16,26 @@ class AiNudgeWidget extends ConsumerWidget {
 
     return insightAsync.when(
       loading: () => const FBSkeletonLoader(height: 64),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (e, _) => Padding(
+        padding: const EdgeInsets.only(bottom: sp16),
+        child: GestureDetector(
+          onTap: () => ref.invalidate(aiInsightProvider),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: sp12, vertical: sp10),
+            decoration: BoxDecoration(
+              color: error100, borderRadius: radius12,
+            ),
+            child: Row(children: [
+              const Icon(Icons.refresh, color: error500, size: 16),
+              const SizedBox(width: sp8),
+              Expanded(
+                child: Text('Coach insight unavailable. Tap to retry.',
+                    style: AppTextStyles.caption.copyWith(color: error500)),
+              ),
+            ]),
+          ),
+        ),
+      ),
       data: (insight) {
         if (insight == null) return const SizedBox.shrink();
         return Padding(

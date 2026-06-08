@@ -20,7 +20,26 @@ class ActiveChallengeWidget extends ConsumerWidget {
         padding: EdgeInsets.only(bottom: sp16),
         child: FBSkeletonLoader(height: 100),
       ),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (e, _) => Padding(
+        padding: const EdgeInsets.only(bottom: sp16),
+        child: GestureDetector(
+          onTap: () => ref.invalidate(activeChallengeProvider),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: sp12, vertical: sp10),
+            decoration: BoxDecoration(
+              color: error100, borderRadius: radius12,
+            ),
+            child: Row(children: [
+              const Icon(Icons.refresh, color: error500, size: 16),
+              const SizedBox(width: sp8),
+              Expanded(
+                child: Text('Challenge unavailable. Tap to retry.',
+                    style: AppTextStyles.caption.copyWith(color: error500)),
+              ),
+            ]),
+          ),
+        ),
+      ),
       data: (challenge) {
         if (challenge == null) return const SizedBox.shrink();
         return Padding(

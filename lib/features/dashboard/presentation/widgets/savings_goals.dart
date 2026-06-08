@@ -27,7 +27,22 @@ class SavingsGoalsWidget extends ConsumerWidget {
             SizedBox(width: sp12),
             FBSkeletonLoader(width: 180, height: 110),
           ]),
-          error: (_, __) => const SizedBox.shrink(),
+          error: (e, _) => GestureDetector(
+            onTap: () => ref.invalidate(savingsGoalsProvider),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(sp12),
+              decoration: BoxDecoration(
+                color: error100, borderRadius: radius12,
+              ),
+              child: Row(children: [
+                const Icon(Icons.refresh, color: error500, size: 16),
+                const SizedBox(width: sp8),
+                Text('Savings goals unavailable. Tap to retry.',
+                    style: AppTextStyles.caption.copyWith(color: error500)),
+              ]),
+            ),
+          ),
           data: (goals) => ListView(
             scrollDirection: Axis.horizontal,
             children: [

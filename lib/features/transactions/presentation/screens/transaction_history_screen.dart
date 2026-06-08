@@ -5,6 +5,7 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/subscription_providers.dart';
+import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../domain/providers.dart';
 import '../../domain/transaction_notifier.dart';
@@ -285,13 +286,7 @@ class _TransactionHistoryScreenState
 
   String _timeAgo(String insertedAt) {
     try {
-      final dt = DateTime.parse(insertedAt);
-      final diff = DateTime.now().difference(dt);
-      if (diff.inMinutes < 1) return 'Just now';
-      if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-      if (diff.inHours < 24) return '${diff.inHours}h ago';
-      if (diff.inDays < 7) return '${diff.inDays}d ago';
-      return '${dt.day}/${dt.month}/${dt.year}';
+      return formatTimeAgo(DateTime.parse(insertedAt));
     } catch (_) {
       return insertedAt;
     }

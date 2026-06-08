@@ -64,7 +64,24 @@ class _RecentTransactionsState extends ConsumerState<RecentTransactions> {
       ]),
       txsAsync.when(
         loading: () => const FBSkeletonLoader(height: 200),
-        error: (_, __) => const SizedBox(),
+        error: (e, _) => GestureDetector(
+          onTap: () => ref.invalidate(recentTransactionsProvider),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(sp12),
+            decoration: BoxDecoration(
+              color: error100, borderRadius: radius12,
+            ),
+            child: Row(children: [
+              const Icon(Icons.refresh, color: error500, size: 16),
+              const SizedBox(width: sp8),
+              Expanded(
+                child: Text('Transactions unavailable. Tap to retry.',
+                    style: AppTextStyles.caption.copyWith(color: error500)),
+              ),
+            ]),
+          ),
+        ),
         data: (txs) {
           final items = _subscriptionItems ?? txs;
           return Column(
