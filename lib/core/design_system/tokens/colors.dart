@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 // Primary — electric blue
 const primary900 = Color(0xFF0A1628);
+const primary800 = Color(0xFF0C1F45);
 const primary700 = Color(0xFF0D2F6E);
 const primary500 = Color(0xFF1A56DB);
+const primary400 = Color(0xFF4D7FE8);
 const primary300 = Color(0xFF76A9FA);
 const primary100 = Color(0xFFE8F0FE);
 
@@ -28,6 +30,12 @@ const gray300 = Color(0xFFD1D5DB);
 const gray100 = Color(0xFFF3F4F6);
 const white   = Color(0xFFFFFFFF);
 
-// Surfaces
+// Surfaces — light
 const surfaceColor = Color(0xFFFAFAFA);
 const cardColor    = Color(0xFFFFFFFF);
+
+// Surfaces — dark
+const darkBg       = Color(0xFF060D1A);
+const darkSurface  = Color(0xFF0D1B30);
+const darkCard     = Color(0xFF122040);
+const darkBorder   = Color(0xFF1E3A5F);

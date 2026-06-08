@@ -53,6 +53,8 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
       child: MaterialApp.router(
         title: 'futureBank',
         theme: buildAppTheme(),
+        darkTheme: buildDarkAppTheme(),
+        themeMode: ThemeMode.system,
         routerConfig: router,
         debugShowCheckedModeBanner: false,
       ),
