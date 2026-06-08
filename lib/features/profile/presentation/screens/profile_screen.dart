@@ -16,6 +16,7 @@ import '../../../../core/services/screenshot_protected_screen.dart';
 import '../../../../features/auth/data/cloudinary_service.dart';
 import '../../domain/providers.dart';
 import '../../../../core/widgets/error_view.dart';
+import 'in_app_camera_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -28,6 +29,7 @@ class ProfileScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.camera_alt),
             title: const Text('Take Photo'),
+            subtitle: Text('In-app camera', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
             onTap: () => Navigator.pop(context, ImageSource.camera),
           ),
           ListTile(
@@ -40,11 +42,20 @@ class ProfileScreen extends ConsumerWidget {
     );
     if (source == null || !context.mounted) return;
 
+    if (source == ImageSource.camera) {
+      // Open the in-app camera screen
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const InAppCameraScreen()),
+      );
+      return;
+    }
+
+    // Gallery — use ImagePicker
     final picker = ImagePicker();
-    final picked = await picker.pickImage(source: source, maxWidth: 512, maxHeight: 512);
+    final picked = await picker.pickImage(source: ImageSource.gallery, maxWidth: 512, maxHeight: 512);
     if (picked == null || !context.mounted) return;
 
-    // Show loading
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Uploading photo...'), duration: Duration(minutes: 1)),
     );
