@@ -29,6 +29,7 @@ import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/health_score_screen.dart';
 import '../../features/profile/presentation/screens/settings_screen.dart';
 import '../../features/profile/presentation/screens/passport_screen.dart';
+import '../../features/profile/presentation/screens/about_screen.dart';
 import '../../features/admin/presentation/screens/admin_screen.dart';
 import '../../features/accounts/presentation/screens/deposit_screen.dart';
 import '../../features/accounts/presentation/screens/transfer_screen.dart';
@@ -109,6 +110,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/loans/:id',
           builder: (_, s) => LoanDetailScreen(loanId: s.pathParameters['id']!)),
       GoRoute(path: '/coach',  builder: (_, __) => const CoachScreen()),
+      GoRoute(path: '/about',  builder: (_, __) => const AboutScreen()),
       GoRoute(path: '/admin',  builder: (_, __) => const AdminScreen()),
       GoRoute(path: '/deposit',  builder: (_, __) => const DepositScreen()),
       GoRoute(path: '/transfer', builder: (_, __) => const TransferScreen()),
