@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/design_system/components/fb_button.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
@@ -114,6 +115,27 @@ class _RegisterStep1InstitutionState extends State<RegisterStep1Institution> {
               widget.selected != null ? widget.onContinue : null,
         ),
       ),
+      Center(
+        child: TextButton(
+          onPressed: () => context.go('/auth/login'),
+          child: RichText(
+            text: TextSpan(
+              text: 'Already have an account? ',
+              style: AppTextStyles.bodyMedium.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+              children: [
+                TextSpan(
+                  text: 'Sign in',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      const SizedBox(height: sp8),
     ]);
   }
 }
