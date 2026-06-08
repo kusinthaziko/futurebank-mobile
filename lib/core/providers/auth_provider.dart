@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../features/auth/domain/auth_state.dart';
+import '../services/security_service.dart';
 
 const _storage = FlutterSecureStorage();
 
@@ -49,6 +50,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
+    // Clear screenshot flag before logout
+    SecurityService().resetScreenshotPrevention();
     await _storage.deleteAll();
     state = const Unauthenticated();
   }

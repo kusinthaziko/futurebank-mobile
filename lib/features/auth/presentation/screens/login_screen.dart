@@ -8,6 +8,7 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/services/screenshot_protected_screen.dart';
 import '../../../../core/widgets/error_view.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -49,7 +50,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScreenshotProtectedScreen(
+      child: Scaffold(
       backgroundColor: white,
       body: SafeArea(
         child: Padding(
@@ -105,6 +107,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ),
       ),
-    );
+    ));
   }
 }

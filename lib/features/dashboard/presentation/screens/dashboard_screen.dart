@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/design_system/components/fb_misc.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/services/screenshot_protected_screen.dart';
 import '../../domain/providers.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../widgets/balance_card.dart';
@@ -20,7 +21,8 @@ class DashboardScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dashboardAsync = ref.watch(dashboardProvider);
 
-    return Scaffold(
+    return ScreenshotProtectedScreen(
+      child: Scaffold(
       body: SafeArea(
         child: dashboardAsync.when(
           loading: () => _buildSkeleton(),
@@ -56,7 +58,7 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildSkeleton() => ListView(

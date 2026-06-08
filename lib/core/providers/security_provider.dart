@@ -40,4 +40,6 @@ final autoLockProvider =
   return AutoLockNotifier(security, biometric);
 });
 
+final securityServiceProvider = Provider<SecurityService>((_) => SecurityService());
+
 final biometricServiceProvider = Provider<BiometricService>((_) => BiometricService());

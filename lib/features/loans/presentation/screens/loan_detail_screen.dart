@@ -8,6 +8,7 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/subscription_providers.dart';
+import '../../../../core/services/screenshot_protected_screen.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../domain/providers.dart';
 import '../widgets/loan_status_stepper.dart';
@@ -26,7 +27,8 @@ class LoanDetailScreen extends ConsumerWidget {
       next.whenData((_) => ref.refresh(loansProvider));
     });
 
-    return Scaffold(
+    return ScreenshotProtectedScreen(
+      child: Scaffold(
       appBar: AppBar(title: const Text('Loan Details')),
       body: loansAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -128,7 +130,7 @@ class LoanDetailScreen extends ConsumerWidget {
           );
         },
       ),
-    );
+    ));
   }
 
   Widget _blockchainCard(BuildContext context, String hash) {

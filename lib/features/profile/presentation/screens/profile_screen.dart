@@ -11,6 +11,7 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/services/screenshot_protected_screen.dart';
 import '../../domain/providers.dart';
 import '../../../../core/widgets/error_view.dart';
 
@@ -23,7 +24,8 @@ class ProfileScreen extends ConsumerWidget {
     final badgesAsync = ref.watch(badgesProvider);
     final role = ref.watch(roleProvider);
 
-    return Scaffold(
+    return ScreenshotProtectedScreen(
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [
@@ -185,7 +187,7 @@ class ProfileScreen extends ConsumerWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 
   String _truncateDid(String did) {

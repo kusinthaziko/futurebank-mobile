@@ -5,6 +5,7 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/subscription_providers.dart';
+import '../../../../core/services/screenshot_protected_screen.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../domain/providers.dart';
@@ -106,7 +107,8 @@ class _TransactionHistoryScreenState
       });
     });
 
-    return Scaffold(
+    return ScreenshotProtectedScreen(
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('Transactions'),
         actions: [
@@ -152,7 +154,7 @@ class _TransactionHistoryScreenState
           Expanded(child: _buildList(state)),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildList(TxPageState state) {

@@ -9,6 +9,7 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/services/screenshot_protected_screen.dart';
 import '../../../../core/widgets/error_view.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -93,7 +94,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScreenshotProtectedScreen(
+      child: Scaffold(
       appBar: AppBar(
         title: Text(['Select Institution', 'Your Details', 'Set Password'][_step]),
         leading: _step > 0
@@ -102,7 +104,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             : null,
       ),
       body: [_buildStep1, _buildStep2, _buildStep3][_step](),
-    );
+    ));
   }
 
   // Step 1 — Institution search & select

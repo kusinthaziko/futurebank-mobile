@@ -7,6 +7,7 @@ import '../../../../core/design_system/components/fb_card_input.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
+import '../../../../core/services/screenshot_protected_screen.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../data/models/profile_models.dart';
 import '../../domain/providers.dart';
@@ -21,7 +22,8 @@ class PassportScreen extends ConsumerWidget {
 
     return DefaultTabController(
       length: 3,
-      child: Scaffold(
+      child: ScreenshotProtectedScreen(
+        child: Scaffold(
         appBar: AppBar(
           title: const Text('Financial Passport'),
           bottom: const TabBar(tabs: [
@@ -45,7 +47,7 @@ class PassportScreen extends ConsumerWidget {
           },
         ),
       ),
-    );
+    ));
   }
 }
 
