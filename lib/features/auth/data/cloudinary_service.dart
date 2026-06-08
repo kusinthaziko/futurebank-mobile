@@ -7,11 +7,15 @@ class _CloudinarySignature {
   final String timestamp;
   final String apiKey;
   final String cloudName;
+  final String folder;
+  final String transformation;
   const _CloudinarySignature({
     required this.signature,
     required this.timestamp,
     required this.apiKey,
     required this.cloudName,
+    required this.folder,
+    this.transformation = '',
   });
 }
 
@@ -19,8 +23,10 @@ class CloudinaryService {
   static const _baseUrl = String.fromEnvironment('API_URL',
       defaultValue: 'http://localhost:4000');
 
-  static Future<String?> uploadImage(String imagePath) async {
-    final sign = await _getSignature();
+  /// Upload an image with optional Cloudinary transformation.
+  /// [transformation] e.g. "c_fill,w_800,h_600" for KYC docs
+  static Future<String?> uploadImage(String imagePath, {String transformation = 'c_fill,w_800,h_600'}) async {
+    final sign = await _getSignature(transformation: transformation);
     if (sign == null) return null;
 
     final bytes = File(imagePath).readAsBytesSync();
@@ -38,6 +44,10 @@ class CloudinaryService {
     field('api_key', sign.apiKey);
     field('timestamp', sign.timestamp);
     field('signature', sign.signature);
+    field('folder', sign.folder);
+    if (sign.transformation.isNotEmpty) {
+      field('transformation', sign.transformation);
+    }
 
     w('--$boundary\r\n');
     w('Content-Disposition: form-data; name="file"; filename="kyc.jpg"\r\n');
@@ -69,9 +79,9 @@ class CloudinaryService {
   }
 
   /// Upload an image and return the full secure URL.
-  /// Used by the profile picture flow (KYC uses uploadImage for public_id).
-  static Future<String?> uploadImageAndGetUrl(String imagePath) async {
-    final sign = await _getSignature();
+  /// Used by the profile picture flow. Avatars get a square crop.
+  static Future<String?> uploadImageAndGetUrl(String imagePath, {String transformation = 'c_fill,w_200,h_200'}) async {
+    final sign = await _getSignature(transformation: transformation);
     if (sign == null) return null;
 
     final bytes = File(imagePath).readAsBytesSync();
@@ -89,6 +99,10 @@ class CloudinaryService {
     field('api_key', sign.apiKey);
     field('timestamp', sign.timestamp);
     field('signature', sign.signature);
+    field('folder', sign.folder);
+    if (sign.transformation.isNotEmpty) {
+      field('transformation', sign.transformation);
+    }
 
     w('--$boundary\r\n');
     w('Content-Disposition: form-data; name="file"; filename="avatar.jpg"\r\n');
@@ -119,12 +133,16 @@ class CloudinaryService {
     }
   }
 
-  static Future<_CloudinarySignature?> _getSignature() async {
+  static Future<_CloudinarySignature?> _getSignature({String transformation = ''}) async {
     final client = HttpClient();
     try {
       final uri = Uri.parse('$_baseUrl/api/cloudinary/sign');
       final request = await client.postUrl(uri);
       request.headers.set('Content-Type', 'application/json');
+      request.write(jsonEncode({
+        'folder': 'uploads',
+        if (transformation.isNotEmpty) 'transformation': transformation,
+      }));
       final response = await request.close();
       final body = await response.transform(utf8.decoder).join();
 
@@ -136,6 +154,8 @@ class CloudinaryService {
         timestamp: data['timestamp'] as String,
         apiKey: data['api_key'] as String,
         cloudName: data['cloud_name'] as String? ?? 'futurebank',
+        folder: data['folder'] as String? ?? 'uploads',
+        transformation: data['transformation'] as String? ?? '',
       );
     } catch (_) {
       return null;
