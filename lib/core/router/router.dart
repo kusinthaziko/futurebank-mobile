@@ -128,12 +128,19 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-class MainShell extends ConsumerWidget {
+class MainShell extends ConsumerStatefulWidget {
   final Widget child;
   const MainShell({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MainShell> createState() => _MainShellState();
+}
+
+class _MainShellState extends ConsumerState<MainShell> {
+  DateTime? _lastBackPress;
+
+  @override
+  Widget build(BuildContext context) {
     ref.listen(notificationSubscriptionProvider, (_, next) {
       next.whenData((n) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -148,22 +155,43 @@ class MainShell extends ConsumerWidget {
         .indexWhere((r) => loc.startsWith(r))
         .clamp(0, 3);
 
-    return Scaffold(
-      body: child,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: idx,
-        onDestinationSelected: (i) => context.go(
-            ['/home', '/accounts', '/social', '/profile'][i]),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined),
-              selectedIcon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined),
-              selectedIcon: Icon(Icons.account_balance_wallet), label: 'Accounts'),
-          NavigationDestination(icon: Icon(Icons.group_outlined),
-              selectedIcon: Icon(Icons.group), label: 'Social'),
-          NavigationDestination(icon: Icon(Icons.person_outlined),
-              selectedIcon: Icon(Icons.person), label: 'Profile'),
-        ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        final now = DateTime.now();
+        if (_lastBackPress == null ||
+            now.difference(_lastBackPress!) > const Duration(seconds: 2)) {
+          _lastBackPress = now;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Press back again to exit'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        } else {
+          // Exit app
+          // ignore: deprecated_member_use
+          Navigator.of(context).pop();
+        }
+      },
+      child: Scaffold(
+        body: widget.child,
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: idx,
+          onDestinationSelected: (i) => context.go(
+              ['/home', '/accounts', '/social', '/profile'][i]),
+          destinations: const [
+            NavigationDestination(icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home), label: 'Home'),
+            NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined),
+                selectedIcon: Icon(Icons.account_balance_wallet), label: 'Accounts'),
+            NavigationDestination(icon: Icon(Icons.group_outlined),
+                selectedIcon: Icon(Icons.group), label: 'Social'),
+            NavigationDestination(icon: Icon(Icons.person_outlined),
+                selectedIcon: Icon(Icons.person), label: 'Profile'),
+          ],
+        ),
       ),
     );
   }
