@@ -21,12 +21,12 @@ subprojects {
 
 // Fix: AGP 8+ requires namespace on all library modules.
 // Some older packages (e.g. flutter_windowmanager 0.2.0) don't specify one.
-// This runs after evaluation so packages that DO have a namespace keep theirs.
+// plugins.withId is evaluation-safe and avoids the "already evaluated" error.
 subprojects {
-    afterEvaluate {
+    plugins.withId("com.android.library") {
         val android = extensions
             .findByType(com.android.build.gradle.LibraryExtension::class.java)
-            ?: return@afterEvaluate
+            ?: return@withId
         if (android.namespace == null) {
             android.namespace = project.group?.toString() ?: "com.futurebank"
         }
