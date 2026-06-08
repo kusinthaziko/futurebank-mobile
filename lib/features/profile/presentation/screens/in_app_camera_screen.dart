@@ -1,11 +1,11 @@
-import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/design_system/tokens/colors.dart';
-import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../features/auth/data/cloudinary_service.dart';
 import '../../domain/providers.dart';
+import '../widgets/camera_viewfinder.dart';
+import '../widgets/captured_photo_preview.dart';
+import '../widgets/camera_action_bar.dart';
 
 class InAppCameraScreen extends ConsumerStatefulWidget {
   const InAppCameraScreen({super.key});
@@ -51,7 +51,6 @@ class _InAppCameraScreenState extends ConsumerState<InAppCameraScreen>
         if (mounted) Navigator.pop(context);
         return;
       }
-      // Prefer front camera for selfies
       final front = cameras.firstWhere(
         (c) => c.lensDirection == CameraLensDirection.front,
         orElse: () => cameras.first,
@@ -112,6 +111,8 @@ class _InAppCameraScreenState extends ConsumerState<InAppCameraScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isPreview = _captured != null;
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -121,88 +122,21 @@ class _InAppCameraScreenState extends ConsumerState<InAppCameraScreen>
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          _captured != null ? 'Preview' : 'Take Photo',
+          isPreview ? 'Preview' : 'Take Photo',
           style: const TextStyle(color: Colors.white),
         ),
       ),
-      body: _captured != null ? _buildPreview() : _buildCamera(),
-      bottomNavigationBar: _buildBottomBar(),
-    );
-  }
-
-  Widget _buildCamera() {
-    if (_controller == null || !_controller!.value.isInitialized) {
-      return const Center(child: CircularProgressIndicator(color: Colors.white));
-    }
-    return Center(
-      child: AspectRatio(
-        aspectRatio: _controller!.value.aspectRatio,
-        child: CameraPreview(_controller!),
-      ),
-    );
-  }
-
-  Widget _buildPreview() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(sp24),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Image.file(File(_captured!.path), fit: BoxFit.cover),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildButtons() {
-    return Row(mainAxisSize: MainAxisSize.min, children: [
-      IconButton(
-        icon: const Icon(Icons.refresh, color: Colors.white, size: 32),
-        onPressed: () => setState(() => _captured = null),
-        tooltip: 'Retake',
-      ),
-      const SizedBox(width: sp32),
-      _uploading
-          ? const SizedBox(
-              width: 56, height: 56,
-              child: CircularProgressIndicator(color: Colors.white),
+      body: isPreview
+          ? CapturedPhotoPreview(
+              imagePath: _captured!.path,
+              uploading: _uploading,
+              onRetake: () => setState(() => _captured = null),
+              onConfirm: _upload,
             )
-          : GestureDetector(
-              onTap: _upload,
-              child: Container(
-                width: 56, height: 56,
-                decoration: const BoxDecoration(
-                  color: primary500, shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.check, color: Colors.white, size: 28),
-              ),
-            ),
-    ]);
-  }
-
-  Widget _buildCaptureButton() {
-    return GestureDetector(
-      onTap: _capture,
-      child: Container(
-        width: 72, height: 72,
-        decoration: const BoxDecoration(
-          color: Colors.white, shape: BoxShape.circle,
-        ),
-        child: const Icon(Icons.camera_alt, color: Colors.black, size: 32),
-      ),
-    );
-  }
-
-  Widget _buildBottomBar() {
-    return Container(
-      color: Colors.black,
-      height: 100,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _captured != null ? _buildButtons() : _buildCaptureButton(),
-        ],
-      ),
+          : CameraViewfinder(controller: _controller),
+      bottomNavigationBar: isPreview
+          ? null
+          : CameraActionBar(onCapture: _capture),
     );
   }
 }
