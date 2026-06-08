@@ -6,12 +6,11 @@ import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/subscription_providers.dart';
 import '../../../../core/services/screenshot_protected_screen.dart';
-import '../../../../core/utils/formatters.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../domain/providers.dart';
 import '../../domain/transaction_notifier.dart';
 import '../widgets/ai_search.dart';
-import '../widgets/transaction_detail_sheet.dart';
+import '../widgets/transaction_tile.dart';
 
 class TransactionHistoryScreen extends ConsumerStatefulWidget {
   final String accountId;
@@ -46,7 +45,8 @@ class _TransactionHistoryScreenState
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _slideCtrl, curve: Curves.easeOutCubic));
     _scrollController.addListener(_onScroll);
-    Future.microtask(() => ref.read(txPageProvider(widget.accountId).notifier).refresh());
+    Future.microtask(
+        () => ref.read(txPageProvider(widget.accountId).notifier).refresh());
   }
 
   @override
@@ -56,7 +56,8 @@ class _TransactionHistoryScreenState
     super.dispose();
   }
 
-  TxPageNotifier get _notifier => ref.read(txPageProvider(widget.accountId).notifier);
+  TxPageNotifier get _notifier =>
+      ref.read(txPageProvider(widget.accountId).notifier);
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
@@ -67,11 +68,16 @@ class _TransactionHistoryScreenState
 
   String _filterValue(String label) {
     switch (label) {
-      case 'Deposits': return 'deposit';
-      case 'Withdrawals': return 'withdrawal';
-      case 'Transfers': return 'transfer';
-      case 'Loans': return 'loan_disbursement';
-      default: return 'All';
+      case 'Deposits':
+        return 'deposit';
+      case 'Withdrawals':
+        return 'withdrawal';
+      case 'Transfers':
+        return 'transfer';
+      case 'Loans':
+        return 'loan_disbursement';
+      default:
+        return 'All';
     }
   }
 
@@ -122,7 +128,8 @@ class _TransactionHistoryScreenState
         children: [
           AISearchInput(
             onSubmitted: (q) => _notifier.search(q),
-            onClear: () => ref.read(txPageProvider(widget.accountId).notifier).search(''),
+            onClear: () =>
+                ref.read(txPageProvider(widget.accountId).notifier).search(''),
             isSearching: state.isLoading && state.searchQuery != null,
           ),
           SizedBox(
@@ -164,7 +171,8 @@ class _TransactionHistoryScreenState
         itemCount: 6,
         itemBuilder: (_, __) => Padding(
           padding: const EdgeInsets.only(bottom: sp12),
-          child: FBSkeletonLoader(height: 64, borderRadius: BorderRadius.circular(12)),
+          child: FBSkeletonLoader(
+              height: 64, borderRadius: BorderRadius.circular(12)),
         ),
       );
     }
@@ -207,76 +215,7 @@ class _TransactionHistoryScreenState
           final tx = state.transactions[i];
           final isNew = state.page == 1 && i == 0;
 
-          final isCredit = tx.transactionType == 'deposit' ||
-              tx.transactionType == 'interest_credit' ||
-              tx.transactionType == 'loan_disbursement';
-
-          final statusColor = switch (tx.status) {
-            'completed' => success500,
-            'pending' || 'processing' => warning500,
-            _ => error500,
-          };
-          final statusBg = switch (tx.status) {
-            'completed' => success100,
-            'pending' || 'processing' => warning100,
-            _ => error100,
-          };
-
-          final tile = GestureDetector(
-            onTap: () => showTransactionDetailSheet(context, tx),
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: sp4),
-              child: SizedBox(
-                height: 64,
-                child: Row(children: [
-                  Container(
-                    width: 40, height: 40,
-                    decoration: BoxDecoration(
-                      color: isCredit ? success100 : error100,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      isCredit ? Icons.arrow_downward : Icons.arrow_upward,
-                      color: isCredit ? success500 : error500, size: 18,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(tx.description ?? tx.transactionType,
-                            style: AppTextStyles.bodyMedium,
-                            maxLines: 1, overflow: TextOverflow.ellipsis),
-                        Text(_timeAgo(tx.insertedAt),
-                            style: AppTextStyles.caption.copyWith(color: gray500)),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text('${isCredit ? '+' : '-'}MWK ${tx.amount}',
-                          style: AppTextStyles.labelLarge.copyWith(
-                              color: isCredit ? success500 : error500)),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: statusBg,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(tx.status.toUpperCase(),
-                            style: AppTextStyles.caption.copyWith(
-                                color: statusColor, fontSize: 9)),
-                      ),
-                    ],
-                  ),
-                ]),
-              ),
-            ),
-          );
+          final tile = TransactionTile(transaction: tx);
 
           return isNew
               ? SlideTransition(position: _slideAnim, child: tile)
@@ -284,13 +223,5 @@ class _TransactionHistoryScreenState
         },
       ),
     );
-  }
-
-  String _timeAgo(String insertedAt) {
-    try {
-      return formatTimeAgo(DateTime.parse(insertedAt));
-    } catch (_) {
-      return insertedAt;
-    }
   }
 }
