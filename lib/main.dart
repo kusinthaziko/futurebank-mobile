@@ -14,19 +14,39 @@ void main() async {
   runApp(const ProviderScope(child: App()));
 }
 
-class App extends ConsumerWidget {
+class App extends ConsumerStatefulWidget {
   const App({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<App> createState() => _AppState();
+}
+
+class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    ref.read(autoLockProvider.notifier).onAppLifecycleChange(state);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
     final token = switch (authState) {
       Authenticated(:final accessToken) => accessToken,
       _ => null,
     };
-
-    ref.listen(autoLockProvider, (_, __) {});
 
     return GraphQLProvider(
       client: ValueNotifier(ref.watch(graphQLClientProvider(token))),
