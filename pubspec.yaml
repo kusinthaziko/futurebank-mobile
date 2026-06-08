@@ -60,6 +60,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.3
   build_runner: ^2.4.13
   freezed: ^2.5.7
   json_serializable: ^6.8.0
@@ -90,3 +91,11 @@ flutter:
           weight: 500
         - asset: assets/fonts/Inter-SemiBold.ttf
           weight: 600
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "store_icon_1024.png"
+  adaptive_icon_background: "#0A1628"
+  adaptive_icon_foreground: "store_icon_1024.png"
+  min_sdk_android: 21
