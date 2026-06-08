@@ -5,9 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/io_client.dart' show IOClient;
 
 const _apiUrl = String.fromEnvironment('API_URL',
-    defaultValue: 'http://localhost:4000/api/graphql');
+    defaultValue: 'https://futurebank-api.onrender.com/api/graphql');
 const _wsUrl = String.fromEnvironment('WS_URL',
-    defaultValue: 'ws://localhost:4000/socket/websocket');
+    defaultValue: 'wss://futurebank-api.onrender.com/socket/websocket');
 
 GraphQLClient buildGraphQLClient(String? token) {
   final auth = AuthLink(getToken: () => token != null ? 'Bearer $token' : null);
