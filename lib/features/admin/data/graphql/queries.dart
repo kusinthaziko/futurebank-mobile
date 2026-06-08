@@ -23,6 +23,14 @@ const String confirmDepositMutation = r'''
   }
 ''';
 
+const String rejectDepositMutation = r'''
+  mutation RejectDeposit($transactionId: ID!, $reason: String) {
+    rejectDeposit(transaction_id: $transactionId, reason: $reason) {
+      id status
+    }
+  }
+''';
+
 const String approveLoanMutation = r'''
   mutation ApproveLoan($loanId: ID!, $amountApproved: String!, $notes: String) {
     approveLoan(loan_id: $loanId, amount_approved: $amountApproved, notes: $notes) {

@@ -35,6 +35,14 @@ class AdminRepository {
     if (r.hasException) throw r.exception!;
   }
 
+  Future<void> rejectDeposit(String transactionId, {String? reason}) async {
+    final r = await _client.mutate(MutationOptions(
+      document: gql(rejectDepositMutation),
+      variables: {'transactionId': transactionId, 'reason': reason},
+    ));
+    if (r.hasException) throw r.exception!;
+  }
+
   Future<void> approveLoan(String loanId, String amountApproved, String? notes) async {
     final r = await _client.mutate(MutationOptions(
       document: gql(approveLoanMutation),

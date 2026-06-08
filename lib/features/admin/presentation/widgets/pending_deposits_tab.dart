@@ -6,6 +6,8 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/utils/error_utils.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../../domain/providers.dart';
 
 class PendingDepositsTab extends ConsumerWidget {
@@ -16,9 +18,9 @@ class PendingDepositsTab extends ConsumerWidget {
     final async = ref.watch(pendingDepositsProvider);
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(
-        child: Text('Error: $e',
-            style: AppTextStyles.bodyMedium.copyWith(color: error500)),
+      error: (e, _) => ErrorView(
+        error: e,
+        onRetry: () => ref.refresh(pendingDepositsProvider),
       ),
       data: (txs) {
         if (txs.isEmpty) {
@@ -47,7 +49,7 @@ class PendingDepositsTab extends ConsumerWidget {
                   Expanded(child: FBButton(
                     label: 'Reject',
                     variant: FBButtonVariant.destructive,
-                    onPressed: () {},
+                    onPressed: () => _showRejectDialog(context, ref, tx['id'] as String),
                   )),
                 ]),
               ]),
@@ -70,8 +72,44 @@ class PendingDepositsTab extends ConsumerWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')));
+            SnackBar(content: Text(friendlyErrorMessage(e))));
       }
     }
+  }
+
+  void _showRejectDialog(BuildContext context, WidgetRef ref, String txId) {
+    final reasonCtrl = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Reject Deposit'),
+        content: FBInput(label: 'Reason (optional)', controller: reasonCtrl),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          FBButton(
+            label: 'Reject',
+            variant: FBButtonVariant.destructive,
+            onPressed: () async {
+              Navigator.pop(ctx);
+              try {
+                await ref.read(adminRepositoryProvider(ref.read(accessTokenProvider)))
+                    .rejectDeposit(txId, reason: reasonCtrl.text.trim().isEmpty
+                        ? null : reasonCtrl.text.trim());
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Deposit rejected')));
+                  ref.invalidate(pendingDepositsProvider);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(friendlyErrorMessage(e))));
+                }
+              }
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

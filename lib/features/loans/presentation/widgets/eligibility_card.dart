@@ -91,7 +91,7 @@ class EligibilityCard extends StatelessWidget {
           ),
           const SizedBox(height: sp4),
           Text(
-            'You are not eligible yet.',
+            eligibility.reason ?? 'You are not eligible yet.',
             style: AppTextStyles.caption.copyWith(color: gray500),
           ),
         ],

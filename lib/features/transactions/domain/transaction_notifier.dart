@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/graphql/client.dart';
+import '../../../core/utils/error_utils.dart';
 import '../../auth/domain/auth_state.dart';
 import '../../accounts/data/models/account_models.dart';
 import '../data/repository.dart';
@@ -96,7 +97,7 @@ class TxPageNotifier extends StateNotifier<TxPageState> {
         isLoadingMore: false,
       );
     } catch (e) {
-      state = state.copyWith(isLoadingMore: false, error: e.toString());
+      state = state.copyWith(isLoadingMore: false, error: friendlyErrorMessage(e));
     }
   }
 
@@ -120,7 +121,7 @@ class TxPageNotifier extends StateNotifier<TxPageState> {
         isLoading: false,
       );
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: friendlyErrorMessage(e));
     }
   }
 
@@ -151,7 +152,7 @@ class TxPageNotifier extends StateNotifier<TxPageState> {
         page: 1,
       );
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: friendlyErrorMessage(e));
     }
   }
 

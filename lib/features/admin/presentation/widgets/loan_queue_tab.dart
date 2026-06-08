@@ -6,6 +6,8 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/utils/error_utils.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../../domain/providers.dart';
 
 class LoanQueueTab extends ConsumerWidget {
@@ -16,9 +18,9 @@ class LoanQueueTab extends ConsumerWidget {
     final async = ref.watch(pendingLoansProvider);
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(
-        child: Text('Error: $e',
-            style: AppTextStyles.bodyMedium.copyWith(color: error500)),
+      error: (e, _) => ErrorView(
+        error: e,
+        onRetry: () => ref.refresh(pendingLoansProvider),
       ),
       data: (loans) {
         if (loans.isEmpty) {
@@ -103,7 +105,7 @@ class LoanQueueTab extends ConsumerWidget {
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error: $e')));
+                      SnackBar(content: Text(friendlyErrorMessage(e))));
                 }
               }
             },
@@ -139,7 +141,7 @@ class LoanQueueTab extends ConsumerWidget {
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error: $e')));
+                      SnackBar(content: Text(friendlyErrorMessage(e))));
                 }
               }
             },
