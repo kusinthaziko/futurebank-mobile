@@ -263,26 +263,26 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         onTap: _pickDateOfBirth,
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: sp16, vertical: sp14),
+          padding: const EdgeInsets.symmetric(horizontal: sp16, vertical: sp12),
           decoration: BoxDecoration(
             border: Border.all(color: _dateOfBirth != null ? primary500 : gray300),
             borderRadius: radius12,
           ),
           child: Row(
             children: [
-              Icon(Icons.calendar_today, color: _dateOfBirth != null ? primary500 : gray400, size: 20),
+              Icon(Icons.calendar_today, color: _dateOfBirth != null ? primary500 : gray500, size: 20),
               const SizedBox(width: sp12),
               Text(
                 _dateOfBirth != null ? _formatDate(_dateOfBirth) : 'Date of Birth',
                 style: AppTextStyles.bodyMedium.copyWith(
-                  color: _dateOfBirth != null ? gray900 : gray400,
+                  color: _dateOfBirth != null ? gray900 : gray500,
                 ),
               ),
               const Spacer(),
               if (_dateOfBirth != null)
                 GestureDetector(
                   onTap: () => setState(() => _dateOfBirth = null),
-                  child: const Icon(Icons.close, size: 18, color: gray400),
+                  child: const Icon(Icons.close, size: 18, color: gray500),
                 ),
             ],
           ),
