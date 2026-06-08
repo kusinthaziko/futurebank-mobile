@@ -168,7 +168,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: const Text('About'),
             subtitle: const Text('Version 1.0.0+1', style: AppTextStyles.caption),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () {},
+            onTap: () => showAboutDialog(
+              context: context,
+              applicationName: 'futureBank',
+              applicationVersion: '1.0.0',
+              applicationIcon: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset('assets/icon/app_icon.png',
+                    width: 48, height: 48,
+                    errorBuilder: (_, __, ___) => const Icon(
+                        Icons.account_balance, size: 48, color: primary500)),
+              ),
+              children: const [
+                SizedBox(height: 8),
+                Text('Campus financial super-app for students.\n\n'
+                    'Built with Flutter & Elixir.\n\n'
+                    '© 2026 futureBank. All rights reserved.'),
+              ],
+            ),
           ),
           const SizedBox(height: sp32),
           FBButton(
