@@ -8,6 +8,7 @@ import '../../../../core/design_system/tokens/typography.dart';
 class RegisterStep2Details extends StatelessWidget {
   final TextEditingController fullName;
   final TextEditingController studentId;
+  final TextEditingController phone;
   final DateTime? dateOfBirth;
   final VoidCallback onPickDate;
   final VoidCallback onClearDate;
@@ -18,6 +19,7 @@ class RegisterStep2Details extends StatelessWidget {
     super.key,
     required this.fullName,
     required this.studentId,
+    required this.phone,
     required this.dateOfBirth,
     required this.onPickDate,
     required this.onClearDate,
@@ -48,6 +50,8 @@ class RegisterStep2Details extends StatelessWidget {
           FBInput(label: 'Full Name', hint: 'e.g. Timothy Chalira', controller: fullName),
           const SizedBox(height: sp16),
           FBInput(label: 'Student ID', hint: 'e.g. 2021/CS/001', controller: studentId),
+          const SizedBox(height: sp16),
+          FBInput(label: 'Phone Number', hint: 'e.g. 0888 123 456', controller: phone, keyboardType: TextInputType.phone),
           const SizedBox(height: sp16),
           GestureDetector(
             onTap: onPickDate,

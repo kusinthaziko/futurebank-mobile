@@ -28,6 +28,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   // Step 2
   final _fullName = TextEditingController();
   final _studentId = TextEditingController();
+  final _phone = TextEditingController();
   DateTime? _dateOfBirth;
 
   // Step 3
@@ -49,6 +50,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _email.removeListener(_validateEmailDomain);
     _fullName.dispose();
     _studentId.dispose();
+    _phone.dispose();
     _email.dispose();
     _password.dispose();
     super.dispose();
@@ -94,6 +96,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool get _canContinueStep2 =>
       _fullName.text.trim().isNotEmpty &&
       _studentId.text.trim().isNotEmpty &&
+      _phone.text.trim().isNotEmpty &&
       _dateOfBirth != null;
 
   bool get _canSubmit =>
@@ -115,6 +118,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         'full_name': _fullName.text.trim(),
         'student_id': _studentId.text.trim(),
         'date_of_birth': dobStr,
+        'phone': _phone.text.trim(),
         'email': _email.text.trim(),
         'password': _password.text,
         'institution_id': _selectedInstitution!['id'],
@@ -165,6 +169,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             1 => RegisterStep2Details(
                 fullName: _fullName,
                 studentId: _studentId,
+                phone: _phone,
                 dateOfBirth: _dateOfBirth,
                 onPickDate: _pickDateOfBirth,
                 onClearDate: () => setState(() => _dateOfBirth = null),
