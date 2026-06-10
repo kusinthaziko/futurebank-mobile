@@ -5,6 +5,7 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
+import '../../../../core/design_system/utils/responsive.dart';
 import '../../../../core/services/screenshot_protected_screen.dart';
 import '../../../../core/utils/error_utils.dart';
 import '../../../../core/widgets/animations/fade_in_staggered.dart';
@@ -31,7 +32,7 @@ class DashboardScreen extends ConsumerWidget {
       child: Scaffold(
       body: SafeArea(
         child: dashboardAsync.when(
-          loading: () => _buildSkeleton(),
+          loading: () => _buildSkeleton(context),
           error: (e, st) {
             final code = errorCode(e);
             // Graceful empty state for not-found — keeps the UI friendly
@@ -50,7 +51,7 @@ class DashboardScreen extends ConsumerWidget {
             ]),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(sp16),
+                padding: Responsive.padding(context),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -150,11 +151,11 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   /// Shimmer skeleton that mirrors the bento grid layout.
-  Widget _buildSkeleton() {
-    return const SingleChildScrollView(
-      physics: AlwaysScrollableScrollPhysics(),
-      padding: EdgeInsets.all(sp16),
-      child: Column(
+  Widget _buildSkeleton(BuildContext context) {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: Responsive.padding(context),
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Greeting placeholder

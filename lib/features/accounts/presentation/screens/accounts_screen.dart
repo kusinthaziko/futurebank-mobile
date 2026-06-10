@@ -5,6 +5,7 @@ import '../../../../core/design_system/components/fb_card_input.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
+import '../../../../core/design_system/utils/responsive.dart';
 import '../../domain/providers.dart';
 import '../../../../core/widgets/error_view.dart';
 
@@ -19,59 +20,112 @@ class AccountsScreen extends ConsumerWidget {
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => ErrorView(error: e, onRetry: () => ref.refresh(accountsProvider)),
-        data: (data) => ListView(
-          padding: const EdgeInsets.all(sp16),
-          children: [
-            ...data.accounts.map((a) => Padding(
-              padding: const EdgeInsets.only(bottom: sp12),
-              child: FBCard(
-                gradient: a.accountType == 'savings',
-                onTap: () => context.push('/accounts/detail/${a.id}'),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(a.accountType.toUpperCase(),
-                      style: AppTextStyles.labelMedium.copyWith(
-                          color: a.accountType == 'savings' ? Colors.white70 : gray500)),
-                  const SizedBox(height: sp8),
-                  Text('${a.currency} ${a.balance}',
-                      style: AppTextStyles.displayMedium.copyWith(
-                          color: a.accountType == 'savings' ? Colors.white : gray900)),
-                  const SizedBox(height: sp4),
-                  Text(a.accountNumber,
-                      style: AppTextStyles.caption.copyWith(
-                          color: a.accountType == 'savings'
-                              ? Colors.white54 : gray500)),
-                ]),
-              ),
-            )),
-            if (data.goals.isNotEmpty) ...[
-              const SizedBox(height: sp8),
-              const Text('Savings Goals', style: AppTextStyles.titleMedium),
-              const SizedBox(height: sp8),
-              ...data.goals.map((g) => Padding(
-                padding: const EdgeInsets.only(bottom: sp8),
-                child: FBCard(child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                    Text(g.name, style: AppTextStyles.labelLarge),
-                    Text(g.category,
-                        style: AppTextStyles.caption.copyWith(color: gray500)),
-                  ]),
-                  const SizedBox(height: sp8),
-                  LinearProgressIndicator(
-                    value: _progress(g.currentAmount, g.targetAmount),
-                    backgroundColor: gray100,
-                    valueColor: const AlwaysStoppedAnimation(primary500),
-                  ),
-                  const SizedBox(height: sp4),
-                  Text('${g.currentAmount} / ${g.targetAmount}',
-                      style: AppTextStyles.caption.copyWith(color: gray500)),
-                ])),
-              )),
-            ],
-          ],
+        data: (data) => LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth >= 600) {
+              return _buildTabletLayout(context, data);
+            }
+            return _buildPhoneLayout(context, data);
+          },
         ),
       ),
     );
+  }
+
+  Widget _buildPhoneLayout(BuildContext context, data) {
+    return ListView(
+      padding: Responsive.padding(context),
+      children: [
+        ..._accountCards(context, data),
+        if (data.goals.isNotEmpty) ...[
+          const SizedBox(height: sp8),
+          const Text('Savings Goals', style: AppTextStyles.titleMedium),
+          const SizedBox(height: sp8),
+          ..._goalCards(data),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildTabletLayout(BuildContext context, data) {
+    return Padding(
+      padding: Responsive.padding(context),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 3,
+            child: ListView(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              children: _accountCards(context, data),
+            ),
+          ),
+          const SizedBox(width: sp24),
+          Expanded(
+            flex: 7,
+            child: data.goals.isNotEmpty
+                ? ListView(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      const Text('Savings Goals', style: AppTextStyles.titleMedium),
+                      const SizedBox(height: sp8),
+                      ..._goalCards(data),
+                    ],
+                  )
+                : const Center(child: Text('No savings goals yet')),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _accountCards(BuildContext context, data) {
+    return data.accounts.map<Widget>((a) => Padding(
+      padding: const EdgeInsets.only(bottom: sp12),
+      child: FBCard(
+        gradient: a.accountType == 'savings',
+        onTap: () => context.push('/accounts/detail/${a.id}'),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(a.accountType.toUpperCase(),
+              style: AppTextStyles.labelMedium.copyWith(
+                  color: a.accountType == 'savings' ? Colors.white70 : gray500)),
+          const SizedBox(height: sp8),
+          Text('${a.currency} ${a.balance}',
+              style: AppTextStyles.displayMedium.copyWith(
+                  color: a.accountType == 'savings' ? Colors.white : gray900)),
+          const SizedBox(height: sp4),
+          Text(a.accountNumber,
+              style: AppTextStyles.caption.copyWith(
+                  color: a.accountType == 'savings'
+                      ? Colors.white54 : gray500)),
+        ]),
+      ),
+    )).toList();
+  }
+
+  List<Widget> _goalCards(data) {
+    return data.goals.map<Widget>((g) => Padding(
+      padding: const EdgeInsets.only(bottom: sp8),
+      child: FBCard(child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text(g.name, style: AppTextStyles.labelLarge),
+          Text(g.category,
+              style: AppTextStyles.caption.copyWith(color: gray500)),
+        ]),
+        const SizedBox(height: sp8),
+        LinearProgressIndicator(
+          value: _progress(g.currentAmount, g.targetAmount),
+          backgroundColor: gray100,
+          valueColor: const AlwaysStoppedAnimation(primary500),
+        ),
+        const SizedBox(height: sp4),
+        Text('${g.currentAmount} / ${g.targetAmount}',
+            style: AppTextStyles.caption.copyWith(color: gray500)),
+      ])),
+    )).toList();
   }
 
   double _progress(String current, String target) {

@@ -48,8 +48,8 @@ const white   = Color(0xFFFFFFFF);
 const surfaceColor = Color(0xFFFAFAFA);
 const cardColor    = Color(0xFFFFFFFF);
 
-// Surfaces — dark
-const darkBg       = Color(0xFF060D1A);
-const darkSurface  = Color(0xFF0D1B30);
-const darkCard     = Color(0xFF122040);
-const darkBorder   = Color(0xFF1E3A5F);
+// Surfaces — dark — true dark for OLED
+const darkBg       = Color(0xFF0D1117);
+const darkSurface  = Color(0xFF161B22);
+const darkCard     = Color(0xFF1C2333);
+const darkBorder   = Color(0xFF30363D);

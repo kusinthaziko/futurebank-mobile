@@ -18,7 +18,7 @@ ThemeData _build(Brightness brightness) {
     tertiary: const Color(0xFF7C4DFF),  // Purple — AI/fintech accent
   );
 
-  return ThemeData(
+  final theme = ThemeData(
     brightness: brightness,
     colorScheme: scheme,
     scaffoldBackgroundColor: scheme.surface,
@@ -54,4 +54,22 @@ ThemeData _build(Brightness brightness) {
       isDark ? FbColors.dark() : FbColors.light(),
     ],
   );
+
+  if (isDark) {
+    return theme.copyWith(
+      scaffoldBackgroundColor: const Color(0xFF0D1117),
+      cardColor: const Color(0xFF1C2333),
+      dialogBackgroundColor: const Color(0xFF161B22),
+      dividerTheme: const DividerThemeData(color: Color(0xFF30363D)),
+      colorScheme: scheme.copyWith(
+        surfaceTint: Colors.transparent,
+        surface: const Color(0xFF0D1117),
+        surfaceContainerHigh: const Color(0xFF1C2333),
+        surfaceContainerHighest: const Color(0xFF1C2333),
+        surfaceContainerLow: const Color(0xFF161B22),
+      ),
+    );
+  }
+
+  return theme;
 }

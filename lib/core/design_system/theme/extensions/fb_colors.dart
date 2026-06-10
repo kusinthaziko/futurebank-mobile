@@ -48,8 +48,8 @@ class FbColors extends ThemeExtension<FbColors> {
 
   /// Dark-mode brand colors.
   factory FbColors.dark() => const FbColors(
-        gold: Color(0xFFFFB300),
-        goldLight: Color(0xFF3E2E00),
-        tealDark: Color(0xFF80CBC4),
+        gold: Color(0xFFFFB300),      // brighter gold pops on dark
+        goldLight: Color(0xFF332200), // deep amber tint, not muddy
+        tealDark: Color(0xFF4DB6AC),  // brighter teal for readability
       );
 }
