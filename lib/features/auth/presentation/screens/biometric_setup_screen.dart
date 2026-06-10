@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
-import 'package:local_auth/local_auth.dart';
 import '../../../../core/design_system/components/fb_button.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
+import '../../../../core/providers/security_provider.dart';
 
 class BiometricSetupScreen extends ConsumerStatefulWidget {
   const BiometricSetupScreen({super.key});
@@ -16,7 +15,6 @@ class BiometricSetupScreen extends ConsumerStatefulWidget {
 }
 
 class _BiometricSetupScreenState extends ConsumerState<BiometricSetupScreen> {
-  final _auth = LocalAuthentication();
   bool _loading = false;
   bool _available = false;
 
@@ -27,20 +25,20 @@ class _BiometricSetupScreenState extends ConsumerState<BiometricSetupScreen> {
   }
 
   Future<void> _checkBiometrics() async {
-    final available = await _auth.canCheckBiometrics;
+    final bio = ref.read(biometricServiceProvider);
+    final available = await bio.isAvailable();
     if (mounted) setState(() => _available = available);
   }
 
   Future<void> _enable() async {
     setState(() => _loading = true);
     try {
-      final authenticated = await _auth.authenticate(
-        localizedReason: 'Enable faster login with your fingerprint or face',
-        options: const AuthenticationOptions(biometricOnly: true),
+      final bio = ref.read(biometricServiceProvider);
+      final authenticated = await bio.authenticate(
+        'Enable faster login with your fingerprint or face',
       );
       if (authenticated && mounted) {
-        await const FlutterSecureStorage()
-            .write(key: 'biometric_enabled', value: 'true');
+        await bio.setEnabled(true);
         if (mounted) context.go('/home');
       }
     } catch (_) {

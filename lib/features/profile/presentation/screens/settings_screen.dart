@@ -21,7 +21,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _blurBalance = false;
   bool _showOnLeaderboard = true;
   bool _publicProfile = false;
-  bool _biometricEnabled = false;
   bool _notifications = true;
   int _autoLockMinutes = 5;
 
@@ -44,10 +43,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             trailing: const Icon(Icons.chevron_right),
             onTap: () {},
           ),
-          _BiometricSwitch(
-            enabled: _biometricEnabled,
-            onChanged: (v) => setState(() => _biometricEnabled = v),
-          ),
+          const _BiometricSwitch(),
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.devices),
@@ -211,33 +207,33 @@ class _SectionHeader extends StatelessWidget {
 }
 
 class _BiometricSwitch extends ConsumerStatefulWidget {
-  final bool enabled;
-  final ValueChanged<bool> onChanged;
-  const _BiometricSwitch({required this.enabled, required this.onChanged});
+  const _BiometricSwitch();
 
   @override
   ConsumerState<_BiometricSwitch> createState() => _BiometricSwitchState();
 }
 
 class _BiometricSwitchState extends ConsumerState<_BiometricSwitch> {
+  bool _enabled = false;
   bool _available = false;
-  bool _checked = false;
+  bool _loaded = false;
 
   @override
   void initState() {
     super.initState();
-    _check();
+    _load();
   }
 
-  Future<void> _check() async {
+  Future<void> _load() async {
     final bio = ref.read(biometricServiceProvider);
     final available = await bio.isAvailable();
-    if (mounted) setState(() { _available = available; _checked = true; });
+    final enabled = available ? await bio.isEnabled() : false;
+    if (mounted) setState(() { _enabled = enabled; _available = available; _loaded = true; });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_checked) return const SizedBox.shrink();
+    if (!_loaded) return const SizedBox.shrink();
     if (!_available) return const SizedBox.shrink();
 
     return SwitchListTile(
@@ -245,11 +241,15 @@ class _BiometricSwitchState extends ConsumerState<_BiometricSwitch> {
       secondary: const Icon(Icons.fingerprint),
       title: const Text('Biometric'),
       subtitle: const Text('Use fingerprint / face to sign in'),
-      value: widget.enabled,
+      value: _enabled,
       onChanged: (v) async {
         final bio = ref.read(biometricServiceProvider);
-        final ok = await bio.authenticate('Enable biometric sign in');
-        if (ok) widget.onChanged(v);
+        if (v) {
+          final ok = await bio.authenticate('Enable biometric sign in');
+          if (!ok) return;
+        }
+        await bio.setEnabled(v);
+        if (mounted) setState(() => _enabled = v);
       },
     );
   }
