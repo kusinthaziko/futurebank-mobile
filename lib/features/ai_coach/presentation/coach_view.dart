@@ -194,14 +194,13 @@ class _AiBubbleState extends State<_AiBubble> {
 
     // Reveal characters at ~40 chars/sec (25ms per char)
     // Batch 1-2 chars per tick for natural feel
-    _typewriterTimer = Timer.periodic(const Duration(milliseconds: 25), (timer) {
+_typewriterTimer = Timer.periodic(const Duration(milliseconds: 25), (timer) {
       if (!mounted) {
         timer.cancel();
         return;
       }
-            _revealedChars = (_revealedChars + 1).clamp(0, widget.text.length);
       setState(() {
-        _revealedChars = (_revealedChars + advance).clamp(0, widget.text.length);
+        _revealedChars = (_revealedChars + 1).clamp(0, widget.text.length);
         if (_revealedChars >= widget.text.length) {
           timer.cancel();
           _cursorTimer?.cancel();
