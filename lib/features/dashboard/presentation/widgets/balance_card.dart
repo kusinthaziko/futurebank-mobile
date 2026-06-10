@@ -5,6 +5,7 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/subscription_providers.dart';
+import '../../../../core/widgets/animations/card_lift.dart';
 import '../../data/models/dashboard_data.dart';
 import '../../domain/providers.dart';
 
@@ -24,7 +25,8 @@ class BalanceCard extends ConsumerWidget {
     final delta = deltaAsync.whenOrNull(data: (d) => d);
     final numericBalance = double.tryParse(displayBalance) ?? 0;
 
-    return Container(
+    return CardLift(
+      child: Container(
       height: 180,
       decoration: BoxDecoration(
         borderRadius: radius24,
@@ -167,6 +169,7 @@ class BalanceCard extends ConsumerWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }

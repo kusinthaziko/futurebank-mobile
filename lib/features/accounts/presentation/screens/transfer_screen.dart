@@ -12,6 +12,8 @@ import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/security_provider.dart';
 import '../../../../core/graphql/client.dart';
 import '../../../../core/utils/validators.dart';
+import '../../../../core/widgets/animations/shake_widget.dart';
+import '../../../../core/widgets/animations/success_celebration.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../features/auth/domain/auth_state.dart';
 import '../../domain/providers.dart';
@@ -145,7 +147,15 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
       if (r.hasException) throw r.exception!;
       if (mounted) {
         final txId = r.data?['transfer']?['id'] as String?;
-        context.go(txId != null ? '/receipt/$txId' : '/home');
+        await SuccessCelebration.show(
+          context,
+          message: 'Transfer successful!',
+          onComplete: () {
+            if (mounted) {
+              context.go(txId != null ? '/receipt/$txId' : '/home');
+            }
+          },
+        );
       }
     } catch (e) {
       setState(() => _error = ErrorView.messageFor(e));
@@ -221,7 +231,10 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
           FBInput(label: 'Description (optional)', controller: _desc),
           if (_error != null) ...[
             const SizedBox(height: sp8),
-            Text(_error!, style: AppTextStyles.caption.copyWith(color: error500)),
+            ShakeWidget(
+              shake: true,
+              child: Text(_error!, style: AppTextStyles.caption.copyWith(color: error500)),
+            ),
           ],
           const Spacer(),
           FBButton(

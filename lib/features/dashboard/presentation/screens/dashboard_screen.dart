@@ -6,6 +6,7 @@ import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/services/screenshot_protected_screen.dart';
 import '../../../../core/utils/error_utils.dart';
+import '../../../../core/widgets/animations/fade_in_staggered.dart';
 import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/shimmer_loading.dart';
@@ -46,96 +47,101 @@ class DashboardScreen extends ConsumerWidget {
               ref.refresh(aiInsightProvider.future),
               ref.refresh(monthlyDeltaProvider(data.primaryAccount.id).future),
             ]),
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(sp16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ── Greeting ──────────────────────────────────────
-                  Text(_greeting(data.user.fullName),
-                      style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: sp20),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(sp16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ── Greeting ──────────────────────────────────────
+                    Text(_greeting(data.user.fullName),
+                        style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: sp20),
 
-                  // ── Bento row 1: Balance (flex 5) | Recent (flex 3) ─
-                  IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                    FadeInStaggered(
+                      staggerDelayMs: 100,
                       children: [
-                        Expanded(
-                          flex: 5,
-                          child: Column(
+                        // ── Bento row 1: Balance (flex 5) | Recent (flex 3) ─
+                        IntrinsicHeight(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              BalanceCard(account: data.primaryAccount),
-                              const SizedBox(height: sp12),
-                              const QuickActions(),
+                              Expanded(
+                                flex: 5,
+                                child: Column(
+                                  children: [
+                                    BalanceCard(account: data.primaryAccount),
+                                    const SizedBox(height: sp12),
+                                    const QuickActions(),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: sp12),
+                              Expanded(
+                                flex: 3,
+                                child: Container(
+                                  padding: const EdgeInsets.all(sp12),
+                                  decoration: BoxDecoration(
+                                    color: cardColor,
+                                    borderRadius: radius16,
+                                    boxShadow: shadowRaised,
+                                  ),
+                                    child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('Recent Activity',
+                                              style: AppTextStyles.labelLarge),
+                                        ],
+                                      ),
+                                      const SizedBox(height: sp8),
+                                      Expanded(
+                                        child: RecentTransactions(
+                                          accountId: data.primaryAccount.id,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        const SizedBox(width: sp12),
-                        Expanded(
-                          flex: 3,
-                          child: Container(
-                            padding: const EdgeInsets.all(sp12),
-                            decoration: BoxDecoration(
-                              color: cardColor,
-                              borderRadius: radius16,
-                              boxShadow: shadowRaised,
-                            ),
-                              child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text('Recent Activity',
-                                        style: AppTextStyles.labelLarge),
-                                  ],
-                                ),
-                                const SizedBox(height: sp8),
-                                Expanded(
-                                  child: RecentTransactions(
-                                    accountId: data.primaryAccount.id,
-                                  ),
-                                ),
-                              ],
+                        const SizedBox(height: sp16),
+
+                        // ── Health score chip ─────────────────────────────
+                        if (data.healthScore != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: sp16),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: HealthScoreTile(healthScore: data.healthScore!),
                             ),
                           ),
+
+                        // ── Bento row 2: Savings Goals | Active Challenge  ─
+                        const Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(child: SavingsGoalsWidget()),
+                            SizedBox(width: sp12),
+                            Expanded(child: ActiveChallengeWidget()),
+                          ],
                         ),
+                        const SizedBox(height: sp16),
+
+                        // ── AI Insight banner (full width) ────────────────
+                        const AiNudgeWidget(),
+
+                        const SizedBox(height: sp80),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: sp16),
-
-                  // ── Health score chip ─────────────────────────────
-                  if (data.healthScore != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: sp16),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: HealthScoreTile(healthScore: data.healthScore!),
-                      ),
-                    ),
-
-                  // ── Bento row 2: Savings Goals | Active Challenge  ─
-                  const Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(child: SavingsGoalsWidget()),
-                      SizedBox(width: sp12),
-                      Expanded(child: ActiveChallengeWidget()),
-                    ],
-                  ),
-                  const SizedBox(height: sp16),
-
-                  // ── AI Insight banner (full width) ────────────────
-                  const AiNudgeWidget(),
-
-                  const SizedBox(height: sp80),
-                ],
+                  ],
+                ),
               ),
-            ),
           ),
         ),
       ),

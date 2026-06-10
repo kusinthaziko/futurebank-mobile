@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../tokens/colors.dart';
 import '../tokens/dimensions.dart';
 import '../tokens/typography.dart';
+import '../../widgets/animations/press_scale.dart';
 
 enum FBButtonVariant { primary, secondary, ghost, destructive }
 enum FBButtonSize { small, medium, large }
@@ -38,32 +39,36 @@ class FBButton extends StatelessWidget {
       FBButtonVariant.destructive => (error500, white, null),
     };
 
-    return SizedBox(
-      height: height,
-      width: double.infinity,
-      child: TextButton(
-        onPressed: loading ? null : onPressed,
-        style: TextButton.styleFrom(
-          backgroundColor: bg,
-          foregroundColor: fg,
-          shape: RoundedRectangleBorder(
-            borderRadius: radiusPill,
-            side: border != null ? BorderSide(color: border) : BorderSide.none,
+    return PressScale(
+      onPressed: loading ? null : onPressed,
+      haptic: onPressed != null ? 1 : 0,
+      child: SizedBox(
+        height: height,
+        width: double.infinity,
+        child: TextButton(
+          onPressed: loading ? null : onPressed,
+          style: TextButton.styleFrom(
+            backgroundColor: bg,
+            foregroundColor: fg,
+            shape: RoundedRectangleBorder(
+              borderRadius: radiusPill,
+              side: border != null ? BorderSide(color: border) : BorderSide.none,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: sp24),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: sp24),
+          child: loading
+              ? SizedBox(
+                  width: 20, height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: fg))
+              : Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (icon != null) ...[icon!, const SizedBox(width: sp8)],
+                    Text(label, style: AppTextStyles.labelLarge.copyWith(color: fg)),
+                  ],
+                ),
         ),
-        child: loading
-            ? SizedBox(
-                width: 20, height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2, color: fg))
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (icon != null) ...[icon!, const SizedBox(width: sp8)],
-                  Text(label, style: AppTextStyles.labelLarge.copyWith(color: fg)),
-                ],
-              ),
       ),
     );
   }

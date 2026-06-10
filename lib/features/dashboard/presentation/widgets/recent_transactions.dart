@@ -7,6 +7,7 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/subscription_providers.dart';
+import '../../../../core/widgets/animations/fade_in_staggered.dart';
 import '../../data/models/dashboard_data.dart';
 import '../../domain/providers.dart';
 
@@ -21,7 +22,6 @@ class RecentTransactions extends ConsumerStatefulWidget {
 
 class _RecentTransactionsState extends ConsumerState<RecentTransactions> {
   List<TransactionModel>? _subscriptionItems;
-  final Set<String> _animatingIds = {};
 
   @override
   Widget build(BuildContext context) {
@@ -40,14 +40,9 @@ class _RecentTransactionsState extends ConsumerState<RecentTransactions> {
         );
         setState(() {
           (_subscriptionItems ??= []).insert(0, model);
-          _animatingIds.add(model.id);
           if (_subscriptionItems!.length > 5) {
-            final removed = _subscriptionItems!.removeLast();
-            _animatingIds.remove(removed.id);
+            _subscriptionItems!.removeLast();
           }
-        });
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted) setState(() => _animatingIds.remove(model.id));
         });
       });
     });
@@ -84,65 +79,15 @@ class _RecentTransactionsState extends ConsumerState<RecentTransactions> {
         ),
         data: (txs) {
           final items = _subscriptionItems ?? txs;
-          return Column(
-            children: items.map((tx) {
-              return _animatingIds.contains(tx.id)
-                  ? _AnimatedNewRow(key: ValueKey(tx.id), tx: tx)
-                  : _TxRow(key: ValueKey(tx.id), tx: tx);
-            }).toList(),
+          return FadeInStaggered(
+            staggerDelayMs: 60,
+            children: items.map((tx) =>
+              _TxRow(key: ValueKey(tx.id), tx: tx)
+            ).toList(),
           );
         },
       ),
     ]);
-  }
-}
-
-class _AnimatedNewRow extends StatefulWidget {
-  final TransactionModel tx;
-  const _AnimatedNewRow({required super.key, required this.tx});
-
-  @override
-  State<_AnimatedNewRow> createState() => _AnimatedNewRowState();
-}
-
-class _AnimatedNewRowState extends State<_AnimatedNewRow>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-  late final Animation<Offset> _slide;
-  late final Animation<double> _fade;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
-    _slide = Tween<Offset>(
-      begin: const Offset(0, -0.5),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
-    _fade = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOut),
-    );
-    _ctrl.forward();
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SlideTransition(
-      position: _slide,
-      child: FadeTransition(
-        opacity: _fade,
-        child: _TxRow(tx: widget.tx),
-      ),
-    );
   }
 }
 
