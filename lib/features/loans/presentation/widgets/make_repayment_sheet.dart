@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:local_auth/local_auth.dart';
 import '../../../../core/design_system/components/fb_button.dart';
+import '../../../../core/providers/security_provider.dart';
 import '../../../../core/design_system/components/fb_card_input.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
@@ -87,11 +87,8 @@ class _MakeRepaymentSheetState extends ConsumerState<MakeRepaymentSheet> {
   Future<void> _submit() async {
     if (!_sufficient) return;
 
-    final localAuth = LocalAuthentication();
-    final authenticated = await localAuth.authenticate(
-      localizedReason: 'Authenticate to confirm repayment',
-      options: const AuthenticationOptions(biometricOnly: true),
-    );
+    final bio = ref.read(biometricServiceProvider);
+    final authenticated = await bio.authenticate('Authenticate to confirm repayment');
     if (!authenticated || !mounted) return;
 
     setState(() => _loading = true);

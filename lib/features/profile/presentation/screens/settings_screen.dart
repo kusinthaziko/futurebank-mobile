@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:local_auth/local_auth.dart';
 import '../../../../core/design_system/components/fb_button.dart';
+import '../../../../core/providers/security_provider.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
@@ -44,22 +44,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             trailing: const Icon(Icons.chevron_right),
             onTap: () {},
           ),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            secondary: const Icon(Icons.fingerprint),
-            title: const Text('Biometric'),
-            subtitle: const Text('Use fingerprint / face to sign in'),
-            value: _biometricEnabled,
-            onChanged: (v) async {
-              final auth = LocalAuthentication();
-              final canCheck = await auth.canCheckBiometrics;
-              if (canCheck) {
-                final authenticated = await auth.authenticate(
-                  localizedReason: 'Enable biometric sign in',
-                );
-                if (authenticated) setState(() => _biometricEnabled = v);
-              }
-            },
+          _BiometricSwitch(
+            enabled: _biometricEnabled,
+            onChanged: (v) => setState(() => _biometricEnabled = v),
           ),
           ListTile(
             contentPadding: EdgeInsets.zero,
@@ -221,4 +208,49 @@ class _SectionHeader extends StatelessWidget {
     child: Text(title,
         style: AppTextStyles.labelLarge.copyWith(color: gray500)),
   );
+}
+
+class _BiometricSwitch extends ConsumerStatefulWidget {
+  final bool enabled;
+  final ValueChanged<bool> onChanged;
+  const _BiometricSwitch({required this.enabled, required this.onChanged});
+
+  @override
+  ConsumerState<_BiometricSwitch> createState() => _BiometricSwitchState();
+}
+
+class _BiometricSwitchState extends ConsumerState<_BiometricSwitch> {
+  bool _available = false;
+  bool _checked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _check();
+  }
+
+  Future<void> _check() async {
+    final bio = ref.read(biometricServiceProvider);
+    final available = await bio.isAvailable();
+    if (mounted) setState(() { _available = available; _checked = true; });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_checked) return const SizedBox.shrink();
+    if (!_available) return const SizedBox.shrink();
+
+    return SwitchListTile(
+      contentPadding: EdgeInsets.zero,
+      secondary: const Icon(Icons.fingerprint),
+      title: const Text('Biometric'),
+      subtitle: const Text('Use fingerprint / face to sign in'),
+      value: widget.enabled,
+      onChanged: (v) async {
+        final bio = ref.read(biometricServiceProvider);
+        final ok = await bio.authenticate('Enable biometric sign in');
+        if (ok) widget.onChanged(v);
+      },
+    );
+  }
 }

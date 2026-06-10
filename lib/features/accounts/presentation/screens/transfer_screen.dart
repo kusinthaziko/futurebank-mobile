@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../../core/design_system/components/fb_button.dart';
 import '../../../../core/design_system/components/fb_card_input.dart';
@@ -10,6 +9,7 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/providers/security_provider.dart';
 import '../../../../core/graphql/client.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/error_view.dart';
@@ -44,7 +44,6 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
   final _recipientId = TextEditingController();
   final _amount = TextEditingController();
   final _desc = TextEditingController();
-  final _auth = LocalAuthentication();
   bool _loading = false;
   String? _error, _recipientName, _recipientAccountId;
   double? _availableBalance;
@@ -123,7 +122,8 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
       return;
     }
 
-    final ok = await _auth.authenticate(localizedReason: 'Confirm transfer');
+    final bio = ref.read(biometricServiceProvider);
+    final ok = await bio.authenticate('Confirm transfer');
     if (!ok) return;
 
     setState(() { _loading = true; _error = null; });
