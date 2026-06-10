@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:app/core/design_system/tokens/icons.dart';
 import 'package:app/features/dashboard/presentation/widgets/balance_card.dart';
 import 'package:app/features/dashboard/data/models/dashboard_data.dart' as dash;
 import 'package:app/features/accounts/data/models/account_models.dart';
@@ -73,17 +74,17 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 700));
     expect(find.text('MWK 24500.00'), findsOneWidget);
-    expect(find.byIcon(Icons.visibility), findsOneWidget);
+    expect(find.byIcon(FbIcons.eye), findsOneWidget);
 
     // Tap the eye toggle to blur
-    await tester.tap(find.byIcon(Icons.visibility));
+    await tester.tap(find.byIcon(FbIcons.eye));
     await tester.pump();
 
     expect(find.text('MWK ••••••'), findsOneWidget);
-    expect(find.byIcon(Icons.visibility_off), findsOneWidget);
+    expect(find.byIcon(FbIcons.eyeSlash), findsOneWidget);
 
     // Tap again to unblur
-    await tester.tap(find.byIcon(Icons.visibility_off));
+    await tester.tap(find.byIcon(FbIcons.eyeSlash));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 700));
 
