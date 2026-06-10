@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:genui/genui.dart';
@@ -30,11 +32,11 @@ class CoachView extends StatelessWidget {
           if (state.weeklyInsight != null)
             const WeeklyInsightsCard(
               amountSaved: 'MWK 3,200',
-              savingsChange: '↑ 18%',
+              savingsChange: '\u2191 18%',
               topSpendCategory: 'Data bundles',
               topSpendAmount: 'MWK 800',
               loanStatus: 'On track',
-              healthScoreChange: '720 (↑ 15 pts)',
+              healthScoreChange: '720 (\u2191 15 pts)',
             ),
           Expanded(
             child: state.allMessages.isEmpty
@@ -147,29 +149,116 @@ class _UserBubble extends StatelessWidget {
   );
 }
 
-class _AiBubble extends StatelessWidget {
+class _AiBubble extends StatefulWidget {
   final String text;
   const _AiBubble({required this.text});
 
   @override
-  Widget build(BuildContext context) => Align(
-    alignment: Alignment.centerLeft,
-    child: Container(
-      margin: const EdgeInsets.symmetric(vertical: sp4),
-      padding: const EdgeInsets.symmetric(horizontal: sp16, vertical: sp12),
-      constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.75,
+  State<_AiBubble> createState() => _AiBubbleState();
+}
+
+class _AiBubbleState extends State<_AiBubble> {
+  int _revealedChars = 0;
+  bool _cursorVisible = true;
+
+  Timer? _typewriterTimer;
+  Timer? _cursorTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTypewriter();
+  }
+
+  @override
+  void didUpdateWidget(_AiBubble old) {
+    super.didUpdateWidget(old);
+    if (old.text != widget.text) {
+      _typewriterTimer?.cancel();
+      _revealedChars = 0;
+      _startTypewriter();
+    }
+  }
+
+  void _startTypewriter() {
+    if (widget.text.isEmpty) return;
+
+    // Start cursor blinking immediately
+    _cursorTimer = Timer.periodic(
+      const Duration(milliseconds: 530),
+      (_) {
+        if (!mounted) return;
+        setState(() => _cursorVisible = !_cursorVisible);
+      },
+    );
+
+    // Reveal characters at ~40 chars/sec (25ms per char)
+    // Batch 1-2 chars per tick for natural feel
+    _typewriterTimer = Timer.periodic(const Duration(milliseconds: 25), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+            _revealedChars = (_revealedChars + 1).clamp(0, widget.text.length);
+      setState(() {
+        _revealedChars = (_revealedChars + advance).clamp(0, widget.text.length);
+        if (_revealedChars >= widget.text.length) {
+          timer.cancel();
+          _cursorTimer?.cancel();
+          _cursorVisible = false;
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _typewriterTimer?.cancel();
+    _cursorTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final displayed = widget.text.substring(0, _revealedChars);
+    final isTyping = _revealedChars < widget.text.length;
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: sp4),
+        padding: const EdgeInsets.symmetric(horizontal: sp16, vertical: sp12),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.75,
+        ),
+        decoration: BoxDecoration(
+          color: gray100,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Flexible(
+              child: Text(
+                displayed,
+                style: AppTextStyles.bodyMedium.copyWith(color: gray900),
+              ),
+            ),
+            if (isTyping && _cursorVisible)
+              Padding(
+                padding: const EdgeInsets.only(left: 1),
+                child: Container(
+                  width: 2,
+                  height: 16,
+                  color: primary500,
+                ),
+              ),
+          ],
+        ),
       ),
-      decoration: BoxDecoration(
-        color: gray100,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        text,
-        style: AppTextStyles.bodyMedium.copyWith(color: gray900),
-      ),
-    ),
-  );
+    );
+  }
 }
 
 class _TypingIndicator extends StatelessWidget {
