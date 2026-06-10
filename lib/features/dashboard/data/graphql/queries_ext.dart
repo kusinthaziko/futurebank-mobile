@@ -1,13 +1,10 @@
 const String dashboardExtrasQuery = r'''
   query DashboardExtras {
-    savingsGoals(accountId: "") {
+    savingsGoals {
       id name target_amount current_amount deadline category status
     }
-    activeChallenges {
-      id name description type progress streak_days days_remaining status
-    }
     aiInsight {
-      message type
+      summary recommendation
     }
   }
 ''';

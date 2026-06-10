@@ -10,7 +10,6 @@ const String myLoansQuery = r'''
       interest_rate
       ai_risk_score
       ai_risk_summary
-      blockchain_contract_hash
       submitted_at
       decided_at
       disbursed_at

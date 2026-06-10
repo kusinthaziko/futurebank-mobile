@@ -3,7 +3,7 @@ const String myAccountsQuery = r'''
     myAccounts {
       id account_number account_type balance currency status interest_rate
     }
-    savingsGoals(accountId: "") {
+    savingsGoals {
       id name target_amount current_amount deadline category status
     }
   }

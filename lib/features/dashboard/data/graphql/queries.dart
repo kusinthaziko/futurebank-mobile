@@ -1,26 +1,13 @@
-// Single responsibility: GraphQL strings only — no logic here
 const String dashboardQuery = r'''
   query Dashboard {
     me {
-      id
-      full_name
-      financial_health_score
-      kyc_level
+      id full_name financial_health_score kyc_level
     }
     myAccounts {
-      id
-      account_number
-      account_type
-      balance
-      currency
-      status
+      id account_number account_type balance currency status
     }
     financialHealthScore {
-      score
-      savings_consistency
-      loan_repayment_rate
-      challenge_completions
-      computed_at
+      score savings_consistency loan_repayment_rate challenge_completions computed_at
     }
   }
 ''';
@@ -28,13 +15,7 @@ const String dashboardQuery = r'''
 const String recentTransactionsQuery = r'''
   query RecentTransactions($accountId: ID!, $limit: Int) {
     transactionHistory(accountId: $accountId, limit: $limit) {
-      id
-      reference
-      description
-      amount
-      transaction_type
-      status
-      inserted_at
+      id reference description amount transaction_type status inserted_at
     }
   }
 ''';

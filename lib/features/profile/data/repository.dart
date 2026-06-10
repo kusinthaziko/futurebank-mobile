@@ -35,7 +35,6 @@ class ProfileRepository {
           'email': me['email'], 'kycLevel': me['kyc_level'],
           'kycStatus': me['kyc_status'],
           'financialHealthScore': me['financial_health_score'],
-          'blockchainDid': me['blockchain_did'],
           'avatarUrl': me['avatar_url'],
         }),
         healthScore: HealthScoreData.fromJson({
@@ -79,7 +78,7 @@ class ProfileRepository {
   Future<void> updateAvatar(String avatarUrl) async {
     final r = await _client.mutate(MutationOptions(
       document: gql(updateProfileMutation),
-      variables: {'avatarUrl': avatarUrl},
+      variables: {'avatar_url': avatarUrl},
     ));
     if (r.hasException) throw r.exception!;
   }
