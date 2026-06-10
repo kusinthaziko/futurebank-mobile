@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -22,6 +23,9 @@ class App extends ConsumerStatefulWidget {
 }
 
 class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
+  Timer? _refreshTimer;
+  // bool _refreshStarted = false;  // kept for future use
+
   @override
   void initState() {
     super.initState();
@@ -30,6 +34,7 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _refreshTimer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -39,10 +44,37 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
     ref.read(autoLockProvider.notifier).onAppLifecycleChange(state);
   }
 
+  void _onAuthChange(AuthState? prev, AuthState next) {
+    // Start timer exactly once when transitioning TO authenticated
+    if (next is Authenticated && prev is! Authenticated) {
+      _startTokenRefresh();
+    } else if (next is! Authenticated) {
+      _refreshTimer?.cancel();
+    }
+  }
+
+  void _startTokenRefresh() {
+    _refreshTimer?.cancel();
+    // _refreshStarted = true;
+
+    // Refresh token proactively every 10 minutes (before 15-min expiry)
+    _refreshTimer = Timer.periodic(const Duration(minutes: 10), (_) async {
+      try {
+        await ref.read(authProvider.notifier).refreshToken();
+      } catch (_) {
+        // Silent fail — token refresh is best-effort
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
+
+    // Listen for auth transitions exactly once
+    ref.listen(authProvider, _onAuthChange);
+
     // Show splash while auth resolves (prevents queries with null token)
     if (authState is Loading) {
       return MaterialApp(

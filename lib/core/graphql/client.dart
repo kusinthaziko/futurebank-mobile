@@ -9,7 +9,7 @@ const _wsUrl = String.fromEnvironment(
   'WS_URL',
   defaultValue: 'wss://futurebank-api.onrender.com:443/socket/websocket',
 );
-n/// Ensures the WebSocket URI always has an explicit port to avoid parsing issues.
+/// Ensures the WebSocket URI always has an explicit port to avoid parsing issues.
 String _ensureWsUrl(String url) {
   final uri = Uri.parse(url);
   if (uri.port == 0) {

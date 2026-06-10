@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import '../../features/auth/domain/auth_state.dart';
 import '../services/security_service.dart';
+import '../graphql/client.dart';
 
 const _storage = FlutterSecureStorage();
 
@@ -52,10 +54,48 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> logout() async {
-    // Clear screenshot flag before logout
     SecurityService().resetScreenshotPrevention();
     await _storage.deleteAll();
     state = const Unauthenticated();
+  }
+
+  /// Reads the stored refresh token and exchanges it for new tokens via the backend.
+  /// Call this periodically to keep the access token fresh.
+  Future<void> refreshToken() async {
+    final storedRefresh = await _storage.read(key: 'refresh_token');
+    if (storedRefresh == null || storedRefresh.isEmpty) return;
+
+    final client = buildGraphQLClient(null);
+    final result = await client.mutate(MutationOptions(
+      document: gql(r'''
+        mutation RefreshToken($refreshToken: String!) {
+          refresh_token(refresh_token: $refreshToken) {
+            access_token
+            refresh_token
+          }
+        }
+      '''),
+      variables: {'refreshToken': storedRefresh},
+    ));
+    if (result.hasException) return;
+    final data = result.data?['refresh_token'];
+    if (data == null) return;
+
+    final newAccess = data['access_token'] as String;
+    final newRefresh = data['refresh_token'] as String;
+
+    await _storage.write(key: 'access_token', value: newAccess);
+    await _storage.write(key: 'refresh_token', value: newRefresh);
+
+    final current = state;
+    if (current is Authenticated) {
+      state = Authenticated(
+        accessToken: newAccess,
+        userId: current.userId,
+        institutionId: current.institutionId,
+        role: current.role,
+      );
+    }
   }
 }
 
