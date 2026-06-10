@@ -36,6 +36,25 @@ import '../../features/accounts/presentation/screens/account_detail_screen.dart'
 import '../../features/accounts/presentation/screens/receipt_screen.dart';
 import '../../features/accounts/presentation/screens/create_goal_screen.dart';
 
+Page<void> _buildPageWithTransition(Widget child) {
+  return CustomTransitionPage<void>(
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0.08, 0),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+          reverseCurve: Curves.easeInCubic,
+        )),
+        child: child,
+      );
+    },
+  );
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
 
@@ -53,19 +72,19 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(path: '/', builder: (_, __) => const SplashScreen()),
-      GoRoute(path: '/onboarding', builder: (_, __) => const OnboardingScreen()),
-      GoRoute(path: '/auth/login',      builder: (_, __) => const LoginScreen()),
-      GoRoute(path: '/auth/register',   builder: (_, __) => const RegisterScreen()),
-      GoRoute(path: '/auth/kyc',        builder: (_, __) => const KycScreen()),
+      GoRoute(path: '/', pageBuilder: (_, __) => _buildPageWithTransition(const SplashScreen())),
+      GoRoute(path: '/onboarding', pageBuilder: (_, __) => _buildPageWithTransition(const OnboardingScreen())),
+      GoRoute(path: '/auth/login',      pageBuilder: (_, __) => _buildPageWithTransition(const LoginScreen())),
+      GoRoute(path: '/auth/register',   pageBuilder: (_, __) => _buildPageWithTransition(const RegisterScreen())),
+      GoRoute(path: '/auth/kyc',        pageBuilder: (_, __) => _buildPageWithTransition(const KycScreen())),
       GoRoute(path: '/auth/forgot-password',
-          builder: (_, __) => const ForgotPasswordScreen()),
+          pageBuilder: (_, __) => _buildPageWithTransition(const ForgotPasswordScreen())),
       GoRoute(path: '/auth/verify-email',
-          builder: (_, s) => VerifyEmailScreen(
+          pageBuilder: (_, s) => _buildPageWithTransition(VerifyEmailScreen(
             email: s.uri.queryParameters['email'],
-          )),
+          ))),
       GoRoute(path: '/auth/biometric-setup',
-          builder: (_, __) => const BiometricSetupScreen()),
+          pageBuilder: (_, __) => _buildPageWithTransition(const BiometricSetupScreen())),
       ShellRoute(
         builder: (_, __, child) => MainShell(child: child),
         routes: [
@@ -76,47 +95,47 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(path: '/accounts/:id/history',
-          builder: (_, s) => TransactionHistoryScreen(accountId: s.pathParameters['id']!)),
+          pageBuilder: (_, s) => _buildPageWithTransition(TransactionHistoryScreen(accountId: s.pathParameters['id']!))),
       GoRoute(path: '/social/groups/:id',
-          builder: (_, s) => GroupDetailScreen(groupId: s.pathParameters['id']!)),
+          pageBuilder: (_, s) => _buildPageWithTransition(GroupDetailScreen(groupId: s.pathParameters['id']!))),
       GoRoute(path: '/social/challenges/:id',
-          builder: (_, s) => ChallengeDetailScreen(challengeId: s.pathParameters['id']!)),
+          pageBuilder: (_, s) => _buildPageWithTransition(ChallengeDetailScreen(challengeId: s.pathParameters['id']!))),
       GoRoute(path: '/social/create-group',
-          builder: (_, __) => const CreateGroupScreen()),
+          pageBuilder: (_, __) => _buildPageWithTransition(const CreateGroupScreen())),
       GoRoute(path: '/leaderboard',
-          builder: (_, __) => const LeaderboardScreen()),
+          pageBuilder: (_, __) => _buildPageWithTransition(const LeaderboardScreen())),
       GoRoute(path: '/badge-earned',
-          builder: (_, s) => BadgeEarnedScreen(
+          pageBuilder: (_, s) => _buildPageWithTransition(BadgeEarnedScreen(
             badgeName: s.uri.queryParameters['name'] ?? 'Achievement',
             badgeType: s.uri.queryParameters['type'] ?? 'achievement',
             pointsAdded: int.tryParse(s.uri.queryParameters['points'] ?? '') ?? 150,
-          )),
+          ))),
       GoRoute(path: '/health-score',
-          builder: (_, __) => const HealthScoreScreen()),
+          pageBuilder: (_, __) => _buildPageWithTransition(const HealthScoreScreen())),
       GoRoute(path: '/settings',
-          builder: (_, __) => const SettingsScreen()),
+          pageBuilder: (_, __) => _buildPageWithTransition(const SettingsScreen())),
       GoRoute(path: '/passport',
-          builder: (_, __) => const PassportScreen()),
-      GoRoute(path: '/loans',       builder: (_, __) => const LoansScreen()),
-      GoRoute(path: '/loans/apply', builder: (_, __) => const LoanApplyScreen()),
-      GoRoute(path: '/loans/history', builder: (_, __) => const LoanHistoryScreen()),
+          pageBuilder: (_, __) => _buildPageWithTransition(const PassportScreen())),
+      GoRoute(path: '/loans',       pageBuilder: (_, __) => _buildPageWithTransition(const LoansScreen())),
+      GoRoute(path: '/loans/apply', pageBuilder: (_, __) => _buildPageWithTransition(const LoanApplyScreen())),
+      GoRoute(path: '/loans/history', pageBuilder: (_, __) => _buildPageWithTransition(const LoanHistoryScreen())),
       GoRoute(path: '/loans/:id',
-          builder: (_, s) => LoanDetailScreen(loanId: s.pathParameters['id']!)),
-      GoRoute(path: '/coach',  builder: (_, __) => const CoachScreen()),
-      GoRoute(path: '/about',  builder: (_, __) => const AboutScreen()),
-      GoRoute(path: '/deposit',  builder: (_, __) => const DepositScreen()),
-      GoRoute(path: '/transfer', builder: (_, __) => const TransferScreen()),
+          pageBuilder: (_, s) => _buildPageWithTransition(LoanDetailScreen(loanId: s.pathParameters['id']!))),
+      GoRoute(path: '/coach',  pageBuilder: (_, __) => _buildPageWithTransition(const CoachScreen())),
+      GoRoute(path: '/about',  pageBuilder: (_, __) => _buildPageWithTransition(const AboutScreen())),
+      GoRoute(path: '/deposit',  pageBuilder: (_, __) => _buildPageWithTransition(const DepositScreen())),
+      GoRoute(path: '/transfer', pageBuilder: (_, __) => _buildPageWithTransition(const TransferScreen())),
       GoRoute(
         path: '/accounts/detail/:id',
-        builder: (_, s) => AccountDetailScreen(accountId: s.pathParameters['id']!),
+        pageBuilder: (_, s) => _buildPageWithTransition(AccountDetailScreen(accountId: s.pathParameters['id']!)),
       ),
       GoRoute(
         path: '/receipt/:id',
-        builder: (_, s) => ReceiptScreen(receiptId: s.pathParameters['id']!),
+        pageBuilder: (_, s) => _buildPageWithTransition(ReceiptScreen(receiptId: s.pathParameters['id']!)),
       ),
       GoRoute(
         path: '/accounts/create-goal',
-        builder: (_, __) => const CreateGoalScreen(),
+        pageBuilder: (_, __) => _buildPageWithTransition(const CreateGoalScreen()),
       ),
     ],
   );
@@ -171,20 +190,57 @@ class _MainShellState extends ConsumerState<MainShell> {
       },
       child: Scaffold(
         body: widget.child,
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: idx,
-          onDestinationSelected: (i) => context.go(
-              ['/home', '/accounts', '/social', '/profile'][i]),
-          destinations: const [
-            NavigationDestination(icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home), label: 'Home'),
-            NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined),
-                selectedIcon: Icon(Icons.account_balance_wallet), label: 'Accounts'),
-            NavigationDestination(icon: Icon(Icons.group_outlined),
-                selectedIcon: Icon(Icons.group), label: 'Social'),
-            NavigationDestination(icon: Icon(Icons.person_outlined),
-                selectedIcon: Icon(Icons.person), label: 'Profile'),
-          ],
+        bottomNavigationBar: Container(
+          margin: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainerHigh,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              child: NavigationBar(
+                selectedIndex: idx,
+                onDestinationSelected: (i) => context.go(
+                    ['/home', '/accounts', '/social', '/profile'][i]),
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                indicatorColor: Theme.of(context).colorScheme.primaryContainer,
+                surfaceTintColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                destinations: const [
+                  NavigationDestination(
+                    icon: Icon(Icons.home_outlined),
+                    selectedIcon: Icon(Icons.home),
+                    label: 'Home',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.account_balance_wallet_outlined),
+                    selectedIcon: Icon(Icons.account_balance_wallet),
+                    label: 'Accounts',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.group_outlined),
+                    selectedIcon: Icon(Icons.group),
+                    label: 'Social',
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.person_outlined),
+                    selectedIcon: Icon(Icons.person),
+                    label: 'Profile',
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );

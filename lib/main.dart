@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'core/design_system/theme.dart';
+import 'core/design_system/theme/app_theme.dart';
 import 'core/router/router.dart';
 import 'core/providers/auth_provider.dart';
 import 'core/providers/security_provider.dart';

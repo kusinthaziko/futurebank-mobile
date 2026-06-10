@@ -1,3 +1,17 @@
+// DEPRECATION NOTICE
+//
+// These hardcoded color tokens are being replaced by the Material 3 ColorScheme
+// (generated via ColorScheme.fromSeed in theme/app_theme.dart) and the FbColors
+// ThemeExtension (theme/extensions/fb_colors.dart).
+//
+// - Primary/surface/error tokens → M3 ColorScheme (scheme.primary, scheme.surface, …)
+// - Brand gold / teal → FbColors extension accessed via
+//   `Theme.of(context).extension<FbColors>()`
+// - Semantic colors (success, warning, error) → move to FbColors or use
+//   Material 3 scheme.error + custom extensions
+//
+// TODO: Migrate all usages and remove this file in Phase 1.
+
 import 'package:flutter/material.dart';
 
 // Primary — electric blue

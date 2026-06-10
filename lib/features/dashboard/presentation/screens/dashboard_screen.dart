@@ -1,18 +1,22 @@
 // Single responsibility: layout only — no data fetching, no business logic
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/design_system/components/fb_misc.dart';
+import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/services/screenshot_protected_screen.dart';
-import '../../domain/providers.dart';
+import '../../../../core/utils/error_utils.dart';
+import '../../../../core/widgets/empty_state.dart';
 import '../../../../core/widgets/error_view.dart';
+import '../../../../core/widgets/shimmer_loading.dart';
+import '../../domain/providers.dart';
+import '../widgets/active_challenge.dart';
+import '../widgets/ai_nudge.dart';
 import '../widgets/balance_card.dart';
 import '../widgets/health_score_tile.dart';
 import '../widgets/quick_actions.dart';
 import '../widgets/recent_transactions.dart';
 import '../widgets/savings_goals.dart';
-import '../widgets/active_challenge.dart';
-import '../widgets/ai_nudge.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -26,7 +30,14 @@ class DashboardScreen extends ConsumerWidget {
       body: SafeArea(
         child: dashboardAsync.when(
           loading: () => _buildSkeleton(),
-          error: (e, _) => ErrorView(error: e, onRetry: () => ref.refresh(dashboardProvider)),
+          error: (e, st) {
+            final code = errorCode(e);
+            // Graceful empty state for not-found — keeps the UI friendly
+            if (code == 'not_found') {
+              return _buildEmptyState(context, ref);
+            }
+            return ErrorView(error: e, onRetry: () => ref.refresh(dashboardProvider));
+          },
           data: (data) => RefreshIndicator(
             onRefresh: () => Future.wait([
               ref.refresh(dashboardProvider.future),
@@ -35,25 +46,95 @@ class DashboardScreen extends ConsumerWidget {
               ref.refresh(aiInsightProvider.future),
               ref.refresh(monthlyDeltaProvider(data.primaryAccount.id).future),
             ]),
-            child: ListView(
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(sp16),
-              children: [
-                Text(_greeting(data.user.fullName),
-                    style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: sp20),
-                BalanceCard(account: data.primaryAccount),
-                const SizedBox(height: sp16),
-                const QuickActions(),
-                const SizedBox(height: sp20),
-                if (data.healthScore != null)
-                  HealthScoreTile(healthScore: data.healthScore!),
-                const SizedBox(height: sp16),
-                const ActiveChallengeWidget(),
-                const AiNudgeWidget(),
-                const SavingsGoalsWidget(),
-                RecentTransactions(accountId: data.primaryAccount.id),
-                const SizedBox(height: sp80),
-              ],
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Greeting ──────────────────────────────────────
+                  Text(_greeting(data.user.fullName),
+                      style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: sp20),
+
+                  // ── Bento row 1: Balance (flex 5) | Recent (flex 3) ─
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Column(
+                            children: [
+                              BalanceCard(account: data.primaryAccount),
+                              const SizedBox(height: sp12),
+                              const QuickActions(),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: sp12),
+                        Expanded(
+                          flex: 3,
+                          child: Container(
+                            padding: const EdgeInsets.all(sp12),
+                            decoration: BoxDecoration(
+                              color: cardColor,
+                              borderRadius: radius16,
+                              boxShadow: shadowRaised,
+                            ),
+                              child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text('Recent Activity',
+                                        style: AppTextStyles.labelLarge),
+                                  ],
+                                ),
+                                const SizedBox(height: sp8),
+                                Expanded(
+                                  child: RecentTransactions(
+                                    accountId: data.primaryAccount.id,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: sp16),
+
+                  // ── Health score chip ─────────────────────────────
+                  if (data.healthScore != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: sp16),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: HealthScoreTile(healthScore: data.healthScore!),
+                      ),
+                    ),
+
+                  // ── Bento row 2: Savings Goals | Active Challenge  ─
+                  const Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: SavingsGoalsWidget()),
+                      SizedBox(width: sp12),
+                      Expanded(child: ActiveChallengeWidget()),
+                    ],
+                  ),
+                  const SizedBox(height: sp16),
+
+                  // ── AI Insight banner (full width) ────────────────
+                  const AiNudgeWidget(),
+
+                  const SizedBox(height: sp80),
+                ],
+              ),
             ),
           ),
         ),
@@ -61,24 +142,86 @@ class DashboardScreen extends ConsumerWidget {
     ));
   }
 
-  Widget _buildSkeleton() => ListView(
-    padding: const EdgeInsets.all(sp16),
-    children: const [
-      FBSkeletonLoader(height: 120),
-      SizedBox(height: sp16),
-      FBSkeletonLoader(height: 60),
-      SizedBox(height: sp16),
-      FBSkeletonLoader(height: 80),
-      SizedBox(height: sp16),
-      FBSkeletonLoader(height: 100),
-      SizedBox(height: sp16),
-      FBSkeletonLoader(height: 64),
-      SizedBox(height: sp16),
-      FBSkeletonLoader(height: 120),
-      SizedBox(height: sp16),
-      FBSkeletonLoader(height: 200),
-    ],
-  );
+  /// Shimmer skeleton that mirrors the bento grid layout.
+  Widget _buildSkeleton() {
+    return const SingleChildScrollView(
+      physics: AlwaysScrollableScrollPhysics(),
+      padding: EdgeInsets.all(sp16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Greeting placeholder
+          ShimmerBox(height: 32, width: 200),
+          SizedBox(height: sp20),
+
+          // Bento row 1 skeleton: balance column + recent column
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 5,
+                child: Column(
+                  children: [
+                    ShimmerCard(height: 160),
+                    SizedBox(height: sp12),
+                    Row(
+                      children: [
+                        Expanded(child: ShimmerCard(height: 56)),
+                        SizedBox(width: sp12),
+                        Expanded(child: ShimmerCard(height: 56)),
+                        SizedBox(width: sp12),
+                        Expanded(child: ShimmerCard(height: 56)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(width: sp12),
+              Expanded(
+                flex: 3,
+                child: ShimmerCard(height: 240),
+              ),
+            ],
+          ),
+          SizedBox(height: sp20),
+
+          // Health score skeleton
+          ShimmerCard(height: 80),
+          SizedBox(height: sp16),
+
+          // Bento row 2 skeleton: savings goals + active challenge
+          Row(
+            children: [
+              Expanded(child: ShimmerCard(height: 120)),
+              SizedBox(width: sp12),
+              Expanded(child: ShimmerCard(height: 120)),
+            ],
+          ),
+          SizedBox(height: sp16),
+
+          // AI Insight skeleton
+          ShimmerCard(height: 64),
+          SizedBox(height: sp16),
+
+          // Transaction skeleton
+          ShimmerCard(height: 200),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context, WidgetRef ref) {
+    return FbEmptyState(
+      icon: Icons.search_off_rounded,
+      title: 'No dashboard data',
+      subtitle: 'We couldn\'t load your dashboard. Pull to refresh or try again.',
+      action: TextButton.icon(
+        onPressed: () => ref.refresh(dashboardProvider),
+        icon: const Icon(Icons.refresh_rounded),
+        label: const Text('Retry'),
+      ),
+    );
+  }
 
   String _greeting(String name) {
     final hour = DateTime.now().hour;
