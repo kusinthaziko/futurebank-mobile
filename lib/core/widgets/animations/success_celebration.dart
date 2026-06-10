@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import '../../design_system/tokens/icons.dart';
 
 class SuccessCelebration extends StatefulWidget {
   final String? message;
@@ -125,7 +126,7 @@ class _SuccessCelebrationState extends State<SuccessCelebration>
                             ),
                           ],
                         ),
-                        child: const Icon(Icons.check_rounded,
+                        child: const Icon(FbIcons.check,
                             color: Colors.white, size: 44),
                       ),
                     ),

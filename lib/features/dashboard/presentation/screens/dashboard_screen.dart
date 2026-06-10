@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/services/screenshot_protected_screen.dart';
 import '../../../../core/utils/error_utils.dart';
@@ -218,12 +219,12 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildEmptyState(BuildContext context, WidgetRef ref) {
     return FbEmptyState(
-      icon: Icons.search_off_rounded,
+      icon: FbIcons.search,
       title: 'No dashboard data',
       subtitle: 'We couldn\'t load your dashboard. Pull to refresh or try again.',
       action: TextButton.icon(
         onPressed: () => ref.refresh(dashboardProvider),
-        icon: const Icon(Icons.refresh_rounded),
+        icon: const Icon(FbIcons.refresh),
         label: const Text('Retry'),
       ),
     );

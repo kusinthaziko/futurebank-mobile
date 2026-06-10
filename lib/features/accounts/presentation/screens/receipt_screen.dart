@@ -6,6 +6,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import '../../../../core/design_system/components/fb_button.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/graphql/client.dart';
@@ -96,7 +97,7 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
           return ListView(
             padding: const EdgeInsets.all(sp24),
             children: [
-              const Icon(Icons.check_circle, color: success500, size: 72),
+              const Icon(FbIcons.checkCircle, color: success500, size: 72),
               const SizedBox(height: sp12),
               const Text('Transaction Successful',
                   style: AppTextStyles.titleLarge,
@@ -153,7 +154,7 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
               const SizedBox(height: sp32),
               FBButton(
                 label: 'Share Receipt',
-                icon: const Icon(Icons.share, size: 16),
+                icon: const Icon(FbIcons.share, size: 16),
                 variant: FBButtonVariant.secondary,
                 loading: _isGeneratingPdf,
                 onPressed: _isGeneratingPdf ? null : () => _sharePdf(tx),

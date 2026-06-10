@@ -7,6 +7,7 @@ import '../../../../core/design_system/components/fb_misc.dart';
 import '../../../../core/design_system/components/fb_button.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../data/models/account_models.dart';
@@ -57,7 +58,7 @@ class AccountDetailScreen extends ConsumerWidget {
               const SizedBox(height: sp16),
               Row(children: [
                 _StatCard(
-                  icon: Icons.trending_up,
+                  icon: FbIcons.trendingUp,
                   label: 'Interest Rate',
                   value: '$rate%',
                 ),
@@ -73,7 +74,7 @@ class AccountDetailScreen extends ConsumerWidget {
                 Expanded(
                   child: FBButton(
                     label: 'Deposit',
-                    icon: const Icon(Icons.add, size: 16),
+                    icon: const Icon(FbIcons.plus, size: 16),
                     variant: FBButtonVariant.secondary,
                     onPressed: () => context.push('/deposit'),
                   ),
@@ -82,7 +83,7 @@ class AccountDetailScreen extends ConsumerWidget {
                 Expanded(
                   child: FBButton(
                     label: 'Transfer',
-                    icon: const Icon(Icons.send, size: 16),
+                    icon: const Icon(FbIcons.send, size: 16),
                     variant: FBButtonVariant.secondary,
                     onPressed: () => context.push('/transfer'),
                   ),
@@ -185,7 +186,7 @@ class _TxRow extends StatelessWidget {
             borderRadius: radius12,
           ),
           child: Icon(
-            _isCredit ? Icons.arrow_downward : Icons.arrow_upward,
+            _isCredit ? FbIcons.arrowDown : FbIcons.arrowUp,
             color: _isCredit ? success500 : error500, size: 18,
           ),
         ),

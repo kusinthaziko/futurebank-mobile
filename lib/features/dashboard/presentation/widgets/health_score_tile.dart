@@ -4,6 +4,7 @@ import '../../../../core/design_system/components/fb_card_input.dart';
 import '../../../../core/design_system/components/fb_health_score.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../data/models/dashboard_data.dart';
 
@@ -23,7 +24,7 @@ class HealthScoreTile extends StatelessWidget {
               style: AppTextStyles.labelMedium.copyWith(color: success500)),
         ]),
         const Spacer(),
-        const Icon(Icons.chevron_right, color: gray500),
+        const Icon(FbIcons.caretRight, color: gray500),
       ]),
     );
   }

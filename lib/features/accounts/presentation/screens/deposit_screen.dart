@@ -6,6 +6,7 @@ import '../../../../core/design_system/components/fb_button.dart';
 import '../../../../core/design_system/components/fb_card_input.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/graphql/client.dart';
@@ -113,7 +114,7 @@ class _DepositScreenState extends ConsumerState<DepositScreen> {
             padding: const EdgeInsets.all(sp12),
             decoration: BoxDecoration(color: primary100, borderRadius: radius12),
             child: Row(children: [
-              const Icon(Icons.info_outline, color: primary500, size: 16),
+              const Icon(FbIcons.info, color: primary500, size: 16),
               const SizedBox(width: sp8),
               Expanded(child: Text(
                 'Finance manager will confirm this deposit.',

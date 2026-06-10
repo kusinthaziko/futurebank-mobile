@@ -6,6 +6,7 @@ import '../../../../core/design_system/components/fb_button.dart';
 import '../../../../core/design_system/components/fb_card_input.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/graphql/client.dart';
@@ -133,7 +134,7 @@ class _CreateGoalScreenState extends ConsumerState<CreateGoalScreen> {
                     color: _deadline != null ? gray900 : gray500,
                   ),
                 ),
-                const Icon(Icons.calendar_today, color: gray500, size: 18),
+                const Icon(FbIcons.calendar, color: gray500, size: 18),
               ]),
             ),
           ),

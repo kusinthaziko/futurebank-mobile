@@ -3,16 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
 
   static const _actions = [
-    (Icons.north_east_rounded, 'Send',    '/transfer',  [primary500, primary400]),
-    (Icons.south_west_rounded, 'Deposit', '/deposit',   [Color(0xFF0D9B64), Color(0xFF34C78A)]),
-    (Icons.credit_score_rounded,'Loans',  '/loans',     [Color(0xFFD4A017), Color(0xFFE8C547)]),
-    (Icons.group_rounded,      'Social',  '/social',    [Color(0xFF7C3AED), Color(0xFFA78BFA)]),
+    (FbIcons.arrowUpRight, 'Send',    '/transfer',  [primary500, primary400]),
+    (FbIcons.arrowDown, 'Deposit', '/deposit',   [Color(0xFF0D9B64), Color(0xFF34C78A)]),
+    (FbIcons.creditCard,'Loans',  '/loans',     [Color(0xFFD4A017), Color(0xFFE8C547)]),
+    (FbIcons.users,      'Social',  '/social',    [Color(0xFF7C3AED), Color(0xFFA78BFA)]),
   ];
 
   @override

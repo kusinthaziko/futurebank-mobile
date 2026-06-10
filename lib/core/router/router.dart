@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../design_system/tokens/icons.dart';
 import '../providers/auth_provider.dart';
 import '../providers/subscription_providers.dart';
 import '../../features/auth/domain/auth_state.dart';
@@ -218,23 +219,23 @@ class _MainShellState extends ConsumerState<MainShell> {
                 shadowColor: Colors.transparent,
                 destinations: const [
                   NavigationDestination(
-                    icon: Icon(Icons.home_outlined),
-                    selectedIcon: Icon(Icons.home),
+                    icon: Icon(FbIcons.home),
+                    selectedIcon: Icon(FbIcons.homeFill),
                     label: 'Home',
                   ),
                   NavigationDestination(
-                    icon: Icon(Icons.account_balance_wallet_outlined),
-                    selectedIcon: Icon(Icons.account_balance_wallet),
+                    icon: Icon(FbIcons.wallet),
+                    selectedIcon: Icon(FbIcons.walletFill),
                     label: 'Accounts',
                   ),
                   NavigationDestination(
-                    icon: Icon(Icons.group_outlined),
-                    selectedIcon: Icon(Icons.group),
+                    icon: Icon(FbIcons.users),
+                    selectedIcon: Icon(FbIcons.usersFill),
                     label: 'Social',
                   ),
                   NavigationDestination(
-                    icon: Icon(Icons.person_outlined),
-                    selectedIcon: Icon(Icons.person),
+                    icon: Icon(FbIcons.user),
+                    selectedIcon: Icon(FbIcons.userFill),
                     label: 'Profile',
                   ),
                 ],

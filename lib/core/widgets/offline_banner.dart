@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../design_system/tokens/colors.dart';
 import '../design_system/tokens/dimensions.dart';
+import '../design_system/tokens/icons.dart';
 import '../design_system/tokens/typography.dart';
 
 final connectivityProvider = StreamProvider<bool>((ref) =>
@@ -20,7 +21,7 @@ class OfflineBanner extends ConsumerWidget {
       color: warning500,
       padding: const EdgeInsets.symmetric(vertical: sp4),
       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        const Icon(Icons.wifi_off, color: Colors.white, size: 14),
+        const Icon(FbIcons.wifiOff, color: Colors.white, size: 14),
         const SizedBox(width: sp4),
         Text('Offline — showing cached data',
             style: AppTextStyles.caption.copyWith(color: Colors.white)),

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/design_system/components/fb_misc.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/subscription_providers.dart';
 import '../../../../core/widgets/animations/fade_in_staggered.dart';
@@ -68,7 +69,7 @@ class _RecentTransactionsState extends ConsumerState<RecentTransactions> {
               color: error100, borderRadius: radius12,
             ),
             child: Row(children: [
-              const Icon(Icons.refresh, color: error500, size: 16),
+              const Icon(FbIcons.refresh, color: error500, size: 16),
               const SizedBox(width: sp8),
               Expanded(
                 child: Text('Transactions unavailable. Tap to retry.',
@@ -112,7 +113,7 @@ class _TxRow extends StatelessWidget {
             borderRadius: radius12,
           ),
           child: Icon(
-            _isCredit ? Icons.arrow_downward : Icons.arrow_upward,
+            _isCredit ? FbIcons.arrowDown : FbIcons.arrowUp,
             color: _isCredit ? success500 : error500,
             size: 18,
           ),

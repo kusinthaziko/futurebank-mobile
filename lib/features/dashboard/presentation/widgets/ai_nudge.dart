@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/design_system/components/fb_misc.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../domain/providers.dart';
 
@@ -26,7 +27,7 @@ class AiNudgeWidget extends ConsumerWidget {
               color: error100, borderRadius: radius12,
             ),
             child: Row(children: [
-              const Icon(Icons.refresh, color: error500, size: 16),
+              const Icon(FbIcons.refresh, color: error500, size: 16),
               const SizedBox(width: sp8),
               Expanded(
                 child: Text('Coach insight unavailable. Tap to retry.',
@@ -55,14 +56,14 @@ class AiNudgeWidget extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: primary100, borderRadius: radius8,
                   ),
-                  child: const Icon(Icons.auto_awesome, color: primary500, size: 18),
+                  child: const Icon(FbIcons.sparkle, color: primary500, size: 18),
                 ),
                 const SizedBox(width: sp12),
                 Expanded(
                   child: Text(insight.message,
                       style: AppTextStyles.bodyMedium.copyWith(color: primary700)),
                 ),
-                const Icon(Icons.chevron_right, color: primary300, size: 18),
+                const Icon(FbIcons.caretRight, color: primary300, size: 18),
               ]),
             ),
           ),

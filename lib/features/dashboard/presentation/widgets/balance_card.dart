@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/subscription_providers.dart';
 import '../../../../core/widgets/animations/card_lift.dart';
@@ -103,8 +104,8 @@ class BalanceCard extends ConsumerWidget {
                               .state = !blurred,
                           child: Icon(
                             blurred
-                                ? Icons.visibility_off
-                                : Icons.visibility,
+                                ? FbIcons.eyeSlash
+                                : FbIcons.eye,
                             color: white.withValues(alpha: 0.7),
                             size: 18,
                           ),
@@ -148,8 +149,8 @@ class BalanceCard extends ConsumerWidget {
                         child: Row(mainAxisSize: MainAxisSize.min, children: [
                           Icon(
                             delta >= 0
-                                ? Icons.trending_up_rounded
-                                : Icons.trending_down_rounded,
+                                ? FbIcons.trendingUp
+                                : FbIcons.trendingDown,
                             size: 13,
                             color: delta >= 0 ? success100 : error100,
                           ),

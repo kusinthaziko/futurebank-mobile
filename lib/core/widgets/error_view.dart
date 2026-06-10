@@ -3,6 +3,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import '../design_system/components/fb_button.dart';
 import '../design_system/tokens/colors.dart';
 import '../design_system/tokens/dimensions.dart';
+import '../design_system/tokens/icons.dart';
 import '../design_system/tokens/typography.dart';
 import '../utils/error_utils.dart';
 
@@ -23,13 +24,13 @@ class ErrorView extends StatelessWidget {
   IconData get _icon {
     final code = errorCode(error);
     return switch (code) {
-      'kyc_required' => Icons.verified_user_outlined,
-      'insufficient_balance' => Icons.account_balance_wallet_outlined,
-      'active_loan_exists' => Icons.credit_score_outlined,
-      'not_found' => Icons.search_off,
-      'unauthenticated' || 'forbidden' => Icons.lock_outline,
-      _ when error is NetworkException => Icons.wifi_off,
-      _ => Icons.error_outline,
+      'kyc_required' => FbIcons.verified,
+      'insufficient_balance' => FbIcons.wallet,
+      'active_loan_exists' => FbIcons.creditCard,
+      'not_found' => FbIcons.search,
+      'unauthenticated' || 'forbidden' => FbIcons.shield,
+      _ when error is NetworkException => FbIcons.wifiOff,
+      _ => FbIcons.warning,
     };
   }
 

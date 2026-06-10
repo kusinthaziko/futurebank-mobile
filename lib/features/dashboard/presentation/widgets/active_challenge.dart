@@ -5,6 +5,7 @@ import '../../../../core/design_system/components/fb_card_input.dart';
 import '../../../../core/design_system/components/fb_misc.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../domain/providers.dart';
 
@@ -30,7 +31,7 @@ class ActiveChallengeWidget extends ConsumerWidget {
               color: error100, borderRadius: radius12,
             ),
             child: Row(children: [
-              const Icon(Icons.refresh, color: error500, size: 16),
+              const Icon(FbIcons.refresh, color: error500, size: 16),
               const SizedBox(width: sp8),
               Expanded(
                 child: Text('Challenge unavailable. Tap to retry.',
@@ -53,7 +54,7 @@ class ActiveChallengeWidget extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: gold100, borderRadius: radius12,
                   ),
-                  child: const Icon(Icons.local_fire_department, color: gold500, size: 22),
+                  child: const Icon(FbIcons.fire, color: gold500, size: 22),
                 )
               else
                 Container(
@@ -61,7 +62,7 @@ class ActiveChallengeWidget extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: primary100, borderRadius: radius12,
                   ),
-                  child: const Icon(Icons.emoji_events, color: primary500, size: 22),
+                  child: const Icon(FbIcons.trophy, color: primary500, size: 22),
                 ),
               const SizedBox(width: sp12),
               Expanded(child: Column(
@@ -84,7 +85,7 @@ class ActiveChallengeWidget extends ConsumerWidget {
                   const SizedBox(height: sp4),
                   Row(children: [
                     if (challenge.isStreak && challenge.streakDays != null) ...[
-                      const Icon(Icons.local_fire_department, size: 12, color: gold500),
+                      const Icon(FbIcons.fire, size: 12, color: gold500),
                       const SizedBox(width: sp4),
                       Text('${challenge.streakDays}-day streak',
                           style: AppTextStyles.caption.copyWith(color: gold500)),
@@ -95,7 +96,7 @@ class ActiveChallengeWidget extends ConsumerWidget {
                   ]),
                 ],
               )),
-              const Icon(Icons.chevron_right, color: gray500),
+              const Icon(FbIcons.caretRight, color: gray500),
             ]),
           ),
         );

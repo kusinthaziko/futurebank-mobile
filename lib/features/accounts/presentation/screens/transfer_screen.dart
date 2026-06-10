@@ -7,6 +7,7 @@ import '../../../../core/design_system/components/fb_button.dart';
 import '../../../../core/design_system/components/fb_card_input.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/providers/security_provider.dart';
@@ -201,14 +202,14 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
                 decoration: BoxDecoration(
                   color: primary100, borderRadius: radius12,
                 ),
-                child: const Icon(Icons.qr_code_scanner, color: primary500, size: 22),
+                child: const Icon(FbIcons.qrCode, color: primary500, size: 22),
               ),
             ),
           ]),
           if (_recipientName != null) ...[
             const SizedBox(height: sp8),
             Row(children: [
-              const Icon(Icons.check_circle, color: success500, size: 14),
+              const Icon(FbIcons.checkCircle, color: success500, size: 14),
               const SizedBox(width: sp4),
               Text('$_recipientName',
                   style: AppTextStyles.labelMedium.copyWith(color: success500)),

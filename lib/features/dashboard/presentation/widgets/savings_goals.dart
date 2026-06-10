@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/design_system/components/fb_card_input.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
+import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/design_system/components/fb_misc.dart';
 import '../../data/models/savings_goal_model.dart';
@@ -36,7 +37,7 @@ class SavingsGoalsWidget extends ConsumerWidget {
                 color: error100, borderRadius: radius12,
               ),
               child: Row(children: [
-                const Icon(Icons.refresh, color: error500, size: 16),
+                const Icon(FbIcons.refresh, color: error500, size: 16),
                 const SizedBox(width: sp8),
                 Text('Savings goals unavailable. Tap to retry.',
                     style: AppTextStyles.caption.copyWith(color: error500)),
@@ -105,7 +106,7 @@ class _AddGoalCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.add_circle_outline, color: primary500, size: 32),
+              const Icon(FbIcons.plus, color: primary500, size: 32),
               const SizedBox(height: sp4),
               Text('Add Goal',
                   style: AppTextStyles.labelMedium.copyWith(color: primary500)),
