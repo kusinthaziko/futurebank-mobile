@@ -13,6 +13,7 @@ import '../../../../core/graphql/client.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../features/auth/domain/auth_state.dart';
+import '../../../dashboard/domain/providers.dart' show dashboardProvider;
 import '../../domain/providers.dart';
 
 const _depositMutation = r'''
@@ -54,6 +55,8 @@ class _DepositScreenState extends ConsumerState<DepositScreen> {
                     'description': _desc.text.trim().isEmpty ? null : _desc.text.trim()},
       ));
       if (r.hasException) throw r.exception!;
+      ref.invalidate(accountsProvider);
+      ref.invalidate(dashboardProvider);
       setState(() => _success = true);
     } catch (e) {
       setState(() => _error = ErrorView.messageFor(e));

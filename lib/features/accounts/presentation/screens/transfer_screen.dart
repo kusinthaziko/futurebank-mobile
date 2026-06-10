@@ -10,11 +10,11 @@ import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
-import '../../../../core/providers/security_provider.dart';
-import '../../../../core/graphql/client.dart';
-import '../../../../core/utils/validators.dart';
-import '../../../../core/widgets/animations/shake_widget.dart';
+import '../../../../core/design_system/tokens/icons.dart';
+import '../../../../core/widgets/error_view.dart';
+import '../../../../features/auth/domain/auth_state.dart';
 import '../../../../core/widgets/animations/success_celebration.dart';
+import '../../../dashboard/domain/providers.dart' show dashboardProvider;
 import '../../../../core/widgets/error_view.dart';
 import '../../../../features/auth/domain/auth_state.dart';
 import '../../domain/providers.dart';
@@ -146,6 +146,8 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
         },
       ));
       if (r.hasException) throw r.exception!;
+      ref.invalidate(accountsProvider);
+      ref.invalidate(dashboardProvider);
       if (mounted) {
         final txId = r.data?['transfer']?['id'] as String?;
         await SuccessCelebration.show(

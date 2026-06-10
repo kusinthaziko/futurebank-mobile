@@ -46,6 +46,7 @@ class _LoanApplyScreenState extends ConsumerState<LoanApplyScreen> {
         purpose: _purpose == 'Other' ? _customDescription : _purpose,
         weeks: _weeks,
       );
+      ref.invalidate(loansProvider);
       if (mounted) context.go('/loans');
     } finally {
       if (mounted) setState(() => _loading = false);

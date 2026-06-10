@@ -12,6 +12,7 @@ import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/graphql/client.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../features/auth/domain/auth_state.dart';
+import '../../../accounts/domain/providers.dart';
 import '../../data/graphql/queries.dart';
 
 final _categories = ['Tuition', 'Emergency', 'Business', 'Personal', 'Group'];
@@ -57,10 +58,13 @@ class _CreateGoalScreenState extends ConsumerState<CreateGoalScreen> {
       final a = ref.read(authProvider);
       final t = a is Authenticated ? a.accessToken : null;
       final client = ref.read(graphQLClientProvider(t));
+      final data = await ref.read(accountsProvider.future);
+      final accountId = data.accounts.first.id;
       final r = await client.mutate(MutationOptions(
         document: gql(createSavingsGoalMutation),
         variables: {
           'input': {
+            'account_id': accountId,
             'name': name,
             'target_amount': target,
             'category': _category,
@@ -69,6 +73,7 @@ class _CreateGoalScreenState extends ConsumerState<CreateGoalScreen> {
         },
       ));
       if (r.hasException) throw r.exception!;
+      ref.invalidate(accountsProvider);
       if (mounted) context.pop();
     } catch (e) {
       setState(() => _error = ErrorView.messageFor(e));

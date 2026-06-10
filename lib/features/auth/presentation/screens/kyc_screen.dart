@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -165,7 +166,7 @@ class _KycScreenState extends ConsumerState<KycScreen> {
                 child: _image != null
                     ? ClipRRect(
                         borderRadius: radius16,
-                        child: Image.network(_image!.path, fit: BoxFit.cover))
+                        child: Image.file(File(_image!.path), fit: BoxFit.cover))
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

@@ -53,8 +53,9 @@ final activeChallengeProvider = FutureProvider.autoDispose<ChallengeModel?>((ref
 });
 
 final aiInsightProvider = FutureProvider.autoDispose<AiInsightModel?>((ref) async {
+  final dashboard = await ref.watch(dashboardProvider.future);
   final token = _token(ref.watch(authProvider));
-  return ref.read(dashboardRepositoryProvider(token)).fetchAiInsight();
+  return ref.read(dashboardRepositoryProvider(token)).fetchAiInsight(dashboard.primaryAccount.id);
 });
 
 final monthlyDeltaProvider = FutureProvider.autoDispose.family<double?, String>((ref, accountId) async {

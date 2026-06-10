@@ -173,9 +173,10 @@ class DashboardRepository {
     return ChallengeModel.fromJson(challenges.first);
   }
 
-  Future<AiInsightModel?> fetchAiInsight() async {
+  Future<AiInsightModel?> fetchAiInsight(String accountId) async {
     final result = await _client.query(QueryOptions(
       document: gql(dashboardExtrasQuery),
+      variables: {'accountId': accountId},
       fetchPolicy: FetchPolicy.cacheAndNetwork,
     ));
 
