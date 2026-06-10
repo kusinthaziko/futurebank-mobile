@@ -23,19 +23,27 @@ class TransactionDetailSheet extends StatelessWidget {
 
   String get _typeLabel {
     switch (tx.transactionType) {
-      case 'deposit': return 'Deposit';
-      case 'withdrawal': return 'Withdrawal';
-      case 'transfer': return 'Transfer';
-      case 'loan_disbursement': return 'Loan Disbursement';
-      case 'loan_repayment': return 'Loan Repayment';
-      case 'interest_credit': return 'Interest Credit';
-      default: return tx.transactionType;
+      case 'deposit':
+        return 'Deposit';
+      case 'withdrawal':
+        return 'Withdrawal';
+      case 'transfer':
+        return 'Transfer';
+      case 'loan_disbursement':
+        return 'Loan Disbursement';
+      case 'loan_repayment':
+        return 'Loan Repayment';
+      case 'interest_credit':
+        return 'Interest Credit';
+      default:
+        return tx.transactionType;
     }
   }
 
-  bool get _isCredit => tx.transactionType == 'deposit'
-      || tx.transactionType == 'interest_credit'
-      || tx.transactionType == 'loan_disbursement';
+  bool get _isCredit =>
+      tx.transactionType == 'deposit' ||
+      tx.transactionType == 'interest_credit' ||
+      tx.transactionType == 'loan_disbursement';
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +55,8 @@ class TransactionDetailSheet extends StatelessWidget {
         children: [
           Center(
             child: Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
                 color: gray300,
                 borderRadius: BorderRadius.circular(2),
@@ -57,14 +66,16 @@ class TransactionDetailSheet extends StatelessWidget {
           const SizedBox(height: sp20),
           Center(
             child: Container(
-              width: 56, height: 56,
+              width: 56,
+              height: 56,
               decoration: BoxDecoration(
                 color: _isCredit ? success100 : error100,
                 borderRadius: radius16,
               ),
               child: Icon(
                 _isCredit ? Icons.arrow_downward : Icons.arrow_upward,
-                color: _isCredit ? success500 : error500, size: 24,
+                color: _isCredit ? success500 : error500,
+                size: 24,
               ),
             ),
           ),
@@ -93,7 +104,12 @@ class TransactionDetailSheet extends StatelessWidget {
           _buildRow(context, 'Date', tx.insertedAt),
           if (tx.transactionType == 'loan_disbursement') ...[
             const SizedBox(height: sp8),
-            _buildRow(context, 'Blockchain Tx', 'View on chain', isBlockchain: true),
+            _buildRow(
+              context,
+              'Blockchain Tx',
+              'View on chain',
+              isBlockchain: true,
+            ),
           ],
           const SizedBox(height: sp24),
           FBButton(
@@ -108,7 +124,10 @@ class TransactionDetailSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(BuildContext context, String label, String value, {
+  Widget _buildRow(
+    BuildContext context,
+    String label,
+    String value, {
     bool copyable = false,
     bool isStatus = false,
     bool isBlockchain = false,
@@ -126,8 +145,10 @@ class TransactionDetailSheet extends StatelessWidget {
         children: [
           SizedBox(
             width: 100,
-            child: Text(label,
-                style: AppTextStyles.caption.copyWith(color: gray500)),
+            child: Text(
+              label,
+              style: AppTextStyles.caption.copyWith(color: gray500),
+            ),
           ),
           const SizedBox(width: sp8),
           Expanded(
@@ -137,12 +158,18 @@ class TransactionDetailSheet extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('View on chain',
-                            style: AppTextStyles.labelMedium
-                                .copyWith(color: primary500)),
+                        Text(
+                          'View on chain',
+                          style: AppTextStyles.labelMedium.copyWith(
+                            color: primary500,
+                          ),
+                        ),
                         const SizedBox(width: sp4),
-                        const Icon(Icons.info_outline,
-                            size: 14, color: primary300),
+                        const Icon(
+                          Icons.info_outline,
+                          size: 14,
+                          color: primary300,
+                        ),
                       ],
                     ),
                   )
@@ -150,10 +177,12 @@ class TransactionDetailSheet extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Flexible(
-                        child: Text(value,
-                            style: AppTextStyles.labelMedium.copyWith(
-                              color: isStatus ? statusColor : gray900,
-                            )),
+                        child: Text(
+                          value,
+                          style: AppTextStyles.labelMedium.copyWith(
+                            color: isStatus ? statusColor : gray900,
+                          ),
+                        ),
                       ),
                       if (copyable) ...[
                         const SizedBox(width: sp4),
@@ -167,7 +196,11 @@ class TransactionDetailSheet extends StatelessWidget {
                               ),
                             );
                           },
-                          child: const Icon(Icons.copy, size: 14, color: primary300),
+                          child: const Icon(
+                            Icons.copy,
+                            size: 14,
+                            color: primary300,
+                          ),
                         ),
                       ],
                     ],
@@ -183,8 +216,10 @@ class TransactionDetailSheet extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: radius12),
-        title: const Text('What is a Blockchain Tx?',
-            style: AppTextStyles.titleMedium),
+        title: const Text(
+          'What is a Blockchain Tx?',
+          style: AppTextStyles.titleMedium,
+        ),
         content: const Text(
           'A blockchain transaction hash is a unique digital fingerprint '
           'for this transaction on the blockchain. It proves the transaction '

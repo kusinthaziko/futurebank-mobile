@@ -10,10 +10,25 @@ class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
 
   static const _actions = [
-    (FbIcons.arrowUpRight, 'Send',    '/transfer',  [primary500, primary400]),
-    (FbIcons.arrowDown, 'Deposit', '/deposit',   [Color(0xFF0D9B64), Color(0xFF34C78A)]),
-    (FbIcons.creditCard,'Loans',  '/loans',     [Color(0xFFD4A017), Color(0xFFE8C547)]),
-    (FbIcons.users,      'Social',  '/social',    [Color(0xFF7C3AED), Color(0xFFA78BFA)]),
+    (FbIcons.arrowUpRight, 'Send', '/transfer', [primary500, primary400]),
+    (
+      FbIcons.arrowDown,
+      'Deposit',
+      '/deposit',
+      [Color(0xFF0D9B64), Color(0xFF34C78A)],
+    ),
+    (
+      FbIcons.creditCard,
+      'Loans',
+      '/loans',
+      [Color(0xFFD4A017), Color(0xFFE8C547)],
+    ),
+    (
+      FbIcons.users,
+      'Social',
+      '/social',
+      [Color(0xFF7C3AED), Color(0xFFA78BFA)],
+    ),
   ];
 
   @override
@@ -21,12 +36,14 @@ class QuickActions extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: _actions
-          .map((a) => _ActionButton(
-                icon: a.$1,
-                label: a.$2,
-                route: a.$3,
-                colors: a.$4.cast<Color>(),
-              ))
+          .map(
+            (a) => _ActionButton(
+              icon: a.$1,
+              label: a.$2,
+              route: a.$3,
+              colors: a.$4.cast<Color>(),
+            ),
+          )
           .toList(),
     );
   }
@@ -37,11 +54,12 @@ class _ActionButton extends StatefulWidget {
   final String label;
   final String route;
   final List<Color> colors;
-  const _ActionButton(
-      {required this.icon,
-      required this.label,
-      required this.route,
-      required this.colors});
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.route,
+    required this.colors,
+  });
 
   @override
   State<_ActionButton> createState() => _ActionButtonState();
@@ -63,6 +81,7 @@ class _ActionButtonState extends State<_ActionButton>
     HapticFeedback.lightImpact();
     context.push(widget.route);
   }
+
   void _onTapCancel() => _ctrl.forward();
 
   @override
@@ -79,33 +98,38 @@ class _ActionButtonState extends State<_ActionButton>
       onTapCancel: _onTapCancel,
       child: ScaleTransition(
         scale: _ctrl,
-        child: Column(children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: widget.colors,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: radius16,
-              boxShadow: [
-                BoxShadow(
-                  color: widget.colors.first.withValues(alpha: 0.35),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+        child: Column(
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: widget.colors,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ],
+                borderRadius: radius16,
+                boxShadow: [
+                  BoxShadow(
+                    color: widget.colors.first.withValues(alpha: 0.35),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Icon(widget.icon, color: white, size: 22),
             ),
-            child: Icon(widget.icon, color: white, size: 22),
-          ),
-          const SizedBox(height: sp6),
-          Text(widget.label,
+            const SizedBox(height: sp6),
+            Text(
+              widget.label,
               style: AppTextStyles.caption.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.w500)),
-        ]),
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

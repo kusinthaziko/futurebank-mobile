@@ -34,12 +34,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     try {
       final client = ref.read(graphQLClientProvider(null));
-      final result = await client.query(QueryOptions(
-        document: gql('''
+      final result = await client.query(
+        QueryOptions(
+          document: gql('''
           query { appConfig { minVersion storeUrl } }
         '''),
-        fetchPolicy: FetchPolicy.networkOnly,
-      ));
+          fetchPolicy: FetchPolicy.networkOnly,
+        ),
+      );
 
       if (result.data != null) {
         final config = result.data!['appConfig'];
@@ -47,7 +49,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         final storeUrl = config['storeUrl'] as String;
         final info = await PackageInfo.fromPlatform();
         if (_isOlderThan(info.version, minVersion)) {
-          if (mounted) setState(() { _forceUpdate = true; _storeUrl = storeUrl; });
+          if (mounted)
+            setState(() {
+              _forceUpdate = true;
+              _storeUrl = storeUrl;
+            });
           return;
         }
       }
@@ -99,11 +105,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           children: [
             const Icon(Icons.account_balance, size: 64, color: white),
             const SizedBox(height: sp16),
-            Text('futureBank',
-                style: AppTextStyles.displayLarge.copyWith(color: white)),
+            Text(
+              'futureBank',
+              style: AppTextStyles.displayLarge.copyWith(color: white),
+            ),
             const SizedBox(height: sp8),
-            Text('Campus financial super-app',
-                style: AppTextStyles.bodyMedium.copyWith(color: primary300)),
+            Text(
+              'Campus financial super-app',
+              style: AppTextStyles.bodyMedium.copyWith(color: primary300),
+            ),
           ],
         ),
       ),

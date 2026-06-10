@@ -20,34 +20,59 @@ class _FBHealthScoreMeterState extends State<FBHealthScoreMeter>
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
-    _anim = Tween<double>(begin: 0, end: widget.score / 1000)
-        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _anim = Tween<double>(
+      begin: 0,
+      end: widget.score / 1000,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
     _ctrl.forward();
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
-  String get _tier => widget.score >= 900 ? 'Elite'
-      : widget.score >= 700 ? 'Excellent'
-      : widget.score >= 500 ? 'Good'
-      : widget.score >= 300 ? 'Fair' : 'Poor';
+  String get _tier => widget.score >= 900
+      ? 'Elite'
+      : widget.score >= 700
+      ? 'Excellent'
+      : widget.score >= 500
+      ? 'Good'
+      : widget.score >= 300
+      ? 'Fair'
+      : 'Poor';
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: widget.size, height: widget.size,
+      width: widget.size,
+      height: widget.size,
       child: AnimatedBuilder(
         animation: _anim,
         builder: (_, __) => CustomPaint(
           painter: _ArcPainter(_anim.value),
-          child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Text('${widget.score}',
-                style: AppTextStyles.displayMedium.copyWith(
-                    fontSize: widget.size * 0.2)),
-            Text(_tier, style: AppTextStyles.labelMedium.copyWith(color: gray500)),
-          ])),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${widget.score}',
+                  style: AppTextStyles.displayMedium.copyWith(
+                    fontSize: widget.size * 0.2,
+                  ),
+                ),
+                Text(
+                  _tier,
+                  style: AppTextStyles.labelMedium.copyWith(color: gray500),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -68,20 +93,32 @@ class _ArcPainter extends CustomPainter {
     // Background arc
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
-      startAngle, sweepAngle, false,
-      Paint()..color = gray100..strokeWidth = 8..style = PaintingStyle.stroke
+      startAngle,
+      sweepAngle,
+      false,
+      Paint()
+        ..color = gray100
+        ..strokeWidth = 8
+        ..style = PaintingStyle.stroke
         ..strokeCap = StrokeCap.round,
     );
 
     // Progress arc — color interpolated
-    final color = Color.lerp(error500,
-        Color.lerp(warning500, success500, (progress - 0.5).clamp(0, 1) * 2)!,
-        progress.clamp(0, 0.5) * 2)!;
+    final color = Color.lerp(
+      error500,
+      Color.lerp(warning500, success500, (progress - 0.5).clamp(0, 1) * 2)!,
+      progress.clamp(0, 0.5) * 2,
+    )!;
 
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
-      startAngle, sweepAngle * progress, false,
-      Paint()..color = color..strokeWidth = 8..style = PaintingStyle.stroke
+      startAngle,
+      sweepAngle * progress,
+      false,
+      Paint()
+        ..color = color
+        ..strokeWidth = 8
+        ..style = PaintingStyle.stroke
         ..strokeCap = StrokeCap.round,
     );
   }
@@ -106,7 +143,10 @@ class FBTransactionTile extends StatelessWidget {
     this.timeAgo = '',
   });
 
-  bool get _isCredit => type == 'deposit' || type == 'interest_credit' || type == 'loan_disbursement';
+  bool get _isCredit =>
+      type == 'deposit' ||
+      type == 'interest_credit' ||
+      type == 'loan_disbursement';
 
   @override
   Widget build(BuildContext context) {
@@ -118,41 +158,68 @@ class FBTransactionTile extends StatelessWidget {
 
     return SizedBox(
       height: 64,
-      child: Row(children: [
-        Container(
-          width: 40, height: 40,
-          decoration: BoxDecoration(
-            color: _isCredit ? success100 : error100,
-            borderRadius: BorderRadius.circular(12)),
-          child: Icon(
-            _isCredit ? Icons.arrow_downward : Icons.arrow_upward,
-            color: _isCredit ? success500 : error500, size: 18),
-        ),
-        const SizedBox(width: 12),
-        Expanded(child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(description, style: AppTextStyles.bodyMedium,
-                maxLines: 1, overflow: TextOverflow.ellipsis),
-            Text(timeAgo, style: AppTextStyles.caption.copyWith(color: gray500)),
-          ])),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text('${_isCredit ? '+' : '-'}$amount',
-                style: AppTextStyles.labelLarge.copyWith(
-                    color: _isCredit ? success500 : error500)),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(color: statusBg,
-                  borderRadius: BorderRadius.circular(4)),
-              child: Text(status.toUpperCase(),
-                  style: AppTextStyles.caption.copyWith(color: statusFg, fontSize: 9)),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: _isCredit ? success100 : error100,
+              borderRadius: BorderRadius.circular(12),
             ),
-          ]),
-      ]),
+            child: Icon(
+              _isCredit ? Icons.arrow_downward : Icons.arrow_upward,
+              color: _isCredit ? success500 : error500,
+              size: 18,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  description,
+                  style: AppTextStyles.bodyMedium,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  timeAgo,
+                  style: AppTextStyles.caption.copyWith(color: gray500),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${_isCredit ? '+' : '-'}$amount',
+                style: AppTextStyles.labelLarge.copyWith(
+                  color: _isCredit ? success500 : error500,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: statusBg,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  status.toUpperCase(),
+                  style: AppTextStyles.caption.copyWith(
+                    color: statusFg,
+                    fontSize: 9,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

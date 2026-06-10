@@ -17,8 +17,7 @@ class RecentTransactions extends ConsumerStatefulWidget {
   const RecentTransactions({super.key, required this.accountId});
 
   @override
-  ConsumerState<RecentTransactions> createState() =>
-      _RecentTransactionsState();
+  ConsumerState<RecentTransactions> createState() => _RecentTransactionsState();
 }
 
 class _RecentTransactionsState extends ConsumerState<RecentTransactions> {
@@ -48,47 +47,60 @@ class _RecentTransactionsState extends ConsumerState<RecentTransactions> {
       });
     });
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        const Text('Recent', style: AppTextStyles.titleMedium),
-        TextButton(
-          onPressed: () =>
-              context.push('/accounts/${widget.accountId}/history'),
-          child: Text('See all',
-              style: AppTextStyles.labelMedium.copyWith(color: primary500)),
-        ),
-      ]),
-      txsAsync.when(
-        loading: () => const FBSkeletonLoader(height: 200),
-        error: (e, _) => GestureDetector(
-          onTap: () => ref.invalidate(recentTransactionsProvider),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(sp12),
-            decoration: BoxDecoration(
-              color: error100, borderRadius: radius12,
-            ),
-            child: Row(children: [
-              const Icon(FbIcons.refresh, color: error500, size: 16),
-              const SizedBox(width: sp8),
-              Expanded(
-                child: Text('Transactions unavailable. Tap to retry.',
-                    style: AppTextStyles.caption.copyWith(color: error500)),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Recent', style: AppTextStyles.titleMedium),
+            TextButton(
+              onPressed: () =>
+                  context.push('/accounts/${widget.accountId}/history'),
+              child: Text(
+                'See all',
+                style: AppTextStyles.labelMedium.copyWith(color: primary500),
               ),
-            ]),
-          ),
+            ),
+          ],
         ),
-        data: (txs) {
-          final items = _subscriptionItems ?? txs;
-          return FadeInStaggered(
-            staggerDelayMs: 60,
-            children: items.map((tx) =>
-              _TxRow(key: ValueKey(tx.id), tx: tx)
-            ).toList(),
-          );
-        },
-      ),
-    ]);
+        txsAsync.when(
+          loading: () => const FBSkeletonLoader(height: 200),
+          error: (e, _) => GestureDetector(
+            onTap: () => ref.invalidate(recentTransactionsProvider),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(sp12),
+              decoration: BoxDecoration(
+                color: error100,
+                borderRadius: radius12,
+              ),
+              child: Row(
+                children: [
+                  const Icon(FbIcons.refresh, color: error500, size: 16),
+                  const SizedBox(width: sp8),
+                  Expanded(
+                    child: Text(
+                      'Transactions unavailable. Tap to retry.',
+                      style: AppTextStyles.caption.copyWith(color: error500),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          data: (txs) {
+            final items = _subscriptionItems ?? txs;
+            return FadeInStaggered(
+              staggerDelayMs: 60,
+              children: items
+                  .map((tx) => _TxRow(key: ValueKey(tx.id), tx: tx))
+                  .toList(),
+            );
+          },
+        ),
+      ],
+    );
   }
 }
 
@@ -104,35 +116,38 @@ class _TxRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: sp4),
-      child: Row(children: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: _isCredit ? success100 : error100,
-            borderRadius: radius12,
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: _isCredit ? success100 : error100,
+              borderRadius: radius12,
+            ),
+            child: Icon(
+              _isCredit ? FbIcons.arrowDown : FbIcons.arrowUp,
+              color: _isCredit ? success500 : error500,
+              size: 18,
+            ),
           ),
-          child: Icon(
-            _isCredit ? FbIcons.arrowDown : FbIcons.arrowUp,
-            color: _isCredit ? success500 : error500,
-            size: 18,
+          const SizedBox(width: sp12),
+          Expanded(
+            child: Text(
+              tx.description ?? tx.transactionType,
+              style: AppTextStyles.bodyMedium,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
-        ),
-        const SizedBox(width: sp12),
-        Expanded(
-          child: Text(
-            tx.description ?? tx.transactionType,
-            style: AppTextStyles.bodyMedium,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          Text(
+            '${_isCredit ? '+' : '-'}${tx.amount}',
+            style: AppTextStyles.labelLarge.copyWith(
+              color: _isCredit ? success500 : error500,
+            ),
           ),
-        ),
-        Text(
-          '${_isCredit ? '+' : '-'}${tx.amount}',
-          style: AppTextStyles.labelLarge.copyWith(
-              color: _isCredit ? success500 : error500),
-        ),
-      ]),
+        ],
+      ),
     );
   }
 }

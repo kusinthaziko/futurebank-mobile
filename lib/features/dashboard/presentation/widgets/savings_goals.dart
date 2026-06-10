@@ -17,46 +17,58 @@ class SavingsGoalsWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final goalsAsync = ref.watch(savingsGoalsProvider);
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text('Savings Goals', style: AppTextStyles.titleMedium),
-      const SizedBox(height: sp12),
-      SizedBox(
-        height: 120,
-        child: goalsAsync.when(
-          loading: () => const Row(children: [
-            FBSkeletonLoader(width: 180, height: 110),
-            SizedBox(width: sp12),
-            FBSkeletonLoader(width: 180, height: 110),
-          ]),
-          error: (e, _) => GestureDetector(
-            onTap: () => ref.invalidate(savingsGoalsProvider),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(sp12),
-              decoration: BoxDecoration(
-                color: error100, borderRadius: radius12,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Savings Goals', style: AppTextStyles.titleMedium),
+        const SizedBox(height: sp12),
+        SizedBox(
+          height: 120,
+          child: goalsAsync.when(
+            loading: () => const Row(
+              children: [
+                FBSkeletonLoader(width: 180, height: 110),
+                SizedBox(width: sp12),
+                FBSkeletonLoader(width: 180, height: 110),
+              ],
+            ),
+            error: (e, _) => GestureDetector(
+              onTap: () => ref.invalidate(savingsGoalsProvider),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(sp12),
+                decoration: BoxDecoration(
+                  color: error100,
+                  borderRadius: radius12,
+                ),
+                child: Row(
+                  children: [
+                    const Icon(FbIcons.refresh, color: error500, size: 16),
+                    const SizedBox(width: sp8),
+                    Text(
+                      'Savings goals unavailable. Tap to retry.',
+                      style: AppTextStyles.caption.copyWith(color: error500),
+                    ),
+                  ],
+                ),
               ),
-              child: Row(children: [
-                const Icon(FbIcons.refresh, color: error500, size: 16),
-                const SizedBox(width: sp8),
-                Text('Savings goals unavailable. Tap to retry.',
-                    style: AppTextStyles.caption.copyWith(color: error500)),
-              ]),
+            ),
+            data: (goals) => ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                ...goals.map(
+                  (g) => Padding(
+                    padding: const EdgeInsets.only(right: sp12),
+                    child: _GoalCard(goal: g),
+                  ),
+                ),
+                _AddGoalCard(),
+              ],
             ),
           ),
-          data: (goals) => ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              ...goals.map((g) => Padding(
-                padding: const EdgeInsets.only(right: sp12),
-                child: _GoalCard(goal: g),
-              )),
-              _AddGoalCard(),
-            ],
-          ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 }
 
@@ -69,26 +81,37 @@ class _GoalCard extends StatelessWidget {
     return SizedBox(
       width: 180,
       child: FBCard(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(goal.name, style: AppTextStyles.labelLarge,
-              maxLines: 1, overflow: TextOverflow.ellipsis),
-          const SizedBox(height: sp8),
-          ClipRRect(
-            borderRadius: radius4,
-            child: LinearProgressIndicator(
-              value: goal.progress,
-              backgroundColor: gray100,
-              valueColor: const AlwaysStoppedAnimation(primary500),
-              minHeight: 6,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              goal.name,
+              style: AppTextStyles.labelLarge,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-          ),
-          const SizedBox(height: sp4),
-          Text('${(goal.progress * 100).toStringAsFixed(0)}%',
-              style: AppTextStyles.labelMedium.copyWith(color: primary500)),
-          const SizedBox(height: sp2),
-          Text(goal.targetAmount,
-              style: AppTextStyles.caption.copyWith(color: gray500)),
-        ]),
+            const SizedBox(height: sp8),
+            ClipRRect(
+              borderRadius: radius4,
+              child: LinearProgressIndicator(
+                value: goal.progress,
+                backgroundColor: gray100,
+                valueColor: const AlwaysStoppedAnimation(primary500),
+                minHeight: 6,
+              ),
+            ),
+            const SizedBox(height: sp4),
+            Text(
+              '${(goal.progress * 100).toStringAsFixed(0)}%',
+              style: AppTextStyles.labelMedium.copyWith(color: primary500),
+            ),
+            const SizedBox(height: sp2),
+            Text(
+              goal.targetAmount,
+              style: AppTextStyles.caption.copyWith(color: gray500),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -108,8 +131,10 @@ class _AddGoalCard extends StatelessWidget {
             children: [
               const Icon(FbIcons.plus, color: primary500, size: 32),
               const SizedBox(height: sp4),
-              Text('Add Goal',
-                  style: AppTextStyles.labelMedium.copyWith(color: primary500)),
+              Text(
+                'Add Goal',
+                style: AppTextStyles.labelMedium.copyWith(color: primary500),
+              ),
             ],
           ),
         ),

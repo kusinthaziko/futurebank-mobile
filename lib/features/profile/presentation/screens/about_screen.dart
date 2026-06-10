@@ -34,41 +34,65 @@ class AboutScreen extends StatelessWidget {
         children: [
           // App identity
           Center(
-            child: Column(children: [
-              Container(
-                width: 80, height: 80,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [primary700, primary500],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+            child: Column(
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [primary700, primary500],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: radius16,
+                    boxShadow: [
+                      BoxShadow(
+                        color: primary500.withValues(alpha: 0.35),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
                   ),
-                  borderRadius: radius16,
-                  boxShadow: [BoxShadow(
-                    color: primary500.withValues(alpha: 0.35),
-                    blurRadius: 20, offset: const Offset(0, 8),
-                  )],
+                  child: const Center(
+                    child: Text(
+                      'f',
+                      style: TextStyle(
+                        fontFamily: 'ClashDisplay',
+                        fontSize: 40,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
-                child: const Center(child: Text('f', style: TextStyle(
-                  fontFamily: 'ClashDisplay', fontSize: 40,
-                  fontWeight: FontWeight.w700, color: Colors.white,
-                ))),
-              ),
-              const SizedBox(height: sp12),
-              Text('futureBank', style: AppTextStyles.titleLarge),
-              const SizedBox(height: sp4),
-              Text('Version 1.0.0', style: AppTextStyles.caption.copyWith(color: gray500)),
-              const SizedBox(height: sp4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: sp12, vertical: sp4),
-                decoration: BoxDecoration(
-                  color: gold100, borderRadius: radiusPill,
+                const SizedBox(height: sp12),
+                Text('futureBank', style: AppTextStyles.titleLarge),
+                const SizedBox(height: sp4),
+                Text(
+                  'Version 1.0.0',
+                  style: AppTextStyles.caption.copyWith(color: gray500),
                 ),
-                child: Text('Campus Financial Super-App',
+                const SizedBox(height: sp4),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: sp12,
+                    vertical: sp4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: gold100,
+                    borderRadius: radiusPill,
+                  ),
+                  child: Text(
+                    'Campus Financial Super-App',
                     style: AppTextStyles.caption.copyWith(
-                        color: gold500, fontWeight: FontWeight.w600)),
-              ),
-            ]),
+                      color: gold500,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
 
           const SizedBox(height: sp32),
@@ -82,7 +106,8 @@ class AboutScreen extends StatelessWidget {
             'peer-to-peer transfers, micro-loans, and AI-powered financial coaching '
             'directly to campus.',
             style: AppTextStyles.bodyMedium.copyWith(
-                color: scheme.onSurface.withValues(alpha: 0.75)),
+              color: scheme.onSurface.withValues(alpha: 0.75),
+            ),
           ),
 
           const SizedBox(height: sp32),
@@ -93,7 +118,8 @@ class AboutScreen extends StatelessWidget {
           _FounderCard(
             name: 'Timothy Chalira',
             role: 'Founder & CEO',
-            bio: 'Driving the vision of accessible campus finance across Africa.',
+            bio:
+                'Driving the vision of accessible campus finance across Africa.',
             twitterHandle: 'TimothyChalira',
             onTwitterTap: _openTwitter,
           ),
@@ -111,20 +137,34 @@ class AboutScreen extends StatelessWidget {
           // Legal & support
           _Section('Legal & Support'),
           const SizedBox(height: sp8),
-          _LinkTile(Icons.privacy_tip_outlined, 'Privacy Policy',
-              () => _openUrl('https://futurebank.app/privacy')),
-          _LinkTile(Icons.description_outlined, 'Terms of Service',
-              () => _openUrl('https://futurebank.app/terms')),
-          _LinkTile(Icons.help_outline, 'Help & Support',
-              () => _openUrl('mailto:support@futurebank.app')),
-          _LinkTile(Icons.bug_report_outlined, 'Report a Bug',
-              () => _openUrl('mailto:bugs@futurebank.app')),
+          _LinkTile(
+            Icons.privacy_tip_outlined,
+            'Privacy Policy',
+            () => _openUrl('https://futurebank.app/privacy'),
+          ),
+          _LinkTile(
+            Icons.description_outlined,
+            'Terms of Service',
+            () => _openUrl('https://futurebank.app/terms'),
+          ),
+          _LinkTile(
+            Icons.help_outline,
+            'Help & Support',
+            () => _openUrl('mailto:support@futurebank.app'),
+          ),
+          _LinkTile(
+            Icons.bug_report_outlined,
+            'Report a Bug',
+            () => _openUrl('mailto:bugs@futurebank.app'),
+          ),
           const SizedBox(height: sp32),
-          Center(child: Text(
-            'Made with ❤️ in Malawi 🇲🇼\n© 2026 futureBank. All rights reserved.',
-            style: AppTextStyles.caption.copyWith(color: gray500),
-            textAlign: TextAlign.center,
-          )),
+          Center(
+            child: Text(
+              'Made with ❤️ in Malawi 🇲🇼\n© 2026 futureBank. All rights reserved.',
+              style: AppTextStyles.caption.copyWith(color: gray500),
+              textAlign: TextAlign.center,
+            ),
+          ),
           const SizedBox(height: sp32),
         ],
       ),
@@ -136,9 +176,12 @@ class _Section extends StatelessWidget {
   final String title;
   const _Section(this.title);
   @override
-  Widget build(BuildContext context) => Text(title,
-      style: AppTextStyles.titleMedium.copyWith(
-          color: Theme.of(context).colorScheme.onSurface));
+  Widget build(BuildContext context) => Text(
+    title,
+    style: AppTextStyles.titleMedium.copyWith(
+      color: Theme.of(context).colorScheme.onSurface,
+    ),
+  );
 }
 
 class _FounderCard extends StatelessWidget {
@@ -149,8 +192,11 @@ class _FounderCard extends StatelessWidget {
   final Future<void> Function(String) onTwitterTap;
 
   const _FounderCard({
-    required this.name, required this.role, required this.bio,
-    required this.twitterHandle, required this.onTwitterTap,
+    required this.name,
+    required this.role,
+    required this.bio,
+    required this.twitterHandle,
+    required this.onTwitterTap,
   });
 
   @override
@@ -160,41 +206,76 @@ class _FounderCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: radius16,
-        boxShadow: const [BoxShadow(
-            color: Color(0x08000000), blurRadius: 12, offset: Offset(0, 4))],
-      ),
-      child: Row(children: [
-        CircleAvatar(
-          radius: 26,
-          backgroundColor: primary100,
-          child: Text(name[0], style: AppTextStyles.titleMedium.copyWith(color: primary500)),
-        ),
-        const SizedBox(width: sp12),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(name, style: AppTextStyles.labelLarge),
-          Text(role, style: AppTextStyles.caption.copyWith(color: primary500)),
-          const SizedBox(height: sp4),
-          Text(bio, style: AppTextStyles.caption.copyWith(color: gray500)),
-        ])),
-        const SizedBox(width: sp8),
-        GestureDetector(
-          onTap: () => onTwitterTap(twitterHandle),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: sp10, vertical: sp6),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1DA1F2).withValues(alpha: 0.1),
-              borderRadius: radiusPill,
-            ),
-            child: Row(mainAxisSize: MainAxisSize.min, children: [
-              const Icon(Icons.alternate_email, size: 13, color: Color(0xFF1DA1F2)),
-              const SizedBox(width: 3),
-              Text(twitterHandle,
-                  style: AppTextStyles.caption.copyWith(
-                      color: const Color(0xFF1DA1F2), fontWeight: FontWeight.w600)),
-            ]),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x08000000),
+            blurRadius: 12,
+            offset: Offset(0, 4),
           ),
-        ),
-      ]),
+        ],
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 26,
+            backgroundColor: primary100,
+            child: Text(
+              name[0],
+              style: AppTextStyles.titleMedium.copyWith(color: primary500),
+            ),
+          ),
+          const SizedBox(width: sp12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name, style: AppTextStyles.labelLarge),
+                Text(
+                  role,
+                  style: AppTextStyles.caption.copyWith(color: primary500),
+                ),
+                const SizedBox(height: sp4),
+                Text(
+                  bio,
+                  style: AppTextStyles.caption.copyWith(color: gray500),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: sp8),
+          GestureDetector(
+            onTap: () => onTwitterTap(twitterHandle),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: sp10,
+                vertical: sp6,
+              ),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1DA1F2).withValues(alpha: 0.1),
+                borderRadius: radiusPill,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.alternate_email,
+                    size: 13,
+                    color: Color(0xFF1DA1F2),
+                  ),
+                  const SizedBox(width: 3),
+                  Text(
+                    twitterHandle,
+                    style: AppTextStyles.caption.copyWith(
+                      color: const Color(0xFF1DA1F2),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

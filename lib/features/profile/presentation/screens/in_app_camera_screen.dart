@@ -60,9 +60,9 @@ class _InAppCameraScreenState extends ConsumerState<InAppCameraScreen>
       if (mounted) setState(() {});
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Camera not available')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Camera not available')));
         Navigator.pop(context);
       }
     }
@@ -75,9 +75,9 @@ class _InAppCameraScreenState extends ConsumerState<InAppCameraScreen>
       setState(() => _captured = file);
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to take photo')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Failed to take photo')));
       }
     }
   }
@@ -87,7 +87,9 @@ class _InAppCameraScreenState extends ConsumerState<InAppCameraScreen>
     setState(() => _uploading = true);
 
     try {
-      final imageUrl = await CloudinaryService.uploadImageAndGetUrl(_captured!.path);
+      final imageUrl = await CloudinaryService.uploadImageAndGetUrl(
+        _captured!.path,
+      );
       if (imageUrl == null) throw Exception('Upload failed');
 
       if (!mounted) return;
@@ -95,7 +97,10 @@ class _InAppCameraScreenState extends ConsumerState<InAppCameraScreen>
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Photo updated!'), duration: Duration(seconds: 2)),
+          const SnackBar(
+            content: Text('Photo updated!'),
+            duration: Duration(seconds: 2),
+          ),
         );
         Navigator.pop(context);
       }

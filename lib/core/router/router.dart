@@ -42,14 +42,14 @@ Page<void> _buildPageWithTransition(Widget child) {
     child: child,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0.08, 0),
-          end: Offset.zero,
-        ).animate(CurvedAnimation(
-          parent: animation,
-          curve: Curves.easeOutCubic,
-          reverseCurve: Curves.easeInCubic,
-        )),
+        position: Tween<Offset>(begin: const Offset(0.08, 0), end: Offset.zero)
+            .animate(
+              CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+                reverseCurve: Curves.easeInCubic,
+              ),
+            ),
         child: child,
       );
     },
@@ -65,78 +65,170 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (authState is Loading) return null;
       final isAuth = authState.isAuthenticated;
       final loc = state.matchedLocation;
-      final isPublic = loc == '/' ||
-          loc.startsWith('/auth') ||
-          loc == '/onboarding';
+      final isPublic =
+          loc == '/' || loc.startsWith('/auth') || loc == '/onboarding';
       if (!isAuth && !isPublic) return '/auth/login';
       if (isAuth && (isPublic && loc != '/')) return '/home';
       return null;
     },
     routes: [
-      GoRoute(path: '/', pageBuilder: (_, __) => _buildPageWithTransition(const SplashScreen())),
-      GoRoute(path: '/onboarding', pageBuilder: (_, __) => _buildPageWithTransition(const OnboardingScreen())),
-      GoRoute(path: '/auth/login',      pageBuilder: (_, __) => _buildPageWithTransition(const LoginScreen())),
-      GoRoute(path: '/auth/register',   pageBuilder: (_, __) => _buildPageWithTransition(const RegisterScreen())),
-      GoRoute(path: '/auth/kyc',        pageBuilder: (_, __) => _buildPageWithTransition(const KycScreen())),
-      GoRoute(path: '/auth/forgot-password',
-          pageBuilder: (_, __) => _buildPageWithTransition(const ForgotPasswordScreen())),
-      GoRoute(path: '/auth/verify-email',
-          pageBuilder: (_, s) => _buildPageWithTransition(VerifyEmailScreen(
-            email: s.uri.queryParameters['email'],
-          ))),
-      GoRoute(path: '/auth/biometric-setup',
-          pageBuilder: (_, __) => _buildPageWithTransition(const BiometricSetupScreen())),
+      GoRoute(
+        path: '/',
+        pageBuilder: (_, __) => _buildPageWithTransition(const SplashScreen()),
+      ),
+      GoRoute(
+        path: '/onboarding',
+        pageBuilder: (_, __) =>
+            _buildPageWithTransition(const OnboardingScreen()),
+      ),
+      GoRoute(
+        path: '/auth/login',
+        pageBuilder: (_, __) => _buildPageWithTransition(const LoginScreen()),
+      ),
+      GoRoute(
+        path: '/auth/register',
+        pageBuilder: (_, __) =>
+            _buildPageWithTransition(const RegisterScreen()),
+      ),
+      GoRoute(
+        path: '/auth/kyc',
+        pageBuilder: (_, __) => _buildPageWithTransition(const KycScreen()),
+      ),
+      GoRoute(
+        path: '/auth/forgot-password',
+        pageBuilder: (_, __) =>
+            _buildPageWithTransition(const ForgotPasswordScreen()),
+      ),
+      GoRoute(
+        path: '/auth/verify-email',
+        pageBuilder: (_, s) => _buildPageWithTransition(
+          VerifyEmailScreen(email: s.uri.queryParameters['email']),
+        ),
+      ),
+      GoRoute(
+        path: '/auth/biometric-setup',
+        pageBuilder: (_, __) =>
+            _buildPageWithTransition(const BiometricSetupScreen()),
+      ),
       ShellRoute(
         builder: (_, __, child) => MainShell(child: child),
         routes: [
-          GoRoute(path: '/home',     builder: (_, __) => const DashboardScreen()),
-          GoRoute(path: '/accounts', builder: (_, __) => const AccountsScreen()),
-          GoRoute(path: '/social',   builder: (_, __) => const SocialScreen()),
-          GoRoute(path: '/profile',  builder: (_, __) => const ProfileScreen()),
+          GoRoute(path: '/home', builder: (_, __) => const DashboardScreen()),
+          GoRoute(
+            path: '/accounts',
+            builder: (_, __) => const AccountsScreen(),
+          ),
+          GoRoute(path: '/social', builder: (_, __) => const SocialScreen()),
+          GoRoute(path: '/profile', builder: (_, __) => const ProfileScreen()),
         ],
       ),
-      GoRoute(path: '/accounts/:id/history',
-          pageBuilder: (_, s) => _buildPageWithTransition(TransactionHistoryScreen(accountId: s.pathParameters['id']!))),
-      GoRoute(path: '/social/groups/:id',
-          pageBuilder: (_, s) => _buildPageWithTransition(GroupDetailScreen(groupId: s.pathParameters['id']!))),
-      GoRoute(path: '/social/challenges/:id',
-          pageBuilder: (_, s) => _buildPageWithTransition(ChallengeDetailScreen(challengeId: s.pathParameters['id']!))),
-      GoRoute(path: '/social/create-group',
-          pageBuilder: (_, __) => _buildPageWithTransition(const CreateGroupScreen())),
-      GoRoute(path: '/leaderboard',
-          pageBuilder: (_, __) => _buildPageWithTransition(const LeaderboardScreen())),
-      GoRoute(path: '/badge-earned',
-          pageBuilder: (_, s) => _buildPageWithTransition(BadgeEarnedScreen(
+      GoRoute(
+        path: '/accounts/:id/history',
+        pageBuilder: (_, s) => _buildPageWithTransition(
+          TransactionHistoryScreen(accountId: s.pathParameters['id']!),
+        ),
+      ),
+      GoRoute(
+        path: '/social/groups/:id',
+        pageBuilder: (_, s) => _buildPageWithTransition(
+          GroupDetailScreen(groupId: s.pathParameters['id']!),
+        ),
+      ),
+      GoRoute(
+        path: '/social/challenges/:id',
+        pageBuilder: (_, s) => _buildPageWithTransition(
+          ChallengeDetailScreen(challengeId: s.pathParameters['id']!),
+        ),
+      ),
+      GoRoute(
+        path: '/social/create-group',
+        pageBuilder: (_, __) =>
+            _buildPageWithTransition(const CreateGroupScreen()),
+      ),
+      GoRoute(
+        path: '/leaderboard',
+        pageBuilder: (_, __) =>
+            _buildPageWithTransition(const LeaderboardScreen()),
+      ),
+      GoRoute(
+        path: '/badge-earned',
+        pageBuilder: (_, s) => _buildPageWithTransition(
+          BadgeEarnedScreen(
             badgeName: s.uri.queryParameters['name'] ?? 'Achievement',
             badgeType: s.uri.queryParameters['type'] ?? 'achievement',
-            pointsAdded: int.tryParse(s.uri.queryParameters['points'] ?? '') ?? 150,
-          ))),
-      GoRoute(path: '/health-score',
-          pageBuilder: (_, __) => _buildPageWithTransition(const HealthScoreScreen())),
-      GoRoute(path: '/settings',
-          pageBuilder: (_, __) => _buildPageWithTransition(const SettingsScreen())),
-      GoRoute(path: '/passport',
-          pageBuilder: (_, __) => _buildPageWithTransition(const PassportScreen())),
-      GoRoute(path: '/loans',       pageBuilder: (_, __) => _buildPageWithTransition(const LoansScreen())),
-      GoRoute(path: '/loans/apply', pageBuilder: (_, __) => _buildPageWithTransition(const LoanApplyScreen())),
-      GoRoute(path: '/loans/history', pageBuilder: (_, __) => _buildPageWithTransition(const LoanHistoryScreen())),
-      GoRoute(path: '/loans/:id',
-          pageBuilder: (_, s) => _buildPageWithTransition(LoanDetailScreen(loanId: s.pathParameters['id']!))),
-      GoRoute(path: '/coach',  pageBuilder: (_, __) => _buildPageWithTransition(const CoachScreen())),
-      GoRoute(path: '/about',  pageBuilder: (_, __) => _buildPageWithTransition(const AboutScreen())),
-      GoRoute(path: '/deposit',  pageBuilder: (_, __) => _buildPageWithTransition(const DepositScreen())),
-      GoRoute(path: '/transfer', pageBuilder: (_, __) => _buildPageWithTransition(const TransferScreen())),
+            pointsAdded:
+                int.tryParse(s.uri.queryParameters['points'] ?? '') ?? 150,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/health-score',
+        pageBuilder: (_, __) =>
+            _buildPageWithTransition(const HealthScoreScreen()),
+      ),
+      GoRoute(
+        path: '/settings',
+        pageBuilder: (_, __) =>
+            _buildPageWithTransition(const SettingsScreen()),
+      ),
+      GoRoute(
+        path: '/passport',
+        pageBuilder: (_, __) =>
+            _buildPageWithTransition(const PassportScreen()),
+      ),
+      GoRoute(
+        path: '/loans',
+        pageBuilder: (_, __) => _buildPageWithTransition(const LoansScreen()),
+      ),
+      GoRoute(
+        path: '/loans/apply',
+        pageBuilder: (_, __) =>
+            _buildPageWithTransition(const LoanApplyScreen()),
+      ),
+      GoRoute(
+        path: '/loans/history',
+        pageBuilder: (_, __) =>
+            _buildPageWithTransition(const LoanHistoryScreen()),
+      ),
+      GoRoute(
+        path: '/loans/:id',
+        pageBuilder: (_, s) => _buildPageWithTransition(
+          LoanDetailScreen(loanId: s.pathParameters['id']!),
+        ),
+      ),
+      GoRoute(
+        path: '/coach',
+        pageBuilder: (_, __) => _buildPageWithTransition(const CoachScreen()),
+      ),
+      GoRoute(
+        path: '/about',
+        pageBuilder: (_, __) => _buildPageWithTransition(const AboutScreen()),
+      ),
+      GoRoute(
+        path: '/deposit',
+        pageBuilder: (_, __) => _buildPageWithTransition(const DepositScreen()),
+      ),
+      GoRoute(
+        path: '/transfer',
+        pageBuilder: (_, __) =>
+            _buildPageWithTransition(const TransferScreen()),
+      ),
       GoRoute(
         path: '/accounts/detail/:id',
-        pageBuilder: (_, s) => _buildPageWithTransition(AccountDetailScreen(accountId: s.pathParameters['id']!)),
+        pageBuilder: (_, s) => _buildPageWithTransition(
+          AccountDetailScreen(accountId: s.pathParameters['id']!),
+        ),
       ),
       GoRoute(
         path: '/receipt/:id',
-        pageBuilder: (_, s) => _buildPageWithTransition(ReceiptScreen(receiptId: s.pathParameters['id']!)),
+        pageBuilder: (_, s) => _buildPageWithTransition(
+          ReceiptScreen(receiptId: s.pathParameters['id']!),
+        ),
       ),
       GoRoute(
         path: '/accounts/create-goal',
-        pageBuilder: (_, __) => _buildPageWithTransition(const CreateGoalScreen()),
+        pageBuilder: (_, __) =>
+            _buildPageWithTransition(const CreateGoalScreen()),
       ),
     ],
   );
@@ -157,17 +249,22 @@ class _MainShellState extends ConsumerState<MainShell> {
   Widget build(BuildContext context) {
     ref.listen(notificationSubscriptionProvider, (_, next) {
       next.whenData((n) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('${n['title']}: ${n['body']}'),
-          duration: const Duration(seconds: 4),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${n['title']}: ${n['body']}'),
+            duration: const Duration(seconds: 4),
+          ),
+        );
       });
     });
 
     final loc = GoRouterState.of(context).matchedLocation;
-    final idx = ['/home', '/accounts', '/social', '/profile']
-        .indexWhere((r) => loc.startsWith(r))
-        .clamp(0, 3);
+    final idx = [
+      '/home',
+      '/accounts',
+      '/social',
+      '/profile',
+    ].indexWhere((r) => loc.startsWith(r)).clamp(0, 3);
 
     return PopScope(
       canPop: false,
@@ -211,7 +308,8 @@ class _MainShellState extends ConsumerState<MainShell> {
               child: NavigationBar(
                 selectedIndex: idx,
                 onDestinationSelected: (i) => context.go(
-                    ['/home', '/accounts', '/social', '/profile'][i]),
+                  ['/home', '/accounts', '/social', '/profile'][i],
+                ),
                 backgroundColor: Colors.transparent,
                 elevation: 0,
                 indicatorColor: Theme.of(context).colorScheme.primaryContainer,

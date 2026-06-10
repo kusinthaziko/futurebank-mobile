@@ -3,5 +3,5 @@ import 'transaction_notifier.dart';
 
 final txPageProvider =
     StateNotifierProvider.family<TxPageNotifier, TxPageState, String>(
-  (ref, accountId) => TxPageNotifier(accountId, ref),
-);
+      (ref, accountId) => TxPageNotifier(accountId, ref),
+    );

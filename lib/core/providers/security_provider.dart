@@ -9,8 +9,7 @@ class AutoLockNotifier extends StateNotifier<LockState> {
   final SecurityService _security;
   final BiometricService _biometric;
 
-  AutoLockNotifier(this._security, this._biometric)
-      : super(LockState.unlocked);
+  AutoLockNotifier(this._security, this._biometric) : super(LockState.unlocked);
 
   void onAppLifecycleChange(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
@@ -33,13 +32,18 @@ class AutoLockNotifier extends StateNotifier<LockState> {
   void unlock() => state = LockState.unlocked;
 }
 
-final autoLockProvider =
-    StateNotifierProvider<AutoLockNotifier, LockState>((ref) {
+final autoLockProvider = StateNotifierProvider<AutoLockNotifier, LockState>((
+  ref,
+) {
   final security = SecurityService();
   final biometric = BiometricService();
   return AutoLockNotifier(security, biometric);
 });
 
-final securityServiceProvider = Provider<SecurityService>((_) => SecurityService());
+final securityServiceProvider = Provider<SecurityService>(
+  (_) => SecurityService(),
+);
 
-final biometricServiceProvider = Provider<BiometricService>((_) => BiometricService());
+final biometricServiceProvider = Provider<BiometricService>(
+  (_) => BiometricService(),
+);

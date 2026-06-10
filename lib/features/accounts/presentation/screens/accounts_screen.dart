@@ -19,7 +19,8 @@ class AccountsScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Accounts')),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => ErrorView(error: e, onRetry: () => ref.refresh(accountsProvider)),
+        error: (e, _) =>
+            ErrorView(error: e, onRetry: () => ref.refresh(accountsProvider)),
         data: (data) => LayoutBuilder(
           builder: (context, constraints) {
             if (constraints.maxWidth >= 600) {
@@ -69,7 +70,10 @@ class AccountsScreen extends ConsumerWidget {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     children: [
-                      const Text('Savings Goals', style: AppTextStyles.titleMedium),
+                      const Text(
+                        'Savings Goals',
+                        style: AppTextStyles.titleMedium,
+                      ),
                       const SizedBox(height: sp8),
                       ..._goalCards(data),
                     ],
@@ -82,50 +86,86 @@ class AccountsScreen extends ConsumerWidget {
   }
 
   List<Widget> _accountCards(BuildContext context, data) {
-    return data.accounts.map<Widget>((a) => Padding(
-      padding: const EdgeInsets.only(bottom: sp12),
-      child: FBCard(
-        gradient: a.accountType == 'savings',
-        onTap: () => context.push('/accounts/detail/${a.id}'),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(a.accountType.toUpperCase(),
-              style: AppTextStyles.labelMedium.copyWith(
-                  color: a.accountType == 'savings' ? Colors.white70 : gray500)),
-          const SizedBox(height: sp8),
-          Text('${a.currency} ${a.balance}',
-              style: AppTextStyles.displayMedium.copyWith(
-                  color: a.accountType == 'savings' ? Colors.white : gray900)),
-          const SizedBox(height: sp4),
-          Text(a.accountNumber,
-              style: AppTextStyles.caption.copyWith(
-                  color: a.accountType == 'savings'
-                      ? Colors.white54 : gray500)),
-        ]),
-      ),
-    )).toList();
+    return data.accounts
+        .map<Widget>(
+          (a) => Padding(
+            padding: const EdgeInsets.only(bottom: sp12),
+            child: FBCard(
+              gradient: a.accountType == 'savings',
+              onTap: () => context.push('/accounts/detail/${a.id}'),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    a.accountType.toUpperCase(),
+                    style: AppTextStyles.labelMedium.copyWith(
+                      color: a.accountType == 'savings'
+                          ? Colors.white70
+                          : gray500,
+                    ),
+                  ),
+                  const SizedBox(height: sp8),
+                  Text(
+                    '${a.currency} ${a.balance}',
+                    style: AppTextStyles.displayMedium.copyWith(
+                      color: a.accountType == 'savings'
+                          ? Colors.white
+                          : gray900,
+                    ),
+                  ),
+                  const SizedBox(height: sp4),
+                  Text(
+                    a.accountNumber,
+                    style: AppTextStyles.caption.copyWith(
+                      color: a.accountType == 'savings'
+                          ? Colors.white54
+                          : gray500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        )
+        .toList();
   }
 
   List<Widget> _goalCards(data) {
-    return data.goals.map<Widget>((g) => Padding(
-      padding: const EdgeInsets.only(bottom: sp8),
-      child: FBCard(child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(g.name, style: AppTextStyles.labelLarge),
-          Text(g.category,
-              style: AppTextStyles.caption.copyWith(color: gray500)),
-        ]),
-        const SizedBox(height: sp8),
-        LinearProgressIndicator(
-          value: _progress(g.currentAmount, g.targetAmount),
-          backgroundColor: gray100,
-          valueColor: const AlwaysStoppedAnimation(primary500),
-        ),
-        const SizedBox(height: sp4),
-        Text('${g.currentAmount} / ${g.targetAmount}',
-            style: AppTextStyles.caption.copyWith(color: gray500)),
-      ])),
-    )).toList();
+    return data.goals
+        .map<Widget>(
+          (g) => Padding(
+            padding: const EdgeInsets.only(bottom: sp8),
+            child: FBCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(g.name, style: AppTextStyles.labelLarge),
+                      Text(
+                        g.category,
+                        style: AppTextStyles.caption.copyWith(color: gray500),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: sp8),
+                  LinearProgressIndicator(
+                    value: _progress(g.currentAmount, g.targetAmount),
+                    backgroundColor: gray100,
+                    valueColor: const AlwaysStoppedAnimation(primary500),
+                  ),
+                  const SizedBox(height: sp4),
+                  Text(
+                    '${g.currentAmount} / ${g.targetAmount}',
+                    style: AppTextStyles.caption.copyWith(color: gray500),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        )
+        .toList();
   }
 
   double _progress(String current, String target) {

@@ -4,11 +4,7 @@ class ShakeWidget extends StatefulWidget {
   final Widget child;
   final bool shake;
 
-  const ShakeWidget({
-    super.key,
-    required this.child,
-    this.shake = false,
-  });
+  const ShakeWidget({super.key, required this.child, this.shake = false});
 
   @override
   State<ShakeWidget> createState() => _ShakeWidgetState();
@@ -56,10 +52,8 @@ class _ShakeWidgetState extends State<ShakeWidget>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _offset,
-      builder: (_, child) => Transform.translate(
-        offset: Offset(_offset.value, 0),
-        child: child,
-      ),
+      builder: (_, child) =>
+          Transform.translate(offset: Offset(_offset.value, 0), child: child),
       child: widget.child,
     );
   }

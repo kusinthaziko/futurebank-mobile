@@ -29,9 +29,10 @@ class _CardLiftState extends State<CardLift>
       duration: const Duration(milliseconds: 150),
       reverseDuration: const Duration(milliseconds: 100),
     );
-    _scale = Tween(begin: 1.0, end: widget.scale).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOut),
-    );
+    _scale = Tween(
+      begin: 1.0,
+      end: widget.scale,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
   }
 
   @override
@@ -56,10 +57,8 @@ class _CardLiftState extends State<CardLift>
       onTap: widget.onTap,
       child: AnimatedBuilder(
         animation: _ctrl,
-        builder: (_, child) => Transform.scale(
-          scale: _scale.value,
-          child: child,
-        ),
+        builder: (_, child) =>
+            Transform.scale(scale: _scale.value, child: child),
         child: widget.child,
       ),
     );

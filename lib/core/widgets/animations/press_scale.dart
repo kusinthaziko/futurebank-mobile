@@ -32,9 +32,10 @@ class _PressScaleState extends State<PressScale>
       duration: const Duration(milliseconds: 100),
       reverseDuration: const Duration(milliseconds: 120),
     );
-    _scaleAnim = Tween(begin: 1.0, end: widget.scale).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOut),
-    );
+    _scaleAnim = Tween(
+      begin: 1.0,
+      end: widget.scale,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
   }
 
   @override
@@ -64,10 +65,8 @@ class _PressScaleState extends State<PressScale>
       onTap: widget.onPressed,
       child: AnimatedBuilder(
         animation: _scaleAnim,
-        builder: (_, child) => Transform.scale(
-          scale: _scaleAnim.value,
-          child: child,
-        ),
+        builder: (_, child) =>
+            Transform.scale(scale: _scaleAnim.value, child: child),
         child: widget.child,
       ),
     );

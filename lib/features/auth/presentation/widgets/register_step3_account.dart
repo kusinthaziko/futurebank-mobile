@@ -41,52 +41,63 @@ class _RegisterStep3AccountState extends State<RegisterStep3Account> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Padding(
         padding: const EdgeInsets.all(sp24),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Create your account', style: AppTextStyles.titleLarge),
-          const SizedBox(height: sp8),
-          if (widget.institutionDomain != null)
-            Text('Must use @${widget.institutionDomain} email.',
-                style: AppTextStyles.bodyMedium.copyWith(color: gray500)),
-          const SizedBox(height: sp32),
-          FBInput(
-            label: 'Email',
-            hint: 'you@${widget.institutionDomain ?? 'university.ac.mw'}',
-            controller: widget.email,
-            keyboardType: TextInputType.emailAddress,
-            error: widget.emailError,
-          ),
-          const SizedBox(height: sp16),
-          FBInput(
-            label: 'Password',
-            hint: 'At least 6 characters',
-            controller: widget.password,
-            obscure: _obscure,
-            suffix: IconButton(
-              icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility,
-                  size: 20),
-              onPressed: () => setState(() => _obscure = !_obscure),
-            ),
-          ),
-          if (widget.submitError != null) ...[
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Create your account', style: AppTextStyles.titleLarge),
             const SizedBox(height: sp8),
-            Text(widget.submitError!,
-                style: AppTextStyles.caption.copyWith(color: error500)),
-          ],
-          const Spacer(),
-          FBButton(
+            if (widget.institutionDomain != null)
+              Text(
+                'Must use @${widget.institutionDomain} email.',
+                style: AppTextStyles.bodyMedium.copyWith(color: gray500),
+              ),
+            const SizedBox(height: sp32),
+            FBInput(
+              label: 'Email',
+              hint: 'you@${widget.institutionDomain ?? 'university.ac.mw'}',
+              controller: widget.email,
+              keyboardType: TextInputType.emailAddress,
+              error: widget.emailError,
+            ),
+            const SizedBox(height: sp16),
+            FBInput(
+              label: 'Password',
+              hint: 'At least 6 characters',
+              controller: widget.password,
+              obscure: _obscure,
+              suffix: IconButton(
+                icon: Icon(
+                  _obscure ? Icons.visibility_off : Icons.visibility,
+                  size: 20,
+                ),
+                onPressed: () => setState(() => _obscure = !_obscure),
+              ),
+            ),
+            if (widget.submitError != null) ...[
+              const SizedBox(height: sp8),
+              Text(
+                widget.submitError!,
+                style: AppTextStyles.caption.copyWith(color: error500),
+              ),
+            ],
+            const Spacer(),
+            FBButton(
               label: 'Create Account',
               onPressed: widget.onSubmit,
-              loading: widget.loading),
-          const SizedBox(height: sp12),
-          Center(
-            child: TextButton(
-              onPressed: () => context.go('/auth/login'),
-              child: Text('Already have an account? Sign in',
-                  style:
-                      AppTextStyles.bodyMedium.copyWith(color: primary500)),
+              loading: widget.loading,
             ),
-          ),
-        ]),
+            const SizedBox(height: sp12),
+            Center(
+              child: TextButton(
+                onPressed: () => context.go('/auth/login'),
+                child: Text(
+                  'Already have an account? Sign in',
+                  style: AppTextStyles.bodyMedium.copyWith(color: primary500),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

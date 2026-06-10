@@ -73,8 +73,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
     if (email.contains('@')) {
       final emailDomain = email.split('@').last;
-      setState(() =>
-          _emailError = emailDomain != domain ? 'Use your @$domain email' : null);
+      setState(
+        () => _emailError = emailDomain != domain
+            ? 'Use your @$domain email'
+            : null,
+      );
     } else {
       setState(() => _emailError = null);
     }
@@ -109,7 +112,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       setState(() => _error = 'Please complete all fields');
       return;
     }
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final dob = _dateOfBirth!;
       final dobStr =
@@ -124,11 +130,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         'institution_id': _selectedInstitution!['id'],
       });
       if (result != null && mounted) {
-        await ref.read(authProvider.notifier).login(
-          result['accessToken'], result['refreshToken'],
-          result['user']['id'],
-          institutionId: result['user']['institution_id'],
-        );
+        await ref
+            .read(authProvider.notifier)
+            .login(
+              result['accessToken'],
+              result['refreshToken'],
+              result['user']['id'],
+              institutionId: result['user']['institution_id'],
+            );
         if (mounted) context.go('/home');
       }
     } catch (e) {
@@ -149,45 +158,50 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           leading: _step > 0
               ? IconButton(
                   icon: const Icon(Icons.arrow_back),
-                  onPressed: () => setState(() => _step--))
+                  onPressed: () => setState(() => _step--),
+                )
               : null,
         ),
-        body: Column(children: [
-          RegisterStepIndicator(currentStep: _step, totalSteps: 3),
-          Expanded(child: switch (_step) {
-            0 => RegisterStep1Institution(
-                institutions: _institutions,
-                loading: _loadingInstitutions,
-                selected: _selectedInstitution,
-                onSelect: (inst) => setState(() {
-                  _selectedInstitution = inst;
-                  _emailError = null;
-                  _validateEmailDomain();
-                }),
-                onContinue: () => setState(() => _step = 1),
-              ),
-            1 => RegisterStep2Details(
-                fullName: _fullName,
-                studentId: _studentId,
-                phone: _phone,
-                dateOfBirth: _dateOfBirth,
-                onPickDate: _pickDateOfBirth,
-                onClearDate: () => setState(() => _dateOfBirth = null),
-                canContinue: _canContinueStep2,
-                onContinue: () => setState(() => _step = 2),
-              ),
-            _ => RegisterStep3Account(
-                email: _email,
-                password: _password,
-                institutionDomain: _selectedInstitution?['domain'],
-                emailError: _emailError,
-                submitError: _error,
-                loading: _loading,
-                canSubmit: _canSubmit,
-                onSubmit: _submit,
-              ),
-          }),
-        ]),
+        body: Column(
+          children: [
+            RegisterStepIndicator(currentStep: _step, totalSteps: 3),
+            Expanded(
+              child: switch (_step) {
+                0 => RegisterStep1Institution(
+                  institutions: _institutions,
+                  loading: _loadingInstitutions,
+                  selected: _selectedInstitution,
+                  onSelect: (inst) => setState(() {
+                    _selectedInstitution = inst;
+                    _emailError = null;
+                    _validateEmailDomain();
+                  }),
+                  onContinue: () => setState(() => _step = 1),
+                ),
+                1 => RegisterStep2Details(
+                  fullName: _fullName,
+                  studentId: _studentId,
+                  phone: _phone,
+                  dateOfBirth: _dateOfBirth,
+                  onPickDate: _pickDateOfBirth,
+                  onClearDate: () => setState(() => _dateOfBirth = null),
+                  canContinue: _canContinueStep2,
+                  onContinue: () => setState(() => _step = 2),
+                ),
+                _ => RegisterStep3Account(
+                  email: _email,
+                  password: _password,
+                  institutionDomain: _selectedInstitution?['domain'],
+                  emailError: _emailError,
+                  submitError: _error,
+                  loading: _loading,
+                  canSubmit: _canSubmit,
+                  onSubmit: _submit,
+                ),
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

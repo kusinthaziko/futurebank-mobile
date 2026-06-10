@@ -31,7 +31,8 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
     for (var i = 0; i < 6; i++) {
       _focusNodes[i].onKeyEvent = (node, event) {
         if (event.logicalKey == LogicalKeyboardKey.backspace &&
-            _controllers[i].text.isEmpty && i > 0) {
+            _controllers[i].text.isEmpty &&
+            i > 0) {
           _focusNodes[i - 1].requestFocus();
           return KeyEventResult.handled;
         }
@@ -63,7 +64,10 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
 
   Future<void> _verify() async {
     if (_code.length < 6) return;
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       await AuthMutations.verifyEmail(ref, code: _code, email: widget.email);
       if (mounted) context.go('/auth/kyc');
@@ -97,41 +101,52 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: sp32),
-              const Text('Check your email', style: AppTextStyles.displayMedium),
+              const Text(
+                'Check your email',
+                style: AppTextStyles.displayMedium,
+              ),
               const SizedBox(height: sp8),
               Text(
                 'We sent a 6-digit code to ${widget.email ?? 'your email'}',
-                style: AppTextStyles.bodyLarge.copyWith(color: gray500)),
+                style: AppTextStyles.bodyLarge.copyWith(color: gray500),
+              ),
               const SizedBox(height: sp32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(6, (i) => SizedBox(
-                  width: 48,
-                  child: TextField(
-                    controller: _controllers[i],
-                    focusNode: _focusNodes[i],
-                    textAlign: TextAlign.center,
-                    keyboardType: TextInputType.number,
-                    maxLength: 1,
-                    style: AppTextStyles.titleLarge,
-                    decoration: InputDecoration(
-                      counterText: '',
-                      border: OutlineInputBorder(borderRadius: radius12),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: radius12,
-                        borderSide: const BorderSide(color: gray300)),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: radius12,
-                        borderSide: const BorderSide(color: primary500)),
+                children: List.generate(
+                  6,
+                  (i) => SizedBox(
+                    width: 48,
+                    child: TextField(
+                      controller: _controllers[i],
+                      focusNode: _focusNodes[i],
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.number,
+                      maxLength: 1,
+                      style: AppTextStyles.titleLarge,
+                      decoration: InputDecoration(
+                        counterText: '',
+                        border: OutlineInputBorder(borderRadius: radius12),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: radius12,
+                          borderSide: const BorderSide(color: gray300),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: radius12,
+                          borderSide: const BorderSide(color: primary500),
+                        ),
+                      ),
+                      onChanged: (v) => _onDigitChange(i, v),
                     ),
-                    onChanged: (v) => _onDigitChange(i, v),
                   ),
-                )),
+                ),
               ),
               if (_error != null) ...[
                 const SizedBox(height: sp16),
-                Text(_error!,
-                    style: AppTextStyles.caption.copyWith(color: error500)),
+                Text(
+                  _error!,
+                  style: AppTextStyles.caption.copyWith(color: error500),
+                ),
               ],
               const SizedBox(height: sp32),
               FBButton(
@@ -148,7 +163,9 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                         ? 'Resend code in $_resendSeconds s'
                         : 'Resend code',
                     style: AppTextStyles.bodyMedium.copyWith(
-                      color: _resendSeconds > 0 ? gray500 : primary500)),
+                      color: _resendSeconds > 0 ? gray500 : primary500,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -161,8 +178,12 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
   @override
   void dispose() {
     _timer?.cancel();
-    for (final c in _controllers) { c.dispose(); }
-    for (final f in _focusNodes) { f.dispose(); }
+    for (final c in _controllers) {
+      c.dispose();
+    }
+    for (final f in _focusNodes) {
+      f.dispose();
+    }
     super.dispose();
   }
 }

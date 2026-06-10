@@ -7,11 +7,7 @@ class ShimmerLoading extends StatefulWidget {
   final Widget child;
   final bool isLoading;
 
-  const ShimmerLoading({
-    super.key,
-    required this.child,
-    this.isLoading = true,
-  });
+  const ShimmerLoading({super.key, required this.child, this.isLoading = true});
 
   @override
   State<ShimmerLoading> createState() => _ShimmerLoadingState();
@@ -140,11 +136,7 @@ class ShimmerCard extends StatelessWidget {
   final double? height;
   final double? width;
 
-  const ShimmerCard({
-    super.key,
-    this.height,
-    this.width,
-  });
+  const ShimmerCard({super.key, this.height, this.width});
 
   @override
   Widget build(BuildContext context) {

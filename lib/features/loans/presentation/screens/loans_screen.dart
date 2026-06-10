@@ -31,20 +31,28 @@ class LoansScreen extends ConsumerWidget {
         loading: () => ListView(
           padding: const EdgeInsets.all(sp16),
           children: const [
-            FBSkeletonLoader(height: 180, borderRadius: BorderRadius.all(Radius.circular(16))),
+            FBSkeletonLoader(
+              height: 180,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
             SizedBox(height: sp20),
-            FBSkeletonLoader(height: 80, borderRadius: BorderRadius.all(Radius.circular(16))),
+            FBSkeletonLoader(
+              height: 80,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
             SizedBox(height: sp8),
-            FBSkeletonLoader(height: 80, borderRadius: BorderRadius.all(Radius.circular(16))),
+            FBSkeletonLoader(
+              height: 80,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
           ],
         ),
-        error: (e, _) => ErrorView(
-          error: e,
-          onRetry: () => ref.refresh(loansProvider),
-        ),
+        error: (e, _) =>
+            ErrorView(error: e, onRetry: () => ref.refresh(loansProvider)),
         data: (data) {
-          final activeLoans =
-              data.loans.where((l) => l.status == 'active').toList();
+          final activeLoans = data.loans
+              .where((l) => l.status == 'active')
+              .toList();
           final pastLoans = data.loans
               .where((l) => l.status != 'active')
               .toList();
@@ -54,12 +62,13 @@ class LoansScreen extends ConsumerWidget {
             children: [
               EligibilityCard(
                 eligibility: data.eligibility,
-                activeLoanId: activeLoans.isNotEmpty ? activeLoans.first.id : null,
+                activeLoanId: activeLoans.isNotEmpty
+                    ? activeLoans.first.id
+                    : null,
               ),
               if (activeLoans.isNotEmpty) ...[
                 const SizedBox(height: sp20),
-                const Text('Active Loans',
-                    style: AppTextStyles.titleMedium),
+                const Text('Active Loans', style: AppTextStyles.titleMedium),
                 const SizedBox(height: sp8),
                 ...activeLoans.map((l) => LoanListCard(loan: l)),
               ],
@@ -75,8 +84,7 @@ class LoansScreen extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Past Loans',
-                        style: AppTextStyles.titleMedium),
+                    const Text('Past Loans', style: AppTextStyles.titleMedium),
                     TextButton(
                       onPressed: () => context.push('/loans/history'),
                       child: const Text('See all'),

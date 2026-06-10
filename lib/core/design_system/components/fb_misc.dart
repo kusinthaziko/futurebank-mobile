@@ -28,10 +28,13 @@ class _FBSkeletonLoaderState extends State<FBSkeletonLoader>
   void initState() {
     super.initState();
     _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1200))
-      ..repeat();
-    _anim = Tween<double>(begin: -2, end: 2).animate(
-        CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat();
+    _anim = Tween<double>(
+      begin: -2,
+      end: 2,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
   }
 
   @override
@@ -65,11 +68,17 @@ class FBAvatar extends StatelessWidget {
   final String name;
   final double size;
 
-  const FBAvatar({super.key, this.imageUrl, required this.name, this.size = 40});
+  const FBAvatar({
+    super.key,
+    this.imageUrl,
+    required this.name,
+    this.size = 40,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final initials = name.split(' ')
+    final initials = name
+        .split(' ')
         .take(2)
         .map((w) => w.isNotEmpty ? w[0] : '')
         .join()
@@ -80,8 +89,10 @@ class FBAvatar extends StatelessWidget {
       backgroundColor: primary100,
       backgroundImage: imageUrl != null ? NetworkImage(imageUrl!) : null,
       child: imageUrl == null
-          ? Text(initials,
-              style: AppTextStyles.labelLarge.copyWith(color: primary500))
+          ? Text(
+              initials,
+              style: AppTextStyles.labelLarge.copyWith(color: primary500),
+            )
           : null,
     );
   }

@@ -36,16 +36,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       setState(() => _error = 'Please enter your email and password');
       return;
     }
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final result = await AuthMutations.login(
-          ref, email: _email.text.trim(), password: _password.text);
+        ref,
+        email: _email.text.trim(),
+        password: _password.text,
+      );
       if (result != null && mounted) {
-        await ref.read(authProvider.notifier).login(
-          result['accessToken'], result['refreshToken'],
-          result['user']['id'],
-          institutionId: result['user']['institution_id'],
-        );
+        await ref
+            .read(authProvider.notifier)
+            .login(
+              result['accessToken'],
+              result['refreshToken'],
+              result['user']['id'],
+              institutionId: result['user']['institution_id'],
+            );
         if (mounted) context.go('/home');
       }
     } catch (e) {
@@ -71,52 +80,69 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: sp48),
                   // Brand header
                   Center(
-                    child: Column(children: [
-                      Container(
-                        width: 64, height: 64,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [primary700, primary500],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: radius16,
-                          boxShadow: [
-                            BoxShadow(
-                              color: primary500.withValues(alpha: 0.35),
-                              blurRadius: 20,
-                              offset: const Offset(0, 8),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [primary700, primary500],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                          ],
-                        ),
-                        child: const Center(
-                          child: Text('f',
+                            borderRadius: radius16,
+                            boxShadow: [
+                              BoxShadow(
+                                color: primary500.withValues(alpha: 0.35),
+                                blurRadius: 20,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'f',
                               style: TextStyle(
                                 fontFamily: 'ClashDisplay',
                                 fontSize: 32,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white,
-                              )),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: sp12),
-                      Text('futureBank',
+                        const SizedBox(height: sp12),
+                        Text(
+                          'futureBank',
                           style: AppTextStyles.titleLarge.copyWith(
-                              color: scheme.onSurface)),
-                      const SizedBox(height: sp4),
-                      Text('Campus financial super-app',
+                            color: scheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: sp4),
+                        Text(
+                          'Campus financial super-app',
                           style: AppTextStyles.caption.copyWith(
-                              color: scheme.onSurface.withValues(alpha: 0.5))),
-                    ]),
+                            color: scheme.onSurface.withValues(alpha: 0.5),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: sp48),
-                  Text('Welcome back',
-                      style: AppTextStyles.displayMedium.copyWith(
-                          color: scheme.onSurface)),
+                  Text(
+                    'Welcome back',
+                    style: AppTextStyles.displayMedium.copyWith(
+                      color: scheme.onSurface,
+                    ),
+                  ),
                   const SizedBox(height: sp4),
-                  Text('Sign in to your account',
-                      style: AppTextStyles.bodyLarge.copyWith(
-                          color: scheme.onSurface.withValues(alpha: 0.5))),
+                  Text(
+                    'Sign in to your account',
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      color: scheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                  ),
                   const SizedBox(height: sp32),
                   FBInput(
                     label: 'Email',
@@ -131,29 +157,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     obscure: _obscure,
                     suffix: IconButton(
                       icon: Icon(
-                          _obscure ? Icons.visibility_off : Icons.visibility,
-                          size: 20),
+                        _obscure ? Icons.visibility_off : Icons.visibility,
+                        size: 20,
+                      ),
                       onPressed: () => setState(() => _obscure = !_obscure),
                     ),
                   ),
                   if (_error != null) ...[
                     const SizedBox(height: sp8),
-                    Text(_error!,
-                        style: AppTextStyles.caption.copyWith(color: error500)),
+                    Text(
+                      _error!,
+                      style: AppTextStyles.caption.copyWith(color: error500),
+                    ),
                   ],
                   const SizedBox(height: sp8),
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () => context.push('/auth/forgot-password'),
-                      child: Text('Forgot password?',
-                          style: AppTextStyles.labelMedium
-                              .copyWith(color: scheme.primary)),
+                      child: Text(
+                        'Forgot password?',
+                        style: AppTextStyles.labelMedium.copyWith(
+                          color: scheme.primary,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: sp8),
                   FBButton(
-                      label: 'Sign In', onPressed: _login, loading: _loading),
+                    label: 'Sign In',
+                    onPressed: _login,
+                    loading: _loading,
+                  ),
                   const SizedBox(height: sp20),
                   Center(
                     child: TextButton(
@@ -162,13 +197,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         text: TextSpan(
                           text: "Don't have an account? ",
                           style: AppTextStyles.bodyMedium.copyWith(
-                              color: scheme.onSurface.withValues(alpha: 0.6)),
+                            color: scheme.onSurface.withValues(alpha: 0.6),
+                          ),
                           children: [
                             TextSpan(
                               text: 'Register',
                               style: AppTextStyles.bodyMedium.copyWith(
-                                  color: scheme.primary,
-                                  fontWeight: FontWeight.w600),
+                                color: scheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ],
                         ),

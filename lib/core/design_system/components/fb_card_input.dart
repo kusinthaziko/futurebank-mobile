@@ -85,19 +85,25 @@ class FBInput extends StatelessWidget {
             suffixIcon: suffix,
             errorText: error,
             contentPadding: const EdgeInsets.symmetric(
-              horizontal: sp16, vertical: sp12),
+              horizontal: sp16,
+              vertical: sp12,
+            ),
             border: OutlineInputBorder(
               borderRadius: radius12,
-              borderSide: const BorderSide(color: gray300, width: 1.5)),
+              borderSide: const BorderSide(color: gray300, width: 1.5),
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: radius12,
-              borderSide: const BorderSide(color: gray300, width: 1.5)),
+              borderSide: const BorderSide(color: gray300, width: 1.5),
+            ),
             focusedBorder: OutlineInputBorder(
               borderRadius: radius12,
-              borderSide: const BorderSide(color: primary500, width: 1.5)),
+              borderSide: const BorderSide(color: primary500, width: 1.5),
+            ),
             errorBorder: OutlineInputBorder(
               borderRadius: radius12,
-              borderSide: const BorderSide(color: error500, width: 1.5)),
+              borderSide: const BorderSide(color: error500, width: 1.5),
+            ),
           ),
         ),
       ],

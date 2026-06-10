@@ -41,63 +41,86 @@ class AccountDetailScreen extends ConsumerWidget {
             children: [
               FBCard(
                 gradient: account.accountType == 'savings',
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(account.accountType.toUpperCase(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      account.accountType.toUpperCase(),
                       style: AppTextStyles.labelMedium.copyWith(
-                          color: account.accountType == 'savings' ? Colors.white70 : gray500)),
-                  const SizedBox(height: sp8),
-                  Text('${account.currency} ${account.balance}',
+                        color: account.accountType == 'savings'
+                            ? Colors.white70
+                            : gray500,
+                      ),
+                    ),
+                    const SizedBox(height: sp8),
+                    Text(
+                      '${account.currency} ${account.balance}',
                       style: AppTextStyles.displayMedium.copyWith(
-                          color: account.accountType == 'savings' ? Colors.white : gray900)),
-                  const SizedBox(height: sp4),
-                  Text(account.accountNumber,
+                        color: account.accountType == 'savings'
+                            ? Colors.white
+                            : gray900,
+                      ),
+                    ),
+                    const SizedBox(height: sp4),
+                    Text(
+                      account.accountNumber,
                       style: AppTextStyles.caption.copyWith(
-                          color: account.accountType == 'savings' ? Colors.white54 : gray500)),
-                ]),
+                        color: account.accountType == 'savings'
+                            ? Colors.white54
+                            : gray500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: sp16),
-              Row(children: [
-                _StatCard(
-                  icon: FbIcons.trendingUp,
-                  label: 'Interest Rate',
-                  value: '$rate%',
-                ),
-                const SizedBox(width: sp12),
-                _StatCard(
-                  icon: Icons.monetization_on_outlined,
-                  label: 'Est. Monthly',
-                  value: '${account.currency} ${monthlyInterest.toStringAsFixed(2)}',
-                ),
-              ]),
+              Row(
+                children: [
+                  _StatCard(
+                    icon: FbIcons.trendingUp,
+                    label: 'Interest Rate',
+                    value: '$rate%',
+                  ),
+                  const SizedBox(width: sp12),
+                  _StatCard(
+                    icon: Icons.monetization_on_outlined,
+                    label: 'Est. Monthly',
+                    value:
+                        '${account.currency} ${monthlyInterest.toStringAsFixed(2)}',
+                  ),
+                ],
+              ),
               const SizedBox(height: sp20),
-              Row(children: [
-                Expanded(
-                  child: FBButton(
-                    label: 'Deposit',
-                    icon: const Icon(FbIcons.plus, size: 16),
-                    variant: FBButtonVariant.secondary,
-                    onPressed: () => context.push('/deposit'),
+              Row(
+                children: [
+                  Expanded(
+                    child: FBButton(
+                      label: 'Deposit',
+                      icon: const Icon(FbIcons.plus, size: 16),
+                      variant: FBButtonVariant.secondary,
+                      onPressed: () => context.push('/deposit'),
+                    ),
                   ),
-                ),
-                const SizedBox(width: sp12),
-                Expanded(
-                  child: FBButton(
-                    label: 'Transfer',
-                    icon: const Icon(FbIcons.send, size: 16),
-                    variant: FBButtonVariant.secondary,
-                    onPressed: () => context.push('/transfer'),
+                  const SizedBox(width: sp12),
+                  Expanded(
+                    child: FBButton(
+                      label: 'Transfer',
+                      icon: const Icon(FbIcons.send, size: 16),
+                      variant: FBButtonVariant.secondary,
+                      onPressed: () => context.push('/transfer'),
+                    ),
                   ),
-                ),
-              ]),
+                ],
+              ),
               const SizedBox(height: sp24),
               const Text('Balance (30 days)', style: AppTextStyles.titleMedium),
               const SizedBox(height: sp12),
-              SizedBox(
-                height: 180,
-                child: _BalanceChart(accountId: accountId),
-              ),
+              SizedBox(height: 180, child: _BalanceChart(accountId: accountId)),
               const SizedBox(height: sp20),
-              const Text('Recent Transactions', style: AppTextStyles.titleMedium),
+              const Text(
+                'Recent Transactions',
+                style: AppTextStyles.titleMedium,
+              ),
               const SizedBox(height: sp8),
               txsAsync.when(
                 loading: () => const FBSkeletonLoader(height: 200),
@@ -118,19 +141,26 @@ class _StatCard extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  const _StatCard({required this.icon, required this.label, required this.value});
+  const _StatCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: FBCard(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Icon(icon, color: primary500, size: 20),
-          const SizedBox(height: sp8),
-          Text(label, style: AppTextStyles.caption.copyWith(color: gray500)),
-          const SizedBox(height: sp4),
-          Text(value, style: AppTextStyles.labelLarge),
-        ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: primary500, size: 20),
+            const SizedBox(height: sp8),
+            Text(label, style: AppTextStyles.caption.copyWith(color: gray500)),
+            const SizedBox(height: sp4),
+            Text(value, style: AppTextStyles.labelLarge),
+          ],
+        ),
       ),
     );
   }
@@ -150,7 +180,13 @@ class _BalanceChart extends ConsumerWidget {
           borderData: FlBorderData(show: false),
           lineBarsData: [
             LineChartBarData(
-              spots: List.generate(30, (i) => FlSpot(i.toDouble(), 1000 + (i * 50) + (i.isEven ? 200 : -100).toDouble())),
+              spots: List.generate(
+                30,
+                (i) => FlSpot(
+                  i.toDouble(),
+                  1000 + (i * 50) + (i.isEven ? 200 : -100).toDouble(),
+                ),
+              ),
               isCurved: true,
               color: primary500,
               barWidth: 2,
@@ -172,40 +208,54 @@ class _TxRow extends StatelessWidget {
   const _TxRow({required this.tx});
 
   bool get _isCredit =>
-      tx.transactionType == 'deposit' || tx.transactionType == 'interest_credit';
+      tx.transactionType == 'deposit' ||
+      tx.transactionType == 'interest_credit';
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: sp4),
-      child: Row(children: [
-        Container(
-          width: 40, height: 40,
-          decoration: BoxDecoration(
-            color: _isCredit ? success100 : error100,
-            borderRadius: radius12,
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: _isCredit ? success100 : error100,
+              borderRadius: radius12,
+            ),
+            child: Icon(
+              _isCredit ? FbIcons.arrowDown : FbIcons.arrowUp,
+              color: _isCredit ? success500 : error500,
+              size: 18,
+            ),
           ),
-          child: Icon(
-            _isCredit ? FbIcons.arrowDown : FbIcons.arrowUp,
-            color: _isCredit ? success500 : error500, size: 18,
+          const SizedBox(width: sp12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  tx.description ?? tx.transactionType,
+                  style: AppTextStyles.bodyMedium,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  _formatDate(tx.insertedAt),
+                  style: AppTextStyles.caption.copyWith(color: gray500),
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(width: sp12),
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(tx.description ?? tx.transactionType,
-                style: AppTextStyles.bodyMedium,
-                maxLines: 1, overflow: TextOverflow.ellipsis),
-            Text(_formatDate(tx.insertedAt),
-                style: AppTextStyles.caption.copyWith(color: gray500)),
-          ]),
-        ),
-        Text(
-          '${_isCredit ? '+' : '-'}${tx.amount}',
-          style: AppTextStyles.labelLarge.copyWith(
-              color: _isCredit ? success500 : error500),
-        ),
-      ]),
+          Text(
+            '${_isCredit ? '+' : '-'}${tx.amount}',
+            style: AppTextStyles.labelLarge.copyWith(
+              color: _isCredit ? success500 : error500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

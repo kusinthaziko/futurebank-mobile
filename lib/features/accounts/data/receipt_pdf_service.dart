@@ -22,14 +22,18 @@ class ReceiptPdfService {
           children: [
             pw.Header(
               level: 0,
-              child: pw.Text('futureBank',
-                  style: pw.TextStyle(
-                    fontSize: 28,
-                    fontWeight: pw.FontWeight.bold,
-                  )),
+              child: pw.Text(
+                'futureBank',
+                style: pw.TextStyle(
+                  fontSize: 28,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
             ),
-            pw.Text('Transaction Receipt',
-                style: pw.TextStyle(fontSize: 16, color: PdfColors.grey700)),
+            pw.Text(
+              'Transaction Receipt',
+              style: pw.TextStyle(fontSize: 16, color: PdfColors.grey700),
+            ),
             pw.Divider(),
             pw.SizedBox(height: 20),
             _pdfRow('Reference', tx['reference'] ?? ''),
@@ -45,11 +49,10 @@ class ReceiptPdfService {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Text('AMOUNT',
-                      style: pw.TextStyle(
-                        fontSize: 10,
-                        color: PdfColors.grey600,
-                      )),
+                  pw.Text(
+                    'AMOUNT',
+                    style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
+                  ),
                   pw.SizedBox(height: 4),
                   pw.Text(
                     'MWK ${tx['amount'] ?? ''}',
@@ -62,16 +65,22 @@ class ReceiptPdfService {
               ),
             ),
             pw.SizedBox(height: 20),
-            pw.Row(children: [
-              pw.Text('Status: ',
-                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-              pw.Text(tx['status'] ?? '',
+            pw.Row(
+              children: [
+                pw.Text(
+                  'Status: ',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                ),
+                pw.Text(
+                  tx['status'] ?? '',
                   style: pw.TextStyle(
                     color: tx['status'] == 'completed'
                         ? PdfColors.green700
                         : PdfColors.orange700,
-                  )),
-            ]),
+                  ),
+                ),
+              ],
+            ),
             if (tx['description'] != null) ...[
               pw.SizedBox(height: 12),
               _pdfRow('Description', tx['description'] as String),
@@ -83,11 +92,10 @@ class ReceiptPdfService {
             pw.SizedBox(height: 40),
             pw.Divider(),
             pw.SizedBox(height: 8),
-            pw.Text('This is a computer-generated receipt',
-                style: pw.TextStyle(
-                  color: PdfColors.grey500,
-                  fontSize: 10,
-                )),
+            pw.Text(
+              'This is a computer-generated receipt',
+              style: pw.TextStyle(color: PdfColors.grey500, fontSize: 10),
+            ),
           ],
         ),
       ),
@@ -99,19 +107,18 @@ class ReceiptPdfService {
   static pw.Widget _pdfRow(String label, String value) {
     return pw.Padding(
       padding: pw.EdgeInsets.symmetric(vertical: 4),
-      child: pw.Row(children: [
-        pw.SizedBox(
-          width: 120,
-          child: pw.Text(label,
-              style: pw.TextStyle(
-                color: PdfColors.grey600,
-                fontSize: 12,
-              )),
-        ),
-        pw.Expanded(
-          child: pw.Text(value, style: pw.TextStyle(fontSize: 12)),
-        ),
-      ]),
+      child: pw.Row(
+        children: [
+          pw.SizedBox(
+            width: 120,
+            child: pw.Text(
+              label,
+              style: pw.TextStyle(color: PdfColors.grey600, fontSize: 12),
+            ),
+          ),
+          pw.Expanded(child: pw.Text(value, style: pw.TextStyle(fontSize: 12))),
+        ],
+      ),
     );
   }
 

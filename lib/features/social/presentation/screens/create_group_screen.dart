@@ -44,37 +44,57 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
     body: ListView(
       padding: const EdgeInsets.all(sp16),
       children: [
-        FBInput(label: 'Group Name', hint: 'e.g. CS 2026 Savings Circle',
-            controller: _nameCtrl),
+        FBInput(
+          label: 'Group Name',
+          hint: 'e.g. CS 2026 Savings Circle',
+          controller: _nameCtrl,
+        ),
         const SizedBox(height: sp16),
         Text('Type', style: AppTextStyles.labelMedium.copyWith(color: gray700)),
         const SizedBox(height: sp8),
-        Row(children: _types.map((t) => Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: sp4),
-            child: GestureDetector(
-              onTap: () => setState(() => _groupType = t),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: sp12),
-                decoration: BoxDecoration(
-                  color: _groupType == t ? primary500 : gray100,
-                  borderRadius: radius12,
+        Row(
+          children: _types
+              .map(
+                (t) => Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: sp4),
+                    child: GestureDetector(
+                      onTap: () => setState(() => _groupType = t),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: sp12),
+                        decoration: BoxDecoration(
+                          color: _groupType == t ? primary500 : gray100,
+                          borderRadius: radius12,
+                        ),
+                        child: Text(
+                          t,
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.labelMedium.copyWith(
+                            color: _groupType == t ? white : gray700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-                child: Text(t, textAlign: TextAlign.center,
-                    style: AppTextStyles.labelMedium.copyWith(
-                        color: _groupType == t ? white : gray700)),
-              ),
-            ),
-          ),
-        )).toList()),
+              )
+              .toList(),
+        ),
         const SizedBox(height: sp24),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('Member limit: ${_memberLimit.toInt()}',
-              style: AppTextStyles.labelLarge),
-        ]),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Member limit: ${_memberLimit.toInt()}',
+              style: AppTextStyles.labelLarge,
+            ),
+          ],
+        ),
         Slider(
           value: _memberLimit,
-          min: 10, max: 200, divisions: 19,
+          min: 10,
+          max: 200,
+          divisions: 19,
           label: '${_memberLimit.toInt()}',
           onChanged: (v) => setState(() => _memberLimit = v),
         ),
@@ -94,12 +114,20 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
         ),
         if (_hasGoal) ...[
           const SizedBox(height: sp8),
-          FBInput(label: 'Target Amount (MWK)', hint: 'e.g. 50000',
-              controller: _goalCtrl, keyboardType: TextInputType.number),
+          FBInput(
+            label: 'Target Amount (MWK)',
+            hint: 'e.g. 50000',
+            controller: _goalCtrl,
+            keyboardType: TextInputType.number,
+          ),
           const SizedBox(height: sp12),
           ListTile(
             contentPadding: EdgeInsets.zero,
-            title: Text(_deadline == null ? 'Set deadline' : 'Deadline: ${_deadline!.toLocal()}'.split(' ')[0]),
+            title: Text(
+              _deadline == null
+                  ? 'Set deadline'
+                  : 'Deadline: ${_deadline!.toLocal()}'.split(' ')[0],
+            ),
             trailing: const Icon(Icons.calendar_today),
             onTap: () async {
               final picked = await showDatePicker(
@@ -119,8 +147,11 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
         ),
         if (_hasRules) ...[
           const SizedBox(height: sp8),
-          FBInput(label: 'Rules (e.g. min weekly contribution)',
-              hint: 'e.g. Minimum MWK 500 per week', controller: _rulesCtrl),
+          FBInput(
+            label: 'Rules (e.g. min weekly contribution)',
+            hint: 'e.g. Minimum MWK 500 per week',
+            controller: _rulesCtrl,
+          ),
         ],
         const SizedBox(height: sp32),
         FBButton(
@@ -136,22 +167,25 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
     setState(() => _loading = true);
     try {
       final token = ref.read(accessTokenProvider);
-      final result = await ref.read(socialRepositoryProvider(token)).createGroup(
-        name: _nameCtrl.text.trim(),
-        groupType: _groupType,
-        isPublic: _isPublic,
-        memberLimit: _memberLimit.toInt(),
-        goal: _hasGoal ? _goalCtrl.text.trim() : null,
-        deadline: _deadline?.toIso8601String(),
-        rules: _hasRules ? _rulesCtrl.text.trim() : null,
-      );
+      final result = await ref
+          .read(socialRepositoryProvider(token))
+          .createGroup(
+            name: _nameCtrl.text.trim(),
+            groupType: _groupType,
+            isPublic: _isPublic,
+            memberLimit: _memberLimit.toInt(),
+            goal: _hasGoal ? _goalCtrl.text.trim() : null,
+            deadline: _deadline?.toIso8601String(),
+            rules: _hasRules ? _rulesCtrl.text.trim() : null,
+          );
       if (context.mounted) {
         _showSuccess(context, result.inviteCode, result.id);
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -164,17 +198,27 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
         title: const Text('Group Created!'),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Icon(Icons.check_circle, color: success500, size: 48),
-          const SizedBox(height: sp16),
-          const Text('Invite Code:', style: AppTextStyles.labelMedium),
-          const SizedBox(height: sp4),
-          Text(inviteCode, style: AppTextStyles.displayMedium.copyWith(
-              letterSpacing: 4, color: primary500)),
-          const SizedBox(height: sp8),
-          Text('Share this code with members',
-              style: AppTextStyles.caption.copyWith(color: gray500)),
-        ]),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.check_circle, color: success500, size: 48),
+            const SizedBox(height: sp16),
+            const Text('Invite Code:', style: AppTextStyles.labelMedium),
+            const SizedBox(height: sp4),
+            Text(
+              inviteCode,
+              style: AppTextStyles.displayMedium.copyWith(
+                letterSpacing: 4,
+                color: primary500,
+              ),
+            ),
+            const SizedBox(height: sp8),
+            Text(
+              'Share this code with members',
+              style: AppTextStyles.caption.copyWith(color: gray500),
+            ),
+          ],
+        ),
         actions: [
           FBButton(
             label: 'View Group',

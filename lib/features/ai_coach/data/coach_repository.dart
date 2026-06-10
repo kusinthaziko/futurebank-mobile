@@ -53,14 +53,20 @@ class CoachRepository implements domain.CoachRepository {
 
         _eventController.add(CoachWaiting(true));
         try {
-          final result = await graphqlClient.mutate(MutationOptions(
-            document: gql(_askCoachMutation),
-            variables: {'message': text, 'sessionId': _sessionId},
-          ));
+          final result = await graphqlClient.mutate(
+            MutationOptions(
+              document: gql(_askCoachMutation),
+              variables: {'message': text, 'sessionId': _sessionId},
+            ),
+          );
 
           if (result.hasException) {
-            _eventController.add(CoachError(
-              result.exception?.graphqlErrors.firstOrNull?.message ?? 'Request failed'));
+            _eventController.add(
+              CoachError(
+                result.exception?.graphqlErrors.firstOrNull?.message ??
+                    'Request failed',
+              ),
+            );
             return;
           }
 
@@ -75,7 +81,9 @@ class CoachRepository implements domain.CoachRepository {
 
           _transport.addChunk(content);
         } catch (e) {
-          _eventController.add(CoachError(e is Exception ? e.toString() : 'Unknown error'));
+          _eventController.add(
+            CoachError(e is Exception ? e.toString() : 'Unknown error'),
+          );
         }
       },
     );

@@ -23,7 +23,8 @@ class UserModel with _$UserModel {
     required int kycLevel,
   }) = _UserModel;
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
+  factory UserModel.fromJson(Map<String, dynamic> json) =>
+      _$UserModelFromJson(json);
 }
 
 @freezed
@@ -37,7 +38,8 @@ class AccountModel with _$AccountModel {
     required String status,
   }) = _AccountModel;
 
-  factory AccountModel.fromJson(Map<String, dynamic> json) => _$AccountModelFromJson(json);
+  factory AccountModel.fromJson(Map<String, dynamic> json) =>
+      _$AccountModelFromJson(json);
 }
 
 @freezed

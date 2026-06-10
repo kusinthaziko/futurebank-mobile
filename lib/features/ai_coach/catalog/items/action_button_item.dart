@@ -7,12 +7,19 @@ import '../../../../core/design_system/tokens/dimensions.dart';
 final actionButtonItem = CatalogItem(
   name: 'ActionButton',
   dataSchema: S.object(
-    description: 'Show a call-to-action button. Use when a clear next action is available after showing data.',
+    description:
+        'Show a call-to-action button. Use when a clear next action is available after showing data.',
     properties: {
       'label': S.string(description: 'Short button label. Max 3 words.'),
       'action': S.string(
         description: 'The navigation action to perform',
-        enumValues: ['apply_loan', 'view_transactions', 'view_goals', 'join_challenge', 'make_repayment'],
+        enumValues: [
+          'apply_loan',
+          'view_transactions',
+          'view_goals',
+          'join_challenge',
+          'make_repayment',
+        ],
       ),
     },
     required: ['label', 'action'],
@@ -31,23 +38,24 @@ final actionButtonItem = CatalogItem(
       _ => null,
     };
 
-    return Builder(builder: (context) => Padding(
-      padding: const EdgeInsets.symmetric(vertical: sp8),
-      child: FBButton(
-        label: label,
-        onPressed: route != null ? () => Navigator.of(context).pushNamed(route) : null,
-        icon: Icon(
-          switch (action) {
+    return Builder(
+      builder: (context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: sp8),
+        child: FBButton(
+          label: label,
+          onPressed: route != null
+              ? () => Navigator.of(context).pushNamed(route)
+              : null,
+          icon: Icon(switch (action) {
             'apply_loan' => Icons.add_card,
             'view_transactions' => Icons.receipt_long,
             'view_goals' => Icons.flag,
             'join_challenge' => Icons.emoji_events,
             'make_repayment' => Icons.payments,
             _ => Icons.arrow_forward,
-          },
-          size: 18,
+          }, size: 18),
         ),
       ),
-    ));
+    );
   },
 );

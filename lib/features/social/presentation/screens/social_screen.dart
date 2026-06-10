@@ -22,15 +22,25 @@ class SocialScreen extends ConsumerWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Social'),
-          bottom: const TabBar(tabs: [Tab(text: 'Groups'), Tab(text: 'Challenges')]),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Groups'),
+              Tab(text: 'Challenges'),
+            ],
+          ),
         ),
         body: async.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => ErrorView(error: e, onRetry: () => ref.refresh(socialProvider(institutionId))),
-          data: (data) => TabBarView(children: [
-            _GroupsTab(groups: data.groups),
-            ChallengesList(challenges: data.challenges),
-          ]),
+          error: (e, _) => ErrorView(
+            error: e,
+            onRetry: () => ref.refresh(socialProvider(institutionId)),
+          ),
+          data: (data) => TabBarView(
+            children: [
+              _GroupsTab(groups: data.groups),
+              ChallengesList(challenges: data.challenges),
+            ],
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => context.push('/social/create-group'),
@@ -51,20 +61,25 @@ class _GroupsTab extends StatelessWidget {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(sp32),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            const Icon(Icons.group_add_outlined, size: 64, color: gray300),
-            const SizedBox(height: sp16),
-            const Text('No groups yet', style: AppTextStyles.titleMedium),
-            const SizedBox(height: sp8),
-            Text('Start a savings circle with friends',
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.group_add_outlined, size: 64, color: gray300),
+              const SizedBox(height: sp16),
+              const Text('No groups yet', style: AppTextStyles.titleMedium),
+              const SizedBox(height: sp8),
+              Text(
+                'Start a savings circle with friends',
                 style: AppTextStyles.bodyMedium.copyWith(color: gray500),
-                textAlign: TextAlign.center),
-            const SizedBox(height: sp24),
-            FBButton(
-              label: 'Create Group',
-              onPressed: () => context.push('/social/create-group'),
-            ),
-          ]),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: sp24),
+              FBButton(
+                label: 'Create Group',
+                onPressed: () => context.push('/social/create-group'),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -75,20 +90,37 @@ class _GroupsTab extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: sp8),
         child: FBCard(
           onTap: () => context.push('/social/groups/${groups[i].id}'),
-          child: Row(children: [
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(groups[i].name, style: AppTextStyles.titleMedium),
-              if (groups[i].inviteCode != null)
-                Text('Code: ${groups[i].inviteCode}',
-                    style: AppTextStyles.caption.copyWith(color: gray500)),
-            ])),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: sp8, vertical: sp4),
-              decoration: BoxDecoration(color: success100, borderRadius: radiusPill),
-              child: Text(groups[i].status.toUpperCase(),
-                  style: AppTextStyles.labelMedium.copyWith(color: success500)),
-            ),
-          ]),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(groups[i].name, style: AppTextStyles.titleMedium),
+                    if (groups[i].inviteCode != null)
+                      Text(
+                        'Code: ${groups[i].inviteCode}',
+                        style: AppTextStyles.caption.copyWith(color: gray500),
+                      ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: sp8,
+                  vertical: sp4,
+                ),
+                decoration: BoxDecoration(
+                  color: success100,
+                  borderRadius: radiusPill,
+                ),
+                child: Text(
+                  groups[i].status.toUpperCase(),
+                  style: AppTextStyles.labelMedium.copyWith(color: success500),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -101,57 +133,90 @@ class ChallengesList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(children: [
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: sp16, vertical: sp12),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(children: [
-            _FilterChip(label: 'All', selected: true, onTap: () {}),
-            const SizedBox(width: sp8),
-            _FilterChip(label: 'Active', selected: false, onTap: () {}),
-            const SizedBox(width: sp8),
-            _FilterChip(label: 'Upcoming', selected: false, onTap: () {}),
-            const SizedBox(width: sp8),
-            _FilterChip(label: 'Completed', selected: false, onTap: () {}),
-          ]),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: sp16, vertical: sp12),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _FilterChip(label: 'All', selected: true, onTap: () {}),
+                const SizedBox(width: sp8),
+                _FilterChip(label: 'Active', selected: false, onTap: () {}),
+                const SizedBox(width: sp8),
+                _FilterChip(label: 'Upcoming', selected: false, onTap: () {}),
+                const SizedBox(width: sp8),
+                _FilterChip(label: 'Completed', selected: false, onTap: () {}),
+              ],
+            ),
+          ),
         ),
-      ),
-      Expanded(
-        child: challenges.isEmpty
-            ? Center(
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  const Icon(Icons.emoji_events_outlined, size: 64, color: gray300),
-                  const SizedBox(height: sp16),
-                  Text('No challenges yet',
-                      style: AppTextStyles.bodyMedium.copyWith(color: gray500)),
-                ]),
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: sp16),
-                itemCount: challenges.length,
-                itemBuilder: (_, i) {
-                  final c = challenges[i];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: sp8),
-                    child: FBCard(
-                      onTap: () => context.push('/social/challenges/${c.id}'),
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Row(children: [
-                          Icon(_typeIcon(c.challengeType), size: 20, color: gold500),
-                          const SizedBox(width: sp8),
-                          Expanded(child: Text(c.title, style: AppTextStyles.titleMedium)),
-                        ]),
-                        const SizedBox(height: sp4),
-                        Text('${c.rewardPoints} pts',
-                            style: AppTextStyles.caption.copyWith(color: gray500)),
-                      ]),
-                    ),
-                  );
-                },
-              ),
-      ),
-    ]);
+        Expanded(
+          child: challenges.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.emoji_events_outlined,
+                        size: 64,
+                        color: gray300,
+                      ),
+                      const SizedBox(height: sp16),
+                      Text(
+                        'No challenges yet',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: gray500,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: sp16),
+                  itemCount: challenges.length,
+                  itemBuilder: (_, i) {
+                    final c = challenges[i];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: sp8),
+                      child: FBCard(
+                        onTap: () => context.push('/social/challenges/${c.id}'),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  _typeIcon(c.challengeType),
+                                  size: 20,
+                                  color: gold500,
+                                ),
+                                const SizedBox(width: sp8),
+                                Expanded(
+                                  child: Text(
+                                    c.title,
+                                    style: AppTextStyles.titleMedium,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: sp4),
+                            Text(
+                              '${c.rewardPoints} pts',
+                              style: AppTextStyles.caption.copyWith(
+                                color: gray500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
   }
 
   IconData _typeIcon(String type) => switch (type) {
@@ -166,7 +231,11 @@ class _FilterChip extends StatelessWidget {
   final String label;
   final bool selected;
   final VoidCallback onTap;
-  const _FilterChip({required this.label, required this.selected, required this.onTap});
+  const _FilterChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) => GestureDetector(
@@ -177,9 +246,12 @@ class _FilterChip extends StatelessWidget {
         color: selected ? primary500 : gray100,
         borderRadius: radiusPill,
       ),
-      child: Text(label,
-          style: AppTextStyles.labelMedium.copyWith(
-              color: selected ? white : gray700)),
+      child: Text(
+        label,
+        style: AppTextStyles.labelMedium.copyWith(
+          color: selected ? white : gray700,
+        ),
+      ),
     ),
   );
 }

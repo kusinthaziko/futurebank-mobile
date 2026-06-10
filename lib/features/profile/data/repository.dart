@@ -11,19 +11,24 @@ class ProfileRepository {
 
   Future<ProfileData> fetchProfile(String userId) async {
     final cached = await _cacheService.getFreshValue<ProfileData>(
-      'profile', userId,
+      'profile',
+      userId,
       (json) => ProfileData(
         user: UserProfile.fromJson(json['user'] as Map<String, dynamic>),
-        healthScore: HealthScoreData.fromJson(json['healthScore'] as Map<String, dynamic>),
+        healthScore: HealthScoreData.fromJson(
+          json['healthScore'] as Map<String, dynamic>,
+        ),
       ),
     );
     if (cached != null) return cached;
 
     try {
-      final r = await _client.query(QueryOptions(
-        document: gql(profileQuery),
-        fetchPolicy: FetchPolicy.cacheAndNetwork,
-      ));
+      final r = await _client.query(
+        QueryOptions(
+          document: gql(profileQuery),
+          fetchPolicy: FetchPolicy.cacheAndNetwork,
+        ),
+      );
       if (r.hasException) throw r.exception!;
 
       final me = r.data!['me'] as Map<String, dynamic>;
@@ -31,8 +36,10 @@ class ProfileRepository {
 
       final profile = ProfileData(
         user: UserProfile.fromJson({
-          'id': me['id'], 'fullName': me['full_name'],
-          'email': me['email'], 'kycLevel': me['kyc_level'],
+          'id': me['id'],
+          'fullName': me['full_name'],
+          'email': me['email'],
+          'kycLevel': me['kyc_level'],
           'kycStatus': me['kyc_status'],
           'financialHealthScore': me['financial_health_score'],
           'avatarUrl': me['avatar_url'],
@@ -47,18 +54,25 @@ class ProfileRepository {
         }),
       );
 
-      await _cacheService.cacheJson('profile', userId, jsonEncode({
-        'user': profile.user.toJson(),
-        'healthScore': profile.healthScore.toJson(),
-      }));
+      await _cacheService.cacheJson(
+        'profile',
+        userId,
+        jsonEncode({
+          'user': profile.user.toJson(),
+          'healthScore': profile.healthScore.toJson(),
+        }),
+      );
 
       return profile;
     } catch (e) {
       final stale = await _cacheService.getStaleValue<ProfileData>(
-        'profile', userId,
+        'profile',
+        userId,
         (json) => ProfileData(
           user: UserProfile.fromJson(json['user'] as Map<String, dynamic>),
-          healthScore: HealthScoreData.fromJson(json['healthScore'] as Map<String, dynamic>),
+          healthScore: HealthScoreData.fromJson(
+            json['healthScore'] as Map<String, dynamic>,
+          ),
         ),
       );
       if (stale != null) return stale;
@@ -69,17 +83,25 @@ class ProfileRepository {
   Future<List<BadgeModel>> fetchBadges() async {
     final r = await _client.query(QueryOptions(document: gql(myBadgesQuery)));
     if (r.hasException) throw r.exception!;
-    return (r.data!['myBadges'] as List).cast<Map<String, dynamic>>()
-        .map((b) => BadgeModel.fromJson({
-              'badgeId': b['badge_id'], 'name': b['name'], 'awardedAt': b['awarded_at'],
-            })).toList();
+    return (r.data!['myBadges'] as List)
+        .cast<Map<String, dynamic>>()
+        .map(
+          (b) => BadgeModel.fromJson({
+            'badgeId': b['badge_id'],
+            'name': b['name'],
+            'awardedAt': b['awarded_at'],
+          }),
+        )
+        .toList();
   }
 
   Future<void> updateAvatar(String avatarUrl) async {
-    final r = await _client.mutate(MutationOptions(
-      document: gql(updateProfileMutation),
-      variables: {'avatar_url': avatarUrl},
-    ));
+    final r = await _client.mutate(
+      MutationOptions(
+        document: gql(updateProfileMutation),
+        variables: {'avatar_url': avatarUrl},
+      ),
+    );
     if (r.hasException) throw r.exception!;
   }
 }

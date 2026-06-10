@@ -88,7 +88,9 @@ class _MakeRepaymentSheetState extends ConsumerState<MakeRepaymentSheet> {
     if (!_sufficient) return;
 
     final bio = ref.read(biometricServiceProvider);
-    final authenticated = await bio.authenticate('Authenticate to confirm repayment');
+    final authenticated = await bio.authenticate(
+      'Authenticate to confirm repayment',
+    );
     if (!authenticated || !mounted) return;
 
     setState(() => _loading = true);
@@ -109,9 +111,9 @@ class _MakeRepaymentSheetState extends ConsumerState<MakeRepaymentSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Repayment failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Repayment failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -133,7 +135,8 @@ class _MakeRepaymentSheetState extends ConsumerState<MakeRepaymentSheet> {
         children: [
           Center(
             child: Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
                 color: gray300,
                 borderRadius: BorderRadius.circular(2),
@@ -146,10 +149,14 @@ class _MakeRepaymentSheetState extends ConsumerState<MakeRepaymentSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Wallet Balance',
-                  style: AppTextStyles.bodyMedium.copyWith(color: gray500)),
-              Text('MWK ${widget.walletBalance}',
-                  style: AppTextStyles.labelLarge.copyWith(color: success500)),
+              Text(
+                'Wallet Balance',
+                style: AppTextStyles.bodyMedium.copyWith(color: gray500),
+              ),
+              Text(
+                'MWK ${widget.walletBalance}',
+                style: AppTextStyles.labelLarge.copyWith(color: success500),
+              ),
             ],
           ),
           const SizedBox(height: sp16),

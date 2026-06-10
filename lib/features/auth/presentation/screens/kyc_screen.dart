@@ -32,10 +32,14 @@ class _KycScreenState extends ConsumerState<KycScreen> {
 
   static const _kycLevels = [
     ('Level 0 — View Only', 'Browse the app, see your financial health score.'),
-    ('Level 1 — Basic Access',
-        'Send money within your institution, join savings circles.'),
-    ('Level 2 — Full Access',
-        'Withdraw, apply for loans, and use all features.'),
+    (
+      'Level 1 — Basic Access',
+      'Send money within your institution, join savings circles.',
+    ),
+    (
+      'Level 2 — Full Access',
+      'Withdraw, apply for loans, and use all features.',
+    ),
   ];
 
   Future<void> _pickImage(ImageSource source) async {
@@ -58,12 +62,18 @@ class _KycScreenState extends ConsumerState<KycScreen> {
               ListTile(
                 leading: const Icon(Icons.camera_alt, color: primary500),
                 title: const Text('Take Photo'),
-                onTap: () { Navigator.pop(context); _pickImage(ImageSource.camera); },
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera);
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library, color: primary500),
                 title: const Text('Choose from Gallery'),
-                onTap: () { Navigator.pop(context); _pickImage(ImageSource.gallery); },
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.gallery);
+                },
               ),
             ],
           ),
@@ -74,10 +84,14 @@ class _KycScreenState extends ConsumerState<KycScreen> {
 
   Future<void> _submit() async {
     if (_image == null) return;
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final publicId = await CloudinaryService.uploadImage(_image!.path);
-      if (publicId == null) throw Exception('Failed to upload image to Cloudinary');
+      if (publicId == null)
+        throw Exception('Failed to upload image to Cloudinary');
       await AuthMutations.submitKYC(
         ref,
         documentType: _docType,
@@ -103,84 +117,121 @@ class _KycScreenState extends ConsumerState<KycScreen> {
           children: [
             const Text('Why KYC?', style: AppTextStyles.titleLarge),
             const SizedBox(height: sp8),
-            Text('We need to verify your identity to prevent fraud and '
-                'unlock higher transaction limits.',
-                style: AppTextStyles.bodyMedium.copyWith(color: gray500)),
+            Text(
+              'We need to verify your identity to prevent fraud and '
+              'unlock higher transaction limits.',
+              style: AppTextStyles.bodyMedium.copyWith(color: gray500),
+            ),
             const SizedBox(height: sp16),
-            ..._kycLevels.map((l) => Padding(
-              padding: const EdgeInsets.only(bottom: sp12),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 8, height: 8, margin: const EdgeInsets.only(top: 6),
-                    decoration: const BoxDecoration(
-                        color: primary500, shape: BoxShape.circle),
-                  ),
-                  const SizedBox(width: sp12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(l.$1, style: AppTextStyles.labelLarge),
-                        Text(l.$2,
-                            style: AppTextStyles.caption.copyWith(color: gray500)),
-                      ],
+            ..._kycLevels.map(
+              (l) => Padding(
+                padding: const EdgeInsets.only(bottom: sp12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      margin: const EdgeInsets.only(top: 6),
+                      decoration: const BoxDecoration(
+                        color: primary500,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: sp12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l.$1, style: AppTextStyles.labelLarge),
+                          Text(
+                            l.$2,
+                            style: AppTextStyles.caption.copyWith(
+                              color: gray500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            )),
+            ),
             const SizedBox(height: sp16),
             const Text('Document Type', style: AppTextStyles.labelLarge),
             const SizedBox(height: sp12),
             Wrap(
               spacing: sp8,
               runSpacing: sp8,
-              children: _docTypes.map((d) => ChoiceChip(
-                label: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(d.$3, size: 18, color: _docType == d.$1 ? white : primary500),
-                      const SizedBox(width: sp8),
-                    Text(d.$2),
-                  ],
-                ),
-                selected: _docType == d.$1,
-                selectedColor: primary500,
-                labelStyle: TextStyle(
-                  color: _docType == d.$1 ? white : gray700,
-                ),
-                onSelected: (_) => setState(() => _docType = d.$1),
-              )).toList(),
+              children: _docTypes
+                  .map(
+                    (d) => ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            d.$3,
+                            size: 18,
+                            color: _docType == d.$1 ? white : primary500,
+                          ),
+                          const SizedBox(width: sp8),
+                          Text(d.$2),
+                        ],
+                      ),
+                      selected: _docType == d.$1,
+                      selectedColor: primary500,
+                      labelStyle: TextStyle(
+                        color: _docType == d.$1 ? white : gray700,
+                      ),
+                      onSelected: (_) => setState(() => _docType = d.$1),
+                    ),
+                  )
+                  .toList(),
             ),
             const SizedBox(height: sp24),
             GestureDetector(
               onTap: _showImageSourceSheet,
               child: Container(
-                width: double.infinity, height: 180,
+                width: double.infinity,
+                height: 180,
                 decoration: BoxDecoration(
                   color: primary100,
                   borderRadius: radius16,
-                  border: Border.all(color: primary300)),
+                  border: Border.all(color: primary300),
+                ),
                 child: _image != null
                     ? ClipRRect(
                         borderRadius: radius16,
-                        child: Image.file(File(_image!.path), fit: BoxFit.cover))
+                        child: Image.file(
+                          File(_image!.path),
+                          fit: BoxFit.cover,
+                        ),
+                      )
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.upload_file, size: 40, color: primary500),
+                          const Icon(
+                            Icons.upload_file,
+                            size: 40,
+                            color: primary500,
+                          ),
                           const SizedBox(height: sp8),
-                          Text('Tap to upload document',
-                              style: AppTextStyles.bodyMedium.copyWith(color: primary500)),
+                          Text(
+                            'Tap to upload document',
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: primary500,
+                            ),
+                          ),
                         ],
                       ),
               ),
             ),
             if (_error != null) ...[
               const SizedBox(height: sp12),
-              Text(_error!, style: AppTextStyles.caption.copyWith(color: error500)),
+              Text(
+                _error!,
+                style: AppTextStyles.caption.copyWith(color: error500),
+              ),
             ],
             const SizedBox(height: sp24),
             FBButton(
@@ -214,7 +265,8 @@ class _KycScreenState extends ConsumerState<KycScreen> {
             Text(
               "We'll notify you once verified (usually within 24 hours).",
               style: AppTextStyles.bodyMedium.copyWith(color: gray500),
-              textAlign: TextAlign.center),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: sp32),
             FBButton(
               label: 'Go to Dashboard',

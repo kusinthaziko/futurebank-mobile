@@ -22,7 +22,8 @@ class UserProfile with _$UserProfile {
     String? blockchainDid,
     String? avatarUrl,
   }) = _UserProfile;
-  factory UserProfile.fromJson(Map<String, dynamic> j) => _$UserProfileFromJson(j);
+  factory UserProfile.fromJson(Map<String, dynamic> j) =>
+      _$UserProfileFromJson(j);
 }
 
 @freezed
@@ -35,7 +36,8 @@ class HealthScoreData with _$HealthScoreData {
     required int accountAgeDays,
     required int kycLevel,
   }) = _HealthScoreData;
-  factory HealthScoreData.fromJson(Map<String, dynamic> j) => _$HealthScoreDataFromJson(j);
+  factory HealthScoreData.fromJson(Map<String, dynamic> j) =>
+      _$HealthScoreDataFromJson(j);
 }
 
 @freezed
@@ -45,5 +47,6 @@ class BadgeModel with _$BadgeModel {
     required String name,
     required String awardedAt,
   }) = _BadgeModel;
-  factory BadgeModel.fromJson(Map<String, dynamic> j) => _$BadgeModelFromJson(j);
+  factory BadgeModel.fromJson(Map<String, dynamic> j) =>
+      _$BadgeModelFromJson(j);
 }

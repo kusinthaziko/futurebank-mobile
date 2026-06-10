@@ -14,29 +14,33 @@ class TransactionRepository {
     String? dateFrom,
     String? dateTo,
   }) async {
-    final result = await _client.query(QueryOptions(
-      document: gql(transactionFilterQuery),
-      variables: {
-        'accountId': accountId,
-        'limit': limit,
-        'offset': offset,
-        'type': type,
-        'dateFrom': dateFrom,
-        'dateTo': dateTo,
-      },
-    ));
+    final result = await _client.query(
+      QueryOptions(
+        document: gql(transactionFilterQuery),
+        variables: {
+          'accountId': accountId,
+          'limit': limit,
+          'offset': offset,
+          'type': type,
+          'dateFrom': dateFrom,
+          'dateTo': dateTo,
+        },
+      ),
+    );
     if (result.hasException) throw result.exception!;
     return (result.data!['filteredTransactions'] as List)
         .cast<Map<String, dynamic>>()
-        .map((t) => TxModel.fromJson({
-              'id': t['id'],
-              'reference': t['reference'],
-              'description': t['description'],
-              'amount': t['amount'],
-              'transactionType': t['transaction_type'],
-              'status': t['status'],
-              'insertedAt': t['inserted_at'],
-            }))
+        .map(
+          (t) => TxModel.fromJson({
+            'id': t['id'],
+            'reference': t['reference'],
+            'description': t['description'],
+            'amount': t['amount'],
+            'transactionType': t['transaction_type'],
+            'status': t['status'],
+            'insertedAt': t['inserted_at'],
+          }),
+        )
         .toList();
   }
 
@@ -44,22 +48,26 @@ class TransactionRepository {
     required String accountId,
     required String query,
   }) async {
-    final result = await _client.query(QueryOptions(
-      document: gql(searchTransactionsQuery),
-      variables: {'accountId': accountId, 'query': query},
-    ));
+    final result = await _client.query(
+      QueryOptions(
+        document: gql(searchTransactionsQuery),
+        variables: {'accountId': accountId, 'query': query},
+      ),
+    );
     if (result.hasException) throw result.exception!;
     return (result.data!['searchTransactions'] as List)
         .cast<Map<String, dynamic>>()
-        .map((t) => TxModel.fromJson({
-              'id': t['id'],
-              'reference': t['reference'],
-              'description': t['description'],
-              'amount': t['amount'],
-              'transactionType': t['transaction_type'],
-              'status': t['status'],
-              'insertedAt': t['inserted_at'],
-            }))
+        .map(
+          (t) => TxModel.fromJson({
+            'id': t['id'],
+            'reference': t['reference'],
+            'description': t['description'],
+            'amount': t['amount'],
+            'transactionType': t['transaction_type'],
+            'status': t['status'],
+            'insertedAt': t['inserted_at'],
+          }),
+        )
         .toList();
   }
 }

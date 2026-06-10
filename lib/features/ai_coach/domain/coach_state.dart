@@ -33,8 +33,7 @@ class CoachState {
   List<DisplayMessage> get currentPageMessages =>
       pages.isNotEmpty ? pages[currentPageIndex] : [];
 
-  List<DisplayMessage> get allMessages =>
-      pages.expand((p) => p).toList();
+  List<DisplayMessage> get allMessages => pages.expand((p) => p).toList();
 
   CoachState copyWith({
     List<List<DisplayMessage>>? pages,
@@ -49,6 +48,8 @@ class CoachState {
     currentPageIndex: currentPageIndex ?? this.currentPageIndex,
     isGenerating: isGenerating ?? this.isGenerating,
     errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
-    weeklyInsight: clearWeeklyInsight ? null : (weeklyInsight ?? this.weeklyInsight),
+    weeklyInsight: clearWeeklyInsight
+        ? null
+        : (weeklyInsight ?? this.weeklyInsight),
   );
 }

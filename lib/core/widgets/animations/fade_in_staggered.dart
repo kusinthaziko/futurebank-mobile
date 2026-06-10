@@ -34,30 +34,33 @@ class _FadeInStaggeredState extends State<FadeInStaggered>
   void initState() {
     super.initState();
     final count = widget.children.length;
-    final totalDuration = widget.itemDuration +
+    final totalDuration =
+        widget.itemDuration +
         Duration(milliseconds: widget.staggerDelayMs * (count - 1));
 
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: totalDuration,
-    );
+    _ctrl = AnimationController(vsync: this, duration: totalDuration);
 
     _fades = List.generate(count, (i) {
       final start = (i * widget.staggerDelayMs) / totalDuration.inMilliseconds;
-      final end = (i * widget.staggerDelayMs + widget.itemDuration.inMilliseconds) /
+      final end =
+          (i * widget.staggerDelayMs + widget.itemDuration.inMilliseconds) /
           totalDuration.inMilliseconds;
       return Tween(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
           parent: _ctrl,
-          curve: Interval(start.clamp(0.0, 1.0), end.clamp(0.0, 1.0),
-              curve: widget.curve),
+          curve: Interval(
+            start.clamp(0.0, 1.0),
+            end.clamp(0.0, 1.0),
+            curve: widget.curve,
+          ),
         ),
       );
     });
 
     _slides = List.generate(count, (i) {
       final start = (i * widget.staggerDelayMs) / totalDuration.inMilliseconds;
-      final end = (i * widget.staggerDelayMs + widget.itemDuration.inMilliseconds) /
+      final end =
+          (i * widget.staggerDelayMs + widget.itemDuration.inMilliseconds) /
           totalDuration.inMilliseconds;
       final offset = widget.slideDirection == Axis.vertical
           ? Offset(0, widget.slideOffset / 100)
@@ -65,8 +68,11 @@ class _FadeInStaggeredState extends State<FadeInStaggered>
       return Tween(begin: offset, end: Offset.zero).animate(
         CurvedAnimation(
           parent: _ctrl,
-          curve: Interval(start.clamp(0.0, 1.0), end.clamp(0.0, 1.0),
-              curve: widget.curve),
+          curve: Interval(
+            start.clamp(0.0, 1.0),
+            end.clamp(0.0, 1.0),
+            curve: widget.curve,
+          ),
         ),
       );
     });

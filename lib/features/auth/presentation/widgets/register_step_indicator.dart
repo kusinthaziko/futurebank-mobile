@@ -5,8 +5,11 @@ import '../../../../core/design_system/tokens/typography.dart';
 class RegisterStepIndicator extends StatelessWidget {
   final int currentStep;
   final int totalSteps;
-  const RegisterStepIndicator(
-      {super.key, required this.currentStep, required this.totalSteps});
+  const RegisterStepIndicator({
+    super.key,
+    required this.currentStep,
+    required this.totalSteps,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +41,13 @@ class RegisterStepIndicator extends StatelessWidget {
             child: Center(
               child: done
                   ? const Icon(Icons.check, size: 14, color: Colors.white)
-                  : Text('${step + 1}',
+                  : Text(
+                      '${step + 1}',
                       style: AppTextStyles.caption.copyWith(
-                          color: active ? Colors.white : color,
-                          fontWeight: FontWeight.w600)),
+                        color: active ? Colors.white : color,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
             ),
           );
         }),

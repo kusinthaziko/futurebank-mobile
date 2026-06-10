@@ -43,9 +43,9 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
       await ReceiptPdfService.sharePdf(tx);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to share PDF: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to share PDF: $e')));
     } finally {
       if (mounted) setState(() => _isGeneratingPdf = false);
     }
@@ -56,14 +56,14 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
     try {
       await ReceiptPdfService.downloadPdf(tx);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('PDF saved successfully')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('PDF saved successfully')));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to download PDF: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to download PDF: $e')));
     } finally {
       if (mounted) setState(() => _isGeneratingPdf = false);
     }
@@ -78,10 +78,12 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Receipt')),
       body: FutureBuilder<QueryResult>(
-        future: client.query(QueryOptions(
-          document: gql(_receiptQuery),
-          variables: {'id': widget.receiptId},
-        )),
+        future: client.query(
+          QueryOptions(
+            document: gql(_receiptQuery),
+            variables: {'id': widget.receiptId},
+          ),
+        ),
         builder: (context, snap) {
           if (snap.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -99,13 +101,17 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
             children: [
               const Icon(FbIcons.checkCircle, color: success500, size: 72),
               const SizedBox(height: sp12),
-              const Text('Transaction Successful',
-                  style: AppTextStyles.titleLarge,
-                  textAlign: TextAlign.center),
+              const Text(
+                'Transaction Successful',
+                style: AppTextStyles.titleLarge,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: sp4),
-              Text(tx['transaction_type'] as String? ?? 'Transfer',
-                  style: AppTextStyles.bodyMedium.copyWith(color: gray500),
-                  textAlign: TextAlign.center),
+              Text(
+                tx['transaction_type'] as String? ?? 'Transfer',
+                style: AppTextStyles.bodyMedium.copyWith(color: gray500),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: sp32),
               ReceiptRow(
                 label: 'Reference',
@@ -170,9 +176,10 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
               const SizedBox(height: sp12),
               TextButton(
                 onPressed: () => context.go('/home'),
-                child: Text('Back to Home',
-                    style: AppTextStyles.labelMedium
-                        .copyWith(color: primary500)),
+                child: Text(
+                  'Back to Home',
+                  style: AppTextStyles.labelMedium.copyWith(color: primary500),
+                ),
               ),
             ],
           );

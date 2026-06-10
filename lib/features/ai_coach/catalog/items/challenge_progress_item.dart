@@ -8,7 +8,8 @@ import '../../../../core/design_system/tokens/typography.dart';
 final challengeProgressItem = CatalogItem(
   name: 'ChallengeProgressCard',
   dataSchema: S.object(
-    description: 'Show challenge progress with streak. Use when user asks about challenges, streak, or leaderboard position.',
+    description:
+        'Show challenge progress with streak. Use when user asks about challenges, streak, or leaderboard position.',
     properties: {
       'title': S.string(description: 'Challenge name e.g. "Save MWK 20,000"'),
       'current_value': S.number(description: 'Current progress value'),
@@ -30,51 +31,81 @@ final challengeProgressItem = CatalogItem(
     return Container(
       padding: const EdgeInsets.all(sp16),
       decoration: BoxDecoration(
-        color: cardColor, borderRadius: radius16, boxShadow: shadowRaised,
+        color: cardColor,
+        borderRadius: radius16,
+        boxShadow: shadowRaised,
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          if (streak > 0) ...[
-            const Icon(Icons.local_fire_department, size: 18, color: warning500),
-            const SizedBox(width: sp4),
-          ],
-          Text(title, style: AppTextStyles.titleMedium),
-        ]),
-        const SizedBox(height: sp12),
-        ClipRRect(
-          borderRadius: radiusPill,
-          child: LinearProgressIndicator(
-            value: pct, minHeight: 10,
-            backgroundColor: gray100,
-            valueColor: AlwaysStoppedAnimation(
-              pct >= 1.0 ? success500 : primary500),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              if (streak > 0) ...[
+                const Icon(
+                  Icons.local_fire_department,
+                  size: 18,
+                  color: warning500,
+                ),
+                const SizedBox(width: sp4),
+              ],
+              Text(title, style: AppTextStyles.titleMedium),
+            ],
           ),
-        ),
-        const SizedBox(height: sp8),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('${current.toStringAsFixed(0)} / ${target.toStringAsFixed(0)}',
-              style: AppTextStyles.labelMedium.copyWith(color: gray700)),
-          Text('${(pct * 100).toStringAsFixed(0)}%',
-              style: AppTextStyles.labelLarge.copyWith(color: primary500)),
-        ]),
-        const SizedBox(height: sp8),
-        Row(children: [
-          if (streak > 0) ...[
-            const Icon(Icons.local_fire_department, size: 14, color: warning500),
-            const SizedBox(width: sp4),
-            Text('$streak-day streak',
-                style: AppTextStyles.labelMedium.copyWith(color: warning500)),
-            const Spacer(),
-          ],
-          const Icon(Icons.access_time, size: 14, color: gray500),
-          const SizedBox(width: sp4),
-          Text(daysLeft > 0 ? '$daysLeft days left' : 'Last day!',
-              style: AppTextStyles.caption.copyWith(
-                color: daysLeft <= 1 ? error500 : gray500,
-                fontWeight: daysLeft <= 1 ? FontWeight.w600 : FontWeight.w400,
-              )),
-        ]),
-      ]),
+          const SizedBox(height: sp12),
+          ClipRRect(
+            borderRadius: radiusPill,
+            child: LinearProgressIndicator(
+              value: pct,
+              minHeight: 10,
+              backgroundColor: gray100,
+              valueColor: AlwaysStoppedAnimation(
+                pct >= 1.0 ? success500 : primary500,
+              ),
+            ),
+          ),
+          const SizedBox(height: sp8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${current.toStringAsFixed(0)} / ${target.toStringAsFixed(0)}',
+                style: AppTextStyles.labelMedium.copyWith(color: gray700),
+              ),
+              Text(
+                '${(pct * 100).toStringAsFixed(0)}%',
+                style: AppTextStyles.labelLarge.copyWith(color: primary500),
+              ),
+            ],
+          ),
+          const SizedBox(height: sp8),
+          Row(
+            children: [
+              if (streak > 0) ...[
+                const Icon(
+                  Icons.local_fire_department,
+                  size: 14,
+                  color: warning500,
+                ),
+                const SizedBox(width: sp4),
+                Text(
+                  '$streak-day streak',
+                  style: AppTextStyles.labelMedium.copyWith(color: warning500),
+                ),
+                const Spacer(),
+              ],
+              const Icon(Icons.access_time, size: 14, color: gray500),
+              const SizedBox(width: sp4),
+              Text(
+                daysLeft > 0 ? '$daysLeft days left' : 'Last day!',
+                style: AppTextStyles.caption.copyWith(
+                  color: daysLeft <= 1 ? error500 : gray500,
+                  fontWeight: daysLeft <= 1 ? FontWeight.w600 : FontWeight.w400,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   },
 );

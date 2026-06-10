@@ -30,25 +30,30 @@ class DashboardScreen extends ConsumerWidget {
 
     return ScreenshotProtectedScreen(
       child: Scaffold(
-      body: SafeArea(
-        child: dashboardAsync.when(
-          loading: () => _buildSkeleton(context),
-          error: (e, st) {
-            final code = errorCode(e);
-            // Graceful empty state for not-found — keeps the UI friendly
-            if (code == 'not_found') {
-              return _buildEmptyState(context, ref);
-            }
-            return ErrorView(error: e, onRetry: () => ref.refresh(dashboardProvider));
-          },
-          data: (data) => RefreshIndicator(
-            onRefresh: () => Future.wait([
-              ref.refresh(dashboardProvider.future),
-              ref.refresh(savingsGoalsProvider.future),
-              ref.refresh(activeChallengeProvider.future),
-              ref.refresh(aiInsightProvider.future),
-              ref.refresh(monthlyDeltaProvider(data.primaryAccount.id).future),
-            ]),
+        body: SafeArea(
+          child: dashboardAsync.when(
+            loading: () => _buildSkeleton(context),
+            error: (e, st) {
+              final code = errorCode(e);
+              // Graceful empty state for not-found — keeps the UI friendly
+              if (code == 'not_found') {
+                return _buildEmptyState(context, ref);
+              }
+              return ErrorView(
+                error: e,
+                onRetry: () => ref.refresh(dashboardProvider),
+              );
+            },
+            data: (data) => RefreshIndicator(
+              onRefresh: () => Future.wait([
+                ref.refresh(dashboardProvider.future),
+                ref.refresh(savingsGoalsProvider.future),
+                ref.refresh(activeChallengeProvider.future),
+                ref.refresh(aiInsightProvider.future),
+                ref.refresh(
+                  monthlyDeltaProvider(data.primaryAccount.id).future,
+                ),
+              ]),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: Responsive.padding(context),
@@ -56,8 +61,10 @@ class DashboardScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // ── Greeting ──────────────────────────────────────
-                    Text(_greeting(data.user.fullName),
-                        style: Theme.of(context).textTheme.titleLarge),
+                    Text(
+                      _greeting(data.user.fullName),
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                     const SizedBox(height: sp20),
 
                     FadeInStaggered(
@@ -88,15 +95,18 @@ class DashboardScreen extends ConsumerWidget {
                                     borderRadius: radius16,
                                     boxShadow: shadowRaised,
                                   ),
-                                    child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Text('Recent Activity',
-                                              style: AppTextStyles.labelLarge),
+                                          Text(
+                                            'Recent Activity',
+                                            style: AppTextStyles.labelLarge,
+                                          ),
                                         ],
                                       ),
                                       const SizedBox(height: sp8),
@@ -120,7 +130,9 @@ class DashboardScreen extends ConsumerWidget {
                             padding: const EdgeInsets.only(bottom: sp16),
                             child: SizedBox(
                               width: double.infinity,
-                              child: HealthScoreTile(healthScore: data.healthScore!),
+                              child: HealthScoreTile(
+                                healthScore: data.healthScore!,
+                              ),
                             ),
                           ),
 
@@ -144,10 +156,11 @@ class DashboardScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+            ),
           ),
         ),
       ),
-    ));
+    );
   }
 
   /// Shimmer skeleton that mirrors the bento grid layout.
@@ -185,10 +198,7 @@ class DashboardScreen extends ConsumerWidget {
                 ),
               ),
               SizedBox(width: sp12),
-              Expanded(
-                flex: 3,
-                child: ShimmerCard(height: 240),
-              ),
+              Expanded(flex: 3, child: ShimmerCard(height: 240)),
             ],
           ),
           SizedBox(height: sp20),
@@ -222,7 +232,8 @@ class DashboardScreen extends ConsumerWidget {
     return FbEmptyState(
       icon: FbIcons.search,
       title: 'No dashboard data',
-      subtitle: 'We couldn\'t load your dashboard. Pull to refresh or try again.',
+      subtitle:
+          'We couldn\'t load your dashboard. Pull to refresh or try again.',
       action: TextButton.icon(
         onPressed: () => ref.refresh(dashboardProvider),
         icon: const Icon(FbIcons.refresh),
@@ -233,7 +244,11 @@ class DashboardScreen extends ConsumerWidget {
 
   String _greeting(String name) {
     final hour = DateTime.now().hour;
-    final g = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    final g = hour < 12
+        ? 'Good morning'
+        : hour < 17
+        ? 'Good afternoon'
+        : 'Good evening';
     return '$g, ${name.split(' ').first}';
   }
 }

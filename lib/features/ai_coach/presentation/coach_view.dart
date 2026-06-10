@@ -25,41 +25,47 @@ class CoachView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CoachBloc, CoachState>(
-      builder: (ctx, state) => Column(children: [
-        if (state.weeklyInsight != null)
-          const WeeklyInsightsCard(
-            amountSaved: 'MWK 3,200', savingsChange: '↑ 18%',
-            topSpendCategory: 'Data bundles', topSpendAmount: 'MWK 800',
-            loanStatus: 'On track', healthScoreChange: '720 (↑ 15 pts)',
-          ),
-        Expanded(
-          child: state.allMessages.isEmpty
-              ? _buildWelcome(ctx)
-              : ListView.builder(
-                  padding: const EdgeInsets.all(sp16),
-                  itemCount: state.allMessages.length +
-                      (state.isGenerating ? 1 : 0),
-                  itemBuilder: (_, i) {
-                    if (i == state.allMessages.length) {
-                      return const _TypingIndicator();
-                    }
-                    return switch (state.allMessages[i]) {
-                      UserMessage(:final text) => _UserBubble(text: text),
-                      AiSurfaceMessage(:final surfaceId) => Padding(
+      builder: (ctx, state) => Column(
+        children: [
+          if (state.weeklyInsight != null)
+            const WeeklyInsightsCard(
+              amountSaved: 'MWK 3,200',
+              savingsChange: '↑ 18%',
+              topSpendCategory: 'Data bundles',
+              topSpendAmount: 'MWK 800',
+              loanStatus: 'On track',
+              healthScoreChange: '720 (↑ 15 pts)',
+            ),
+          Expanded(
+            child: state.allMessages.isEmpty
+                ? _buildWelcome(ctx)
+                : ListView.builder(
+                    padding: const EdgeInsets.all(sp16),
+                    itemCount:
+                        state.allMessages.length + (state.isGenerating ? 1 : 0),
+                    itemBuilder: (_, i) {
+                      if (i == state.allMessages.length) {
+                        return const _TypingIndicator();
+                      }
+                      return switch (state.allMessages[i]) {
+                        UserMessage(:final text) => _UserBubble(text: text),
+                        AiSurfaceMessage(:final surfaceId) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: sp8),
                           child: Surface(
                             surfaceContext: surfaceHost.contextFor(surfaceId),
-                          )),
-                      AiFallbackMessage(:final text) => _AiBubble(text: text),
-                    };
-                  },
-                ),
-        ),
-        ChatInput(
-          disabled: state.isGenerating,
-          onSend: (text) => ctx.read<CoachBloc>().add(CoachMessageSent(text)),
-        ),
-      ]),
+                          ),
+                        ),
+                        AiFallbackMessage(:final text) => _AiBubble(text: text),
+                      };
+                    },
+                  ),
+          ),
+          ChatInput(
+            disabled: state.isGenerating,
+            onSend: (text) => ctx.read<CoachBloc>().add(CoachMessageSent(text)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -67,29 +73,45 @@ class CoachView extends StatelessWidget {
     final suggestions = _getSuggestions(context);
     return Padding(
       padding: const EdgeInsets.all(sp24),
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Container(
-          width: 80, height: 80,
-          decoration: BoxDecoration(
-            color: primary100, borderRadius: BorderRadius.circular(40),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              color: primary100,
+              borderRadius: BorderRadius.circular(40),
+            ),
+            child: const Icon(Icons.psychology, size: 40, color: primary500),
           ),
-          child: const Icon(Icons.psychology, size: 40, color: primary500),
-        ),
-        const SizedBox(height: sp16),
-        const Text("Hi! I'm your financial coach.",
-            style: AppTextStyles.titleMedium, textAlign: TextAlign.center),
-        const SizedBox(height: sp8),
-        Text('Ask me anything about your money.',
-            style: AppTextStyles.bodyMedium.copyWith(color: gray500)),
-        const SizedBox(height: sp24),
-        Wrap(
-          spacing: sp8, runSpacing: sp8,
-          children: suggestions.map((s) => ActionChip(
-            label: Text(s, style: AppTextStyles.labelMedium),
-            onPressed: () => context.read<CoachBloc>().add(CoachMessageSent(s)),
-          )).toList(),
-        ),
-      ]),
+          const SizedBox(height: sp16),
+          const Text(
+            "Hi! I'm your financial coach.",
+            style: AppTextStyles.titleMedium,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: sp8),
+          Text(
+            'Ask me anything about your money.',
+            style: AppTextStyles.bodyMedium.copyWith(color: gray500),
+          ),
+          const SizedBox(height: sp24),
+          Wrap(
+            spacing: sp8,
+            runSpacing: sp8,
+            children: suggestions
+                .map(
+                  (s) => ActionChip(
+                    label: Text(s, style: AppTextStyles.labelMedium),
+                    onPressed: () =>
+                        context.read<CoachBloc>().add(CoachMessageSent(s)),
+                  ),
+                )
+                .toList(),
+          ),
+        ],
+      ),
     );
   }
 
@@ -109,15 +131,18 @@ class _UserBubble extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: sp4),
       padding: const EdgeInsets.symmetric(horizontal: sp16, vertical: sp12),
       constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.75),
+        maxWidth: MediaQuery.of(context).size.width * 0.75,
+      ),
       decoration: const BoxDecoration(
         color: primary500,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16), topRight: Radius.circular(16),
-          bottomLeft: Radius.circular(16), bottomRight: Radius.circular(4)),
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+          bottomLeft: Radius.circular(16),
+          bottomRight: Radius.circular(4),
+        ),
       ),
-      child: Text(text,
-          style: AppTextStyles.bodyMedium.copyWith(color: white)),
+      child: Text(text, style: AppTextStyles.bodyMedium.copyWith(color: white)),
     ),
   );
 }
@@ -133,12 +158,16 @@ class _AiBubble extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: sp4),
       padding: const EdgeInsets.symmetric(horizontal: sp16, vertical: sp12),
       constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.75),
-      decoration: BoxDecoration(
-        color: gray100, borderRadius: BorderRadius.circular(12),
+        maxWidth: MediaQuery.of(context).size.width * 0.75,
       ),
-      child: Text(text,
-          style: AppTextStyles.bodyMedium.copyWith(color: gray900)),
+      decoration: BoxDecoration(
+        color: gray100,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        text,
+        style: AppTextStyles.bodyMedium.copyWith(color: gray900),
+      ),
     ),
   );
 }
@@ -153,17 +182,24 @@ class _TypingIndicator extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: sp4),
       padding: const EdgeInsets.all(sp12),
       decoration: BoxDecoration(
-        color: gray100, borderRadius: BorderRadius.circular(12),
+        color: gray100,
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        const SizedBox(
-          width: 16, height: 16,
-          child: CircularProgressIndicator(strokeWidth: 2, color: primary500),
-        ),
-        const SizedBox(width: sp8),
-        Text('Thinking...',
-            style: AppTextStyles.caption.copyWith(color: gray500)),
-      ]),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(
+            width: 16,
+            height: 16,
+            child: CircularProgressIndicator(strokeWidth: 2, color: primary500),
+          ),
+          const SizedBox(width: sp8),
+          Text(
+            'Thinking...',
+            style: AppTextStyles.caption.copyWith(color: gray500),
+          ),
+        ],
+      ),
     ),
   );
 }

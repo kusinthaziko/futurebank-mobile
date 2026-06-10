@@ -41,7 +41,10 @@ class _AISearchInputState extends State<AISearchInput> {
         decoration: InputDecoration(
           hintText: 'Search transactions...',
           hintStyle: AppTextStyles.bodyMedium.copyWith(color: gray500),
-          contentPadding: const EdgeInsets.symmetric(horizontal: sp16, vertical: sp12),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: sp16,
+            vertical: sp12,
+          ),
           border: OutlineInputBorder(
             borderRadius: radius12,
             borderSide: const BorderSide(color: gray300),

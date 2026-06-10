@@ -17,8 +17,7 @@ class CacheService {
     'social': Duration(seconds: 30),
   };
 
-  Duration ttl(String key) =>
-      _ttl[key] ?? const Duration(seconds: 30);
+  Duration ttl(String key) => _ttl[key] ?? const Duration(seconds: 30);
 
   bool _isFresh(DateTime cachedAt, Duration ttl) {
     return DateTime.now().difference(cachedAt) <= ttl;
@@ -109,7 +108,9 @@ class CacheService {
   }
 
   Future<({String json, DateTime cachedAt})?> _getCachedRaw(
-      String key, String id) async {
+    String key,
+    String id,
+  ) async {
     switch (key) {
       case 'accounts':
         final r = await _db.getCachedAccount(id);
@@ -118,16 +119,18 @@ class CacheService {
         final rows = await _db.getCachedTxs(id);
         if (rows.isNotEmpty) {
           final items = rows.map((r) => jsonDecode(r.json)).toList();
-          final latest =
-              rows.map((r) => r.cachedAt).reduce((a, b) => a.isAfter(b) ? a : b);
+          final latest = rows
+              .map((r) => r.cachedAt)
+              .reduce((a, b) => a.isAfter(b) ? a : b);
           return (json: jsonEncode({'items': items}), cachedAt: latest);
         }
       case 'loans':
         final rows = await _db.getCachedLoans();
         if (rows.isNotEmpty) {
           final items = rows.map((r) => jsonDecode(r.json)).toList();
-          final latest =
-              rows.map((r) => r.cachedAt).reduce((a, b) => a.isAfter(b) ? a : b);
+          final latest = rows
+              .map((r) => r.cachedAt)
+              .reduce((a, b) => a.isAfter(b) ? a : b);
           return (json: jsonEncode({'items': items}), cachedAt: latest);
         }
       case 'profile':

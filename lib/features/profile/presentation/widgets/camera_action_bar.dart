@@ -34,32 +34,35 @@ class CameraActionBar extends StatelessWidget {
   }
 
   Widget _buildPreviewActions() {
-    return Row(mainAxisSize: MainAxisSize.min, children: [
-      IconButton(
-        icon: const Icon(Icons.refresh, color: Colors.white, size: 32),
-        onPressed: onRetake,
-        tooltip: 'Retake',
-      ),
-      const SizedBox(width: sp32),
-      uploading
-          ? const SizedBox(
-              width: 56,
-              height: 56,
-              child: CircularProgressIndicator(color: Colors.white),
-            )
-          : GestureDetector(
-              onTap: onConfirm,
-              child: Container(
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.refresh, color: Colors.white, size: 32),
+          onPressed: onRetake,
+          tooltip: 'Retake',
+        ),
+        const SizedBox(width: sp32),
+        uploading
+            ? const SizedBox(
                 width: 56,
                 height: 56,
-                decoration: const BoxDecoration(
-                  color: primary500,
-                  shape: BoxShape.circle,
+                child: CircularProgressIndicator(color: Colors.white),
+              )
+            : GestureDetector(
+                onTap: onConfirm,
+                child: Container(
+                  width: 56,
+                  height: 56,
+                  decoration: const BoxDecoration(
+                    color: primary500,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check, color: Colors.white, size: 28),
                 ),
-                child: const Icon(Icons.check, color: Colors.white, size: 28),
               ),
-            ),
-    ]);
+      ],
+    );
   }
 
   Widget _buildCaptureButton() {

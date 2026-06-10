@@ -43,14 +43,19 @@ class CoachBloc extends Bloc<CoachEvent, CoachState> {
     };
   }
 
-  Future<void> _onMessageSent(CoachMessageSent event, Emitter<CoachState> emit) async {
+  Future<void> _onMessageSent(
+    CoachMessageSent event,
+    Emitter<CoachState> emit,
+  ) async {
     final newPage = <DisplayMessage>[UserMessage(event.text)];
-    emit(state.copyWith(
-      pages: [...state.pages, newPage],
-      currentPageIndex: state.pages.length,
-      isGenerating: true,
-      clearError: true,
-    ));
+    emit(
+      state.copyWith(
+        pages: [...state.pages, newPage],
+        currentPageIndex: state.pages.length,
+        isGenerating: true,
+        clearError: true,
+      ),
+    );
     await repository.sendMessage(event.text);
   }
 
@@ -63,7 +68,10 @@ class CoachBloc extends Bloc<CoachEvent, CoachState> {
     emit(state.copyWith(currentPageIndex: event.index));
   }
 
-  void _onInternalWaiting(CoachInternalWaiting event, Emitter<CoachState> emit) {
+  void _onInternalWaiting(
+    CoachInternalWaiting event,
+    Emitter<CoachState> emit,
+  ) {
     emit(state.copyWith(isGenerating: event.isWaiting));
   }
 
@@ -75,7 +83,10 @@ class CoachBloc extends Bloc<CoachEvent, CoachState> {
     emit(state.copyWith(pages: pages, isGenerating: false));
   }
 
-  void _onInternalSurface(CoachInternalSurface event, Emitter<CoachState> emit) {
+  void _onInternalSurface(
+    CoachInternalSurface event,
+    Emitter<CoachState> emit,
+  ) {
     final pages = [...state.pages];
     if (pages.isNotEmpty) {
       pages.last = [...pages.last, AiSurfaceMessage(event.surfaceId)];

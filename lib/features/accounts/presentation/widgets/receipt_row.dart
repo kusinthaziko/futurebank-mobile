@@ -28,8 +28,10 @@ class ReceiptRow extends StatelessWidget {
       children: [
         SizedBox(
           width: 120,
-          child: Text(label,
-              style: AppTextStyles.caption.copyWith(color: gray500)),
+          child: Text(
+            label,
+            style: AppTextStyles.caption.copyWith(color: gray500),
+          ),
         ),
         Expanded(
           child: GestureDetector(
@@ -41,18 +43,22 @@ class ReceiptRow extends StatelessWidget {
                     );
                   }
                 : null,
-            child: Row(children: [
-              Expanded(
-                child: Text(value,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    value,
                     style: AppTextStyles.bodyMedium.copyWith(
                       fontWeight: bold ? FontWeight.w600 : null,
                       color: status
                           ? (value == 'completed' ? success500 : warning500)
                           : null,
-                    )),
-              ),
-              if (copyable) const Icon(Icons.copy, color: gray500, size: 14),
-            ]),
+                    ),
+                  ),
+                ),
+                if (copyable) const Icon(Icons.copy, color: gray500, size: 14),
+              ],
+            ),
           ),
         ),
       ],

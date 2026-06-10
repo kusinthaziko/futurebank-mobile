@@ -61,24 +61,31 @@ class _BiometricSetupScreenState extends ConsumerState<BiometricSetupScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 100, height: 100,
+                width: 100,
+                height: 100,
                 decoration: BoxDecoration(
                   color: primary100,
                   borderRadius: radius24,
                 ),
                 child: const Icon(
-                  Icons.fingerprint, size: 56, color: primary500),
+                  Icons.fingerprint,
+                  size: 56,
+                  color: primary500,
+                ),
               ),
               const SizedBox(height: sp32),
-              const Text('Secure your account',
-                  style: AppTextStyles.displayMedium,
-                  textAlign: TextAlign.center),
+              const Text(
+                'Secure your account',
+                style: AppTextStyles.displayMedium,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: sp12),
               Text(
                 'Enable fingerprint or face login for faster, '
                 'more secure access to your account.',
                 style: AppTextStyles.bodyLarge.copyWith(color: gray500),
-                textAlign: TextAlign.center),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: sp48),
               FBButton(
                 label: 'Enable Biometric Login',
@@ -89,8 +96,10 @@ class _BiometricSetupScreenState extends ConsumerState<BiometricSetupScreen> {
               const SizedBox(height: sp16),
               TextButton(
                 onPressed: _skip,
-                child: Text('Skip for now',
-                    style: AppTextStyles.bodyMedium.copyWith(color: gray500)),
+                child: Text(
+                  'Skip for now',
+                  style: AppTextStyles.bodyMedium.copyWith(color: gray500),
+                ),
               ),
             ],
           ),

@@ -33,8 +33,8 @@ const success500 = Color(0xFF0D9B64);
 const success100 = Color(0xFFD1FAE5);
 const warning500 = Color(0xFFF59E0B);
 const warning100 = Color(0xFFFEF3C7);
-const error500   = Color(0xFFDC2626);
-const error100   = Color(0xFFFEE2E2);
+const error500 = Color(0xFFDC2626);
+const error100 = Color(0xFFFEE2E2);
 
 // Neutrals
 const gray900 = Color(0xFF111827);
@@ -42,14 +42,14 @@ const gray700 = Color(0xFF374151);
 const gray500 = Color(0xFF6B7280);
 const gray300 = Color(0xFFD1D5DB);
 const gray100 = Color(0xFFF3F4F6);
-const white   = Color(0xFFFFFFFF);
+const white = Color(0xFFFFFFFF);
 
 // Surfaces — light
 const surfaceColor = Color(0xFFFAFAFA);
-const cardColor    = Color(0xFFFFFFFF);
+const cardColor = Color(0xFFFFFFFF);
 
 // Surfaces — dark — true dark for OLED
-const darkBg       = Color(0xFF0D1117);
-const darkSurface  = Color(0xFF161B22);
-const darkCard     = Color(0xFF1C2333);
-const darkBorder   = Color(0xFF30363D);
+const darkBg = Color(0xFF0D1117);
+const darkSurface = Color(0xFF161B22);
+const darkCard = Color(0xFF1C2333);
+const darkBorder = Color(0xFF30363D);

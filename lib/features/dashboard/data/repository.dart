@@ -17,33 +17,41 @@ class DashboardRepository {
 
   Future<DashboardData> fetchDashboard(String userId) async {
     final cached = await _cacheService.getFreshValue<DashboardData>(
-      'dashboard', userId,
+      'dashboard',
+      userId,
       (json) => DashboardData(
         user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
-        primaryAccount: AccountModel.fromJson(json['primaryAccount'] as Map<String, dynamic>),
+        primaryAccount: AccountModel.fromJson(
+          json['primaryAccount'] as Map<String, dynamic>,
+        ),
         recentTransactions: (json['recentTransactions'] as List)
             .cast<Map<String, dynamic>>()
             .map(TransactionModel.fromJson)
             .toList(),
         healthScore: json['healthScore'] != null
-            ? HealthScoreModel.fromJson(json['healthScore'] as Map<String, dynamic>)
+            ? HealthScoreModel.fromJson(
+                json['healthScore'] as Map<String, dynamic>,
+              )
             : null,
       ),
     );
     if (cached != null) return cached;
 
     try {
-      final result = await _client.query(QueryOptions(
-        document: gql(dashboardQuery),
-        fetchPolicy: FetchPolicy.cacheAndNetwork,
-      ));
+      final result = await _client.query(
+        QueryOptions(
+          document: gql(dashboardQuery),
+          fetchPolicy: FetchPolicy.cacheAndNetwork,
+        ),
+      );
 
       if (result.hasException) throw result.exception!;
 
       final me = result.data!['me'] as Map<String, dynamic>;
       final accounts = (result.data!['myAccounts'] as List)
           .cast<Map<String, dynamic>>();
-      final hsRaw = result.data!['financialHealthScore'] as Map<String, dynamic>?;
+      final hsRaw =
+          result.data!['financialHealthScore'] as Map<String, dynamic>?;
 
       final primaryAccount = accounts.firstWhere(
         (a) => a['account_type'] == 'savings',
@@ -59,34 +67,49 @@ class DashboardRepository {
         }),
         primaryAccount: AccountModel.fromJson(primaryAccount),
         recentTransactions: const [],
-        healthScore: hsRaw != null ? HealthScoreModel.fromJson({
-          'score': hsRaw['score'] ?? 0,
-          'savingsConsistency': (hsRaw['savings_consistency'] as num?)?.toDouble() ?? 0.0,
-          'loanRepaymentRate': (hsRaw['loan_repayment_rate'] as num?)?.toDouble() ?? 0.0,
-          'challengeCompletions': hsRaw['challenge_completions'] ?? 0,
-        }) : null,
+        healthScore: hsRaw != null
+            ? HealthScoreModel.fromJson({
+                'score': hsRaw['score'] ?? 0,
+                'savingsConsistency':
+                    (hsRaw['savings_consistency'] as num?)?.toDouble() ?? 0.0,
+                'loanRepaymentRate':
+                    (hsRaw['loan_repayment_rate'] as num?)?.toDouble() ?? 0.0,
+                'challengeCompletions': hsRaw['challenge_completions'] ?? 0,
+              })
+            : null,
       );
 
-      await _cacheService.cacheJson('dashboard', userId, jsonEncode({
-        'user': dashboard.user.toJson(),
-        'primaryAccount': dashboard.primaryAccount.toJson(),
-        'recentTransactions': dashboard.recentTransactions.map((t) => t.toJson()).toList(),
-        'healthScore': dashboard.healthScore?.toJson(),
-      }));
+      await _cacheService.cacheJson(
+        'dashboard',
+        userId,
+        jsonEncode({
+          'user': dashboard.user.toJson(),
+          'primaryAccount': dashboard.primaryAccount.toJson(),
+          'recentTransactions': dashboard.recentTransactions
+              .map((t) => t.toJson())
+              .toList(),
+          'healthScore': dashboard.healthScore?.toJson(),
+        }),
+      );
 
       return dashboard;
     } catch (e) {
       final stale = await _cacheService.getStaleValue<DashboardData>(
-        'dashboard', userId,
+        'dashboard',
+        userId,
         (json) => DashboardData(
           user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
-          primaryAccount: AccountModel.fromJson(json['primaryAccount'] as Map<String, dynamic>),
+          primaryAccount: AccountModel.fromJson(
+            json['primaryAccount'] as Map<String, dynamic>,
+          ),
           recentTransactions: (json['recentTransactions'] as List)
               .cast<Map<String, dynamic>>()
               .map(TransactionModel.fromJson)
               .toList(),
           healthScore: json['healthScore'] != null
-              ? HealthScoreModel.fromJson(json['healthScore'] as Map<String, dynamic>)
+              ? HealthScoreModel.fromJson(
+                  json['healthScore'] as Map<String, dynamic>,
+                )
               : null,
         ),
       );
@@ -95,9 +118,12 @@ class DashboardRepository {
     }
   }
 
-  Future<List<TransactionModel>> fetchRecentTransactions(String accountId) async {
+  Future<List<TransactionModel>> fetchRecentTransactions(
+    String accountId,
+  ) async {
     final cached = await _cacheService.getFreshValue<List<TransactionModel>>(
-      'transactions', accountId,
+      'transactions',
+      accountId,
       (json) => (json['items'] as List)
           .cast<Map<String, dynamic>>()
           .map(TransactionModel.fromJson)
@@ -106,35 +132,42 @@ class DashboardRepository {
     if (cached != null) return cached;
 
     try {
-      final result = await _client.query(QueryOptions(
-        document: gql(recentTransactionsQuery),
-        variables: {'accountId': accountId, 'limit': 5},
-        fetchPolicy: FetchPolicy.cacheAndNetwork,
-      ));
+      final result = await _client.query(
+        QueryOptions(
+          document: gql(recentTransactionsQuery),
+          variables: {'accountId': accountId, 'limit': 5},
+          fetchPolicy: FetchPolicy.cacheAndNetwork,
+        ),
+      );
 
       if (result.hasException) throw result.exception!;
 
       final txs = (result.data!['transactionHistory'] as List)
           .cast<Map<String, dynamic>>()
-          .map((t) => TransactionModel.fromJson({
-                'id': t['id'],
-                'reference': t['reference'],
-                'description': t['description'],
-                'amount': t['amount'],
-                'transactionType': t['transaction_type'],
-                'status': t['status'],
-                'insertedAt': t['inserted_at'],
-              }))
+          .map(
+            (t) => TransactionModel.fromJson({
+              'id': t['id'],
+              'reference': t['reference'],
+              'description': t['description'],
+              'amount': t['amount'],
+              'transactionType': t['transaction_type'],
+              'status': t['status'],
+              'insertedAt': t['inserted_at'],
+            }),
+          )
           .toList();
 
-      await _cacheService.cacheJson('transactions', accountId, jsonEncode({
-        'items': txs.map((t) => t.toJson()).toList(),
-      }));
+      await _cacheService.cacheJson(
+        'transactions',
+        accountId,
+        jsonEncode({'items': txs.map((t) => t.toJson()).toList()}),
+      );
 
       return txs;
     } catch (e) {
       final stale = await _cacheService.getStaleValue<List<TransactionModel>>(
-        'transactions', accountId,
+        'transactions',
+        accountId,
         (json) => (json['items'] as List)
             .cast<Map<String, dynamic>>()
             .map(TransactionModel.fromJson)
@@ -146,10 +179,12 @@ class DashboardRepository {
   }
 
   Future<List<SavingsGoalModel>> fetchSavingsGoals() async {
-    final result = await _client.query(QueryOptions(
-      document: gql(dashboardExtrasQuery),
-      fetchPolicy: FetchPolicy.cacheAndNetwork,
-    ));
+    final result = await _client.query(
+      QueryOptions(
+        document: gql(dashboardExtrasQuery),
+        fetchPolicy: FetchPolicy.cacheAndNetwork,
+      ),
+    );
 
     if (result.hasException) throw result.exception!;
 
@@ -160,10 +195,12 @@ class DashboardRepository {
   }
 
   Future<ChallengeModel?> fetchActiveChallenge() async {
-    final result = await _client.query(QueryOptions(
-      document: gql(dashboardExtrasQuery),
-      fetchPolicy: FetchPolicy.cacheAndNetwork,
-    ));
+    final result = await _client.query(
+      QueryOptions(
+        document: gql(dashboardExtrasQuery),
+        fetchPolicy: FetchPolicy.cacheAndNetwork,
+      ),
+    );
 
     if (result.hasException) throw result.exception!;
 
@@ -174,11 +211,13 @@ class DashboardRepository {
   }
 
   Future<AiInsightModel?> fetchAiInsight(String accountId) async {
-    final result = await _client.query(QueryOptions(
-      document: gql(dashboardExtrasQuery),
-      variables: {'accountId': accountId},
-      fetchPolicy: FetchPolicy.cacheAndNetwork,
-    ));
+    final result = await _client.query(
+      QueryOptions(
+        document: gql(dashboardExtrasQuery),
+        variables: {'accountId': accountId},
+        fetchPolicy: FetchPolicy.cacheAndNetwork,
+      ),
+    );
 
     if (result.hasException) throw result.exception!;
 
@@ -188,11 +227,13 @@ class DashboardRepository {
   }
 
   Future<double?> fetchMonthlyDelta(String accountId) async {
-    final result = await _client.query(QueryOptions(
-      document: gql(monthlyDeltaQuery),
-      variables: {'accountId': accountId},
-      fetchPolicy: FetchPolicy.cacheAndNetwork,
-    ));
+    final result = await _client.query(
+      QueryOptions(
+        document: gql(monthlyDeltaQuery),
+        variables: {'accountId': accountId},
+        fetchPolicy: FetchPolicy.cacheAndNetwork,
+      ),
+    );
 
     if (result.hasException) return null;
 

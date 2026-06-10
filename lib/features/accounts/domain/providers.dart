@@ -18,14 +18,18 @@ final accountRepositoryProvider = Provider.family<AccountRepository, String?>(
   ),
 );
 
-final accountsProvider = FutureProvider.autoDispose<
-    ({List<AccountModel> accounts, List<SavingsGoalModel> goals})>((ref) async {
-  final token = _token(ref.watch(authProvider));
-  return ref.read(accountRepositoryProvider(token)).fetchAccounts();
-});
+final accountsProvider =
+    FutureProvider.autoDispose<
+      ({List<AccountModel> accounts, List<SavingsGoalModel> goals})
+    >((ref) async {
+      final token = _token(ref.watch(authProvider));
+      return ref.read(accountRepositoryProvider(token)).fetchAccounts();
+    });
 
-final transactionsProvider =
-    FutureProvider.autoDispose.family<List<TxModel>, String>((ref, accountId) async {
-  final token = _token(ref.watch(authProvider));
-  return ref.read(accountRepositoryProvider(token)).fetchTransactions(accountId);
-});
+final transactionsProvider = FutureProvider.autoDispose
+    .family<List<TxModel>, String>((ref, accountId) async {
+      final token = _token(ref.watch(authProvider));
+      return ref
+          .read(accountRepositoryProvider(token))
+          .fetchTransactions(accountId);
+    });

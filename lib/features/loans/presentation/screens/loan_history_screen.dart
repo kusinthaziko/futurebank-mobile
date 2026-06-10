@@ -22,17 +22,24 @@ class LoanHistoryScreen extends ConsumerWidget {
         loading: () => ListView(
           padding: const EdgeInsets.all(sp16),
           children: const [
-            FBSkeletonLoader(height: 80, borderRadius: BorderRadius.all(Radius.circular(16))),
+            FBSkeletonLoader(
+              height: 80,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
             SizedBox(height: sp8),
-            FBSkeletonLoader(height: 80, borderRadius: BorderRadius.all(Radius.circular(16))),
+            FBSkeletonLoader(
+              height: 80,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
             SizedBox(height: sp8),
-            FBSkeletonLoader(height: 80, borderRadius: BorderRadius.all(Radius.circular(16))),
+            FBSkeletonLoader(
+              height: 80,
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
           ],
         ),
-        error: (e, _) => ErrorView(
-          error: e,
-          onRetry: () => ref.refresh(loansProvider),
-        ),
+        error: (e, _) =>
+            ErrorView(error: e, onRetry: () => ref.refresh(loansProvider)),
         data: (data) {
           final pastLoans = data.loans
               .where((l) => l.status != 'active')
@@ -45,8 +52,10 @@ class LoanHistoryScreen extends ConsumerWidget {
                 children: [
                   const Icon(Icons.history, size: 48, color: gray300),
                   const SizedBox(height: sp12),
-                  Text('No past loans.',
-                      style: AppTextStyles.bodyMedium.copyWith(color: gray500)),
+                  Text(
+                    'No past loans.',
+                    style: AppTextStyles.bodyMedium.copyWith(color: gray500),
+                  ),
                 ],
               ),
             );
@@ -55,8 +64,10 @@ class LoanHistoryScreen extends ConsumerWidget {
           return ListView(
             padding: const EdgeInsets.all(sp16),
             children: [
-              Text('${pastLoans.length} past loan(s)',
-                  style: AppTextStyles.labelLarge.copyWith(color: gray500)),
+              Text(
+                '${pastLoans.length} past loan(s)',
+                style: AppTextStyles.labelLarge.copyWith(color: gray500),
+              ),
               const SizedBox(height: sp12),
               ...pastLoans.map((loan) {
                 final total = double.tryParse(loan.amountRequested) ?? 0;
@@ -76,53 +87,69 @@ class LoanHistoryScreen extends ConsumerWidget {
                         builder: (_) => _ReadOnlyDetailScreen(loan: loan),
                       ),
                     ),
-                    child: Row(children: [
-                      Container(
-                        width: 44, height: 44,
-                        decoration: BoxDecoration(
-                          color: color.withValues(alpha: 0.1),
-                          borderRadius: radius12,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: color.withValues(alpha: 0.1),
+                            borderRadius: radius12,
+                          ),
+                          child: Icon(
+                            isClosed ? Icons.check_circle : Icons.cancel,
+                            color: color,
+                            size: 22,
+                          ),
                         ),
-                        child: Icon(
-                          isClosed ? Icons.check_circle : Icons.cancel,
-                          color: color, size: 22,
+                        const SizedBox(width: sp12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'MWK ${loan.amountRequested}',
+                                style: AppTextStyles.titleMedium,
+                              ),
+                              Text(
+                                '${loan.purpose} · ${loan.repaymentPeriodWeeks} weeks',
+                                style: AppTextStyles.caption.copyWith(
+                                  color: gray500,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: sp12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text('MWK ${loan.amountRequested}',
-                                style: AppTextStyles.titleMedium),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: color.withValues(alpha: 0.1),
+                                borderRadius: radiusPill,
+                              ),
+                              child: Text(
+                                loan.status.toUpperCase(),
+                                style: AppTextStyles.labelMedium.copyWith(
+                                  color: color,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
                             Text(
-                              '${loan.purpose} · ${loan.repaymentPeriodWeeks} weeks',
-                              style: AppTextStyles.caption.copyWith(color: gray500),
+                              '$rate% repaid',
+                              style: AppTextStyles.caption.copyWith(
+                                color: gray500,
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: color.withValues(alpha: 0.1),
-                              borderRadius: radiusPill,
-                            ),
-                            child: Text(loan.status.toUpperCase(),
-                                style: AppTextStyles.labelMedium
-                                    .copyWith(color: color)),
-                          ),
-                          const SizedBox(height: 4),
-                          Text('$rate% repaid',
-                              style: AppTextStyles.caption
-                                  .copyWith(color: gray500)),
-                        ],
-                      ),
-                    ]),
+                      ],
+                    ),
                   ),
                 );
               }),
@@ -146,17 +173,20 @@ class _ReadOnlyDetailScreen extends StatelessWidget {
         padding: const EdgeInsets.all(sp16),
         children: [
           FBCard(
-            child: Column(children: [
-              _row('Amount', 'MWK ${loan.amountRequested}'),
-              _row('Approved', 'MWK ${loan.amountApproved ?? 'N/A'}'),
-              _row('Purpose', loan.purpose),
-              _row('Period', '${loan.repaymentPeriodWeeks} weeks'),
-              _row('Interest Rate', '${loan.interestRate}% / week'),
-              _row('Status', loan.status),
-              _row('Submitted', loan.submittedAt ?? 'N/A'),
-              if (loan.decidedAt != null) _row('Decided', loan.decidedAt!),
-              if (loan.disbursedAt != null) _row('Disbursed', loan.disbursedAt!),
-            ]),
+            child: Column(
+              children: [
+                _row('Amount', 'MWK ${loan.amountRequested}'),
+                _row('Approved', 'MWK ${loan.amountApproved ?? 'N/A'}'),
+                _row('Purpose', loan.purpose),
+                _row('Period', '${loan.repaymentPeriodWeeks} weeks'),
+                _row('Interest Rate', '${loan.interestRate}% / week'),
+                _row('Status', loan.status),
+                _row('Submitted', loan.submittedAt ?? 'N/A'),
+                if (loan.decidedAt != null) _row('Decided', loan.decidedAt!),
+                if (loan.disbursedAt != null)
+                  _row('Disbursed', loan.disbursedAt!),
+              ],
+            ),
           ),
           if (loan.aiRiskSummary != null) ...[
             const SizedBox(height: sp12),
@@ -164,11 +194,15 @@ class _ReadOnlyDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('AI Risk Assessment',
-                      style: AppTextStyles.labelLarge),
+                  const Text(
+                    'AI Risk Assessment',
+                    style: AppTextStyles.labelLarge,
+                  ),
                   const SizedBox(height: sp4),
-                  Text(loan.aiRiskSummary!,
-                      style: AppTextStyles.bodyMedium.copyWith(color: gray700)),
+                  Text(
+                    loan.aiRiskSummary!,
+                    style: AppTextStyles.bodyMedium.copyWith(color: gray700),
+                  ),
                 ],
               ),
             ),

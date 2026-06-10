@@ -13,7 +13,8 @@ class AccountModel with _$AccountModel {
     required String status,
     required String interestRate,
   }) = _AccountModel;
-  factory AccountModel.fromJson(Map<String, dynamic> j) => _$AccountModelFromJson(j);
+  factory AccountModel.fromJson(Map<String, dynamic> j) =>
+      _$AccountModelFromJson(j);
 }
 
 @freezed
@@ -27,7 +28,8 @@ class SavingsGoalModel with _$SavingsGoalModel {
     required String category,
     required String status,
   }) = _SavingsGoalModel;
-  factory SavingsGoalModel.fromJson(Map<String, dynamic> j) => _$SavingsGoalModelFromJson(j);
+  factory SavingsGoalModel.fromJson(Map<String, dynamic> j) =>
+      _$SavingsGoalModelFromJson(j);
 }
 
 @freezed

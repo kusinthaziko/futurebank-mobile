@@ -24,26 +24,41 @@ class LoanListCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(bottom: sp8),
         child: FBCard(
-          child: Row(children: [
-            Expanded(child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('MWK ${loan.amountRequested}',
-                    style: AppTextStyles.titleMedium),
-                Text(loan.purpose,
-                    style: AppTextStyles.caption.copyWith(color: gray500)),
-              ],
-            )),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: sp8, vertical: sp4),
-              decoration: BoxDecoration(
-                color: _statusColor.withValues(alpha: 0.1),
-                borderRadius: radiusPill,
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'MWK ${loan.amountRequested}',
+                      style: AppTextStyles.titleMedium,
+                    ),
+                    Text(
+                      loan.purpose,
+                      style: AppTextStyles.caption.copyWith(color: gray500),
+                    ),
+                  ],
+                ),
               ),
-              child: Text(loan.status.toUpperCase(),
-                  style: AppTextStyles.labelMedium.copyWith(color: _statusColor)),
-            ),
-          ]),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: sp8,
+                  vertical: sp4,
+                ),
+                decoration: BoxDecoration(
+                  color: _statusColor.withValues(alpha: 0.1),
+                  borderRadius: radiusPill,
+                ),
+                child: Text(
+                  loan.status.toUpperCase(),
+                  style: AppTextStyles.labelMedium.copyWith(
+                    color: _statusColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

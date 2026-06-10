@@ -42,35 +42,42 @@ class ErrorView extends StatelessWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(sp32),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(_icon, color: error500, size: 48),
-          const SizedBox(height: sp16),
-          Text(_message,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(_icon, color: error500, size: 48),
+            const SizedBox(height: sp16),
+            Text(
+              _message,
               style: AppTextStyles.bodyMedium.copyWith(color: gray700),
-              textAlign: TextAlign.center),
-          const SizedBox(height: sp16),
-          if (isAuth && onSignIn != null)
-            FBButton(
-              label: 'Sign In',
-              variant: FBButtonVariant.primary,
-              onPressed: onSignIn,
-            )
-          else if (onRetry != null)
-            FBButton(
-              label: 'Try Again',
-              variant: FBButtonVariant.secondary,
-              onPressed: onRetry,
+              textAlign: TextAlign.center,
             ),
-        ]),
+            const SizedBox(height: sp16),
+            if (isAuth && onSignIn != null)
+              FBButton(
+                label: 'Sign In',
+                variant: FBButtonVariant.primary,
+                onPressed: onSignIn,
+              )
+            else if (onRetry != null)
+              FBButton(
+                label: 'Try Again',
+                variant: FBButtonVariant.secondary,
+                onPressed: onRetry,
+              ),
+          ],
+        ),
       ),
     );
   }
 }
 
 void showErrorToast(BuildContext context, Object error) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    content: Text(friendlyErrorMessage(error)),
-    backgroundColor: error500,
-    duration: const Duration(seconds: 3),
-  ));
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(friendlyErrorMessage(error)),
+      backgroundColor: error500,
+      duration: const Duration(seconds: 3),
+    ),
+  );
 }

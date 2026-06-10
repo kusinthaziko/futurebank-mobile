@@ -49,10 +49,7 @@ class FbEmptyState extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             ],
-            if (action != null) ...[
-              const SizedBox(height: sp24),
-              action!,
-            ],
+            if (action != null) ...[const SizedBox(height: sp24), action!],
           ],
         ),
       ),

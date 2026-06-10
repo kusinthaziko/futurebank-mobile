@@ -20,14 +20,17 @@ String? _userId(AuthState auth) => switch (auth) {
   _ => null,
 };
 
-final dashboardRepositoryProvider = Provider.family<DashboardRepository, String?>(
-  (ref, token) => DashboardRepository(
-    ref.read(graphQLClientProvider(token)),
-    ref.read(cacheServiceProvider),
-  ),
-);
+final dashboardRepositoryProvider =
+    Provider.family<DashboardRepository, String?>(
+      (ref, token) => DashboardRepository(
+        ref.read(graphQLClientProvider(token)),
+        ref.read(cacheServiceProvider),
+      ),
+    );
 
-final dashboardProvider = FutureProvider.autoDispose<DashboardData>((ref) async {
+final dashboardProvider = FutureProvider.autoDispose<DashboardData>((
+  ref,
+) async {
   final auth = ref.watch(authProvider);
   final token = _token(auth);
   final userId = _userId(auth) ?? '';
@@ -36,29 +39,42 @@ final dashboardProvider = FutureProvider.autoDispose<DashboardData>((ref) async 
 
 final recentTransactionsProvider =
     FutureProvider.autoDispose<List<TransactionModel>>((ref) async {
-  final dashboard = await ref.watch(dashboardProvider.future);
-  final token = _token(ref.watch(authProvider));
-  return ref.read(dashboardRepositoryProvider(token))
-      .fetchRecentTransactions(dashboard.primaryAccount.id);
-});
+      final dashboard = await ref.watch(dashboardProvider.future);
+      final token = _token(ref.watch(authProvider));
+      return ref
+          .read(dashboardRepositoryProvider(token))
+          .fetchRecentTransactions(dashboard.primaryAccount.id);
+    });
 
-final savingsGoalsProvider = FutureProvider.autoDispose<List<SavingsGoalModel>>((ref) async {
-  final token = _token(ref.watch(authProvider));
-  return ref.read(dashboardRepositoryProvider(token)).fetchSavingsGoals();
-});
+final savingsGoalsProvider = FutureProvider.autoDispose<List<SavingsGoalModel>>(
+  (ref) async {
+    final token = _token(ref.watch(authProvider));
+    return ref.read(dashboardRepositoryProvider(token)).fetchSavingsGoals();
+  },
+);
 
-final activeChallengeProvider = FutureProvider.autoDispose<ChallengeModel?>((ref) async {
+final activeChallengeProvider = FutureProvider.autoDispose<ChallengeModel?>((
+  ref,
+) async {
   final token = _token(ref.watch(authProvider));
   return ref.read(dashboardRepositoryProvider(token)).fetchActiveChallenge();
 });
 
-final aiInsightProvider = FutureProvider.autoDispose<AiInsightModel?>((ref) async {
+final aiInsightProvider = FutureProvider.autoDispose<AiInsightModel?>((
+  ref,
+) async {
   final dashboard = await ref.watch(dashboardProvider.future);
   final token = _token(ref.watch(authProvider));
-  return ref.read(dashboardRepositoryProvider(token)).fetchAiInsight(dashboard.primaryAccount.id);
+  return ref
+      .read(dashboardRepositoryProvider(token))
+      .fetchAiInsight(dashboard.primaryAccount.id);
 });
 
-final monthlyDeltaProvider = FutureProvider.autoDispose.family<double?, String>((ref, accountId) async {
-  final token = _token(ref.watch(authProvider));
-  return ref.read(dashboardRepositoryProvider(token)).fetchMonthlyDelta(accountId);
-});
+final monthlyDeltaProvider = FutureProvider.autoDispose.family<double?, String>(
+  (ref, accountId) async {
+    final token = _token(ref.watch(authProvider));
+    return ref
+        .read(dashboardRepositoryProvider(token))
+        .fetchMonthlyDelta(accountId);
+  },
+);

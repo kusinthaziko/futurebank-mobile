@@ -27,7 +27,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       setState(() => _error = 'Enter a valid email address');
       return;
     }
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       await AuthMutations.forgotPassword(ref, email: _email.text);
       setState(() => _sent = true);
@@ -57,11 +60,17 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       const SizedBox(height: sp32),
       const Text('Forgot your password?', style: AppTextStyles.displayMedium),
       const SizedBox(height: sp8),
-      Text("Enter your email and we'll send you a reset link.",
-          style: AppTextStyles.bodyLarge.copyWith(color: gray500)),
+      Text(
+        "Enter your email and we'll send you a reset link.",
+        style: AppTextStyles.bodyLarge.copyWith(color: gray500),
+      ),
       const SizedBox(height: sp32),
-      FBInput(label: 'Email', hint: 'your@university.ac.mw',
-          controller: _email, keyboardType: TextInputType.emailAddress),
+      FBInput(
+        label: 'Email',
+        hint: 'your@university.ac.mw',
+        controller: _email,
+        keyboardType: TextInputType.emailAddress,
+      ),
       if (_error != null) ...[
         const SizedBox(height: sp8),
         Text(_error!, style: AppTextStyles.caption.copyWith(color: error500)),
@@ -72,8 +81,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       Center(
         child: TextButton(
           onPressed: () => context.go('/auth/login'),
-          child: Text('Back to Sign In',
-              style: AppTextStyles.bodyMedium.copyWith(color: primary500)),
+          child: Text(
+            'Back to Sign In',
+            style: AppTextStyles.bodyMedium.copyWith(color: primary500),
+          ),
         ),
       ),
     ],
@@ -86,9 +97,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       const SizedBox(height: sp16),
       const Text('Check your email', style: AppTextStyles.titleLarge),
       const SizedBox(height: sp8),
-      Text("We've sent a password reset link to\n${_email.text}",
-          style: AppTextStyles.bodyMedium.copyWith(color: gray500),
-          textAlign: TextAlign.center),
+      Text(
+        "We've sent a password reset link to\n${_email.text}",
+        style: AppTextStyles.bodyMedium.copyWith(color: gray500),
+        textAlign: TextAlign.center,
+      ),
       const SizedBox(height: sp32),
       FBButton(
         label: 'Back to Sign In',

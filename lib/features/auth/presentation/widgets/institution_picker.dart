@@ -63,16 +63,33 @@ class _InstitutionPickerSheetState extends State<InstitutionPickerSheet> {
                 leading: inst['logo_url'] != null
                     ? ClipRRect(
                         borderRadius: radius8,
-                        child: Image.network(inst['logo_url'], width: 36, height: 36))
+                        child: Image.network(
+                          inst['logo_url'],
+                          width: 36,
+                          height: 36,
+                        ),
+                      )
                     : Container(
-                        width: 36, height: 36,
+                        width: 36,
+                        height: 36,
                         decoration: BoxDecoration(
-                          color: primary100, borderRadius: radius8),
-                        child: const Icon(Icons.school, color: primary500, size: 20),
+                          color: primary100,
+                          borderRadius: radius8,
+                        ),
+                        child: const Icon(
+                          Icons.school,
+                          color: primary500,
+                          size: 20,
+                        ),
                       ),
                 title: Row(
                   children: [
-                    Flexible(child: Text(inst['name'], style: AppTextStyles.bodyMedium)),
+                    Flexible(
+                      child: Text(
+                        inst['name'],
+                        style: AppTextStyles.bodyMedium,
+                      ),
+                    ),
                     if (verified) ...[
                       const SizedBox(width: sp4),
                       const Icon(Icons.verified, color: success500, size: 16),
@@ -80,8 +97,10 @@ class _InstitutionPickerSheetState extends State<InstitutionPickerSheet> {
                   ],
                 ),
                 subtitle: inst['domain'] != null
-                    ? Text('@${inst['domain']}',
-                        style: AppTextStyles.caption.copyWith(color: gray500))
+                    ? Text(
+                        '@${inst['domain']}',
+                        style: AppTextStyles.caption.copyWith(color: gray500),
+                      )
                     : null,
                 onTap: () => Navigator.pop(context, inst),
               );

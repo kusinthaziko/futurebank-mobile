@@ -17,10 +17,8 @@ class SuccessCelebration extends StatefulWidget {
       context: context,
       barrierDismissible: false,
       barrierColor: Colors.black54,
-      builder: (_) => SuccessCelebration(
-        message: message,
-        onComplete: onComplete,
-      ),
+      builder: (_) =>
+          SuccessCelebration(message: message, onComplete: onComplete),
     );
   }
 
@@ -100,11 +98,14 @@ class _SuccessCelebrationState extends State<SuccessCelebration>
           child: Stack(
             alignment: Alignment.center,
             children: [
-              ...List.generate(30, (i) => _ConfettiParticle(
-                index: i,
-                progress: _confettiProgress.value,
-                color: _confettiColors[i % _confettiColors.length],
-              )),
+              ...List.generate(
+                30,
+                (i) => _ConfettiParticle(
+                  index: i,
+                  progress: _confettiProgress.value,
+                  color: _confettiColors[i % _confettiColors.length],
+                ),
+              ),
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -120,14 +121,19 @@ class _SuccessCelebrationState extends State<SuccessCelebration>
                           color: theme.colorScheme.primary,
                           boxShadow: [
                             BoxShadow(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.4),
+                              color: theme.colorScheme.primary.withValues(
+                                alpha: 0.4,
+                              ),
                               blurRadius: 24,
                               offset: const Offset(0, 8),
                             ),
                           ],
                         ),
-                        child: const Icon(FbIcons.check,
-                            color: Colors.white, size: 44),
+                        child: const Icon(
+                          FbIcons.check,
+                          color: Colors.white,
+                          size: 44,
+                        ),
                       ),
                     ),
                   ),

@@ -17,9 +17,7 @@ class InstitutionsQuery {
 
   static Future<List<Map<String, dynamic>>> fetch(WidgetRef ref) async {
     final client = ref.read(graphQLClientProvider(null));
-    final result = await client.query(
-      QueryOptions(document: gql(_query)),
-    );
+    final result = await client.query(QueryOptions(document: gql(_query)));
     if (result.hasException) throw result.exception!;
     final List? data = result.data?['institutions'];
     return data?.cast<Map<String, dynamic>>() ?? [];

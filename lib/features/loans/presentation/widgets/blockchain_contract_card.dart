@@ -17,38 +17,48 @@ class BlockchainContractCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            const Text('Blockchain Contract',
-                style: AppTextStyles.labelLarge),
-            const SizedBox(width: sp4),
-            GestureDetector(
-              onTap: () => _showTooltip(context),
-              child: const Icon(Icons.info_outline, size: 14, color: primary300),
-            ),
-          ]),
-          const SizedBox(height: sp4),
-          Row(children: [
-            Expanded(
-              child: Text(
-                '${contractHash.substring(0, 24)}...',
-                style: AppTextStyles.caption.copyWith(
-                  color: primary500,
-                  fontFamily: 'monospace',
+          Row(
+            children: [
+              const Text(
+                'Blockchain Contract',
+                style: AppTextStyles.labelLarge,
+              ),
+              const SizedBox(width: sp4),
+              GestureDetector(
+                onTap: () => _showTooltip(context),
+                child: const Icon(
+                  Icons.info_outline,
+                  size: 14,
+                  color: primary300,
                 ),
               ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.copy, size: 16, color: primary500),
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: contractHash));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Hash copied')),
-                );
-              },
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-            ),
-          ]),
+            ],
+          ),
+          const SizedBox(height: sp4),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '${contractHash.substring(0, 24)}...',
+                  style: AppTextStyles.caption.copyWith(
+                    color: primary500,
+                    fontFamily: 'monospace',
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.copy, size: 16, color: primary500),
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: contractHash));
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text('Hash copied')));
+                },
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -59,8 +69,10 @@ class BlockchainContractCard extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: radius12),
-        title: const Text('What is a Blockchain Contract?',
-            style: AppTextStyles.titleMedium),
+        title: const Text(
+          'What is a Blockchain Contract?',
+          style: AppTextStyles.titleMedium,
+        ),
         content: const Text(
           'A blockchain contract hash is the unique address of your loan '
           'agreement on the blockchain. It proves your loan terms are '

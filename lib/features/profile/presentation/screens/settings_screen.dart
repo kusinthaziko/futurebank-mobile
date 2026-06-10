@@ -49,10 +49,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             leading: const Icon(Icons.devices),
             title: const Text('Active Sessions'),
             subtitle: const Text('Current device · This phone'),
-            trailing: TextButton(
-              onPressed: () {},
-              child: const Text('Revoke'),
-            ),
+            trailing: TextButton(onPressed: () {}, child: const Text('Revoke')),
           ),
           ListTile(
             contentPadding: EdgeInsets.zero,
@@ -106,8 +103,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 icon: const Icon(Icons.copy, size: 18),
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: did));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('DID copied!')));
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text('DID copied!')));
                 },
               ),
             ),
@@ -116,8 +114,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.verified_user_outlined),
             title: const Text('KYC Status'),
-            subtitle: Text('Level ${profileAsync.asData?.value.user.kycLevel ?? 0}',
-                style: AppTextStyles.caption),
+            subtitle: Text(
+              'Level ${profileAsync.asData?.value.user.kycLevel ?? 0}',
+              style: AppTextStyles.caption,
+            ),
             trailing: TextButton(
               onPressed: () => context.push('/auth/kyc'),
               child: const Text('Upgrade'),
@@ -149,7 +149,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.info_outline),
             title: const Text('About'),
-            subtitle: const Text('Version 1.0.0+1', style: AppTextStyles.caption),
+            subtitle: const Text(
+              'Version 1.0.0+1',
+              style: AppTextStyles.caption,
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/about'),
           ),
@@ -172,7 +175,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         title: const Text('Sign Out'),
         content: const Text('Are you sure you want to sign out?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           FBButton(
             label: 'Sign Out',
             variant: FBButtonVariant.destructive,
@@ -201,8 +207,10 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(bottom: sp4),
-    child: Text(title,
-        style: AppTextStyles.labelLarge.copyWith(color: gray500)),
+    child: Text(
+      title,
+      style: AppTextStyles.labelLarge.copyWith(color: gray500),
+    ),
   );
 }
 
@@ -228,7 +236,12 @@ class _BiometricSwitchState extends ConsumerState<_BiometricSwitch> {
     final bio = ref.read(biometricServiceProvider);
     final available = await bio.isAvailable();
     final enabled = available ? await bio.isEnabled() : false;
-    if (mounted) setState(() { _enabled = enabled; _available = available; _loaded = true; });
+    if (mounted)
+      setState(() {
+        _enabled = enabled;
+        _available = available;
+        _loaded = true;
+      });
   }
 
   @override

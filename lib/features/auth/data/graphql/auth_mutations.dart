@@ -60,66 +60,91 @@ class AuthMutations {
     required String password,
   }) async {
     final client = ref.read(graphQLClientProvider(null));
-    final result = await client.mutate(MutationOptions(
-      document: gql(_loginMutation),
-      variables: {'email': email, 'password': password},
-    ));
+    final result = await client.mutate(
+      MutationOptions(
+        document: gql(_loginMutation),
+        variables: {'email': email, 'password': password},
+      ),
+    );
     if (result.hasException) throw result.exception!;
     return result.data?['login'];
   }
 
   static Future<Map<String, dynamic>?> register(
-    WidgetRef ref, Map<String, dynamic> input,
+    WidgetRef ref,
+    Map<String, dynamic> input,
   ) async {
     final client = ref.read(graphQLClientProvider(null));
-    final result = await client.mutate(MutationOptions(
-      document: gql(_registerMutation),
-      variables: {'input': input},
-    ));
+    final result = await client.mutate(
+      MutationOptions(
+        document: gql(_registerMutation),
+        variables: {'input': input},
+      ),
+    );
     if (result.hasException) throw result.exception!;
     return result.data?['register'];
   }
 
   static Future<void> forgotPassword(
-    WidgetRef ref, {required String email}) async {
+    WidgetRef ref, {
+    required String email,
+  }) async {
     final client = ref.read(graphQLClientProvider(null));
-    final result = await client.mutate(MutationOptions(
-      document: gql(_forgotPasswordMutation),
-      variables: {'email': email},
-    ));
+    final result = await client.mutate(
+      MutationOptions(
+        document: gql(_forgotPasswordMutation),
+        variables: {'email': email},
+      ),
+    );
     if (result.hasException) throw result.exception!;
   }
 
   static Future<void> verifyEmail(
-    WidgetRef ref, {required String code, String? email}) async {
+    WidgetRef ref, {
+    required String code,
+    String? email,
+  }) async {
     final client = ref.read(graphQLClientProvider(null));
-    final result = await client.mutate(MutationOptions(
-      document: gql(_verifyEmailMutation),
-      variables: {'code': code, 'email': email},
-    ));
+    final result = await client.mutate(
+      MutationOptions(
+        document: gql(_verifyEmailMutation),
+        variables: {'code': code, 'email': email},
+      ),
+    );
     if (result.hasException) throw result.exception!;
   }
 
   static Future<void> resendVerificationCode(
-    WidgetRef ref, {String? email}) async {
+    WidgetRef ref, {
+    String? email,
+  }) async {
     final client = ref.read(graphQLClientProvider(null));
-    final result = await client.mutate(MutationOptions(
-      document: gql(_resendVerificationMutation),
-      variables: {'email': email},
-    ));
+    final result = await client.mutate(
+      MutationOptions(
+        document: gql(_resendVerificationMutation),
+        variables: {'email': email},
+      ),
+    );
     if (result.hasException) throw result.exception!;
   }
 
   static Future<void> submitKYC(
-    WidgetRef ref, {required String documentType, required String cloudinaryPublicId}) async {
+    WidgetRef ref, {
+    required String documentType,
+    required String cloudinaryPublicId,
+  }) async {
     final client = ref.read(graphQLClientProvider(null));
-    final result = await client.mutate(MutationOptions(
-      document: gql(_submitKYCMutation),
-      variables: {'input': {
-        'document_type': documentType,
-        'cloudinary_public_id': cloudinaryPublicId,
-      }},
-    ));
+    final result = await client.mutate(
+      MutationOptions(
+        document: gql(_submitKYCMutation),
+        variables: {
+          'input': {
+            'document_type': documentType,
+            'cloudinary_public_id': cloudinaryPublicId,
+          },
+        },
+      ),
+    );
     if (result.hasException) throw result.exception!;
   }
 }

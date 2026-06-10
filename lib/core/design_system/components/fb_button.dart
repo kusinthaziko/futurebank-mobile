@@ -5,6 +5,7 @@ import '../tokens/typography.dart';
 import '../../widgets/animations/press_scale.dart';
 
 enum FBButtonVariant { primary, secondary, ghost, destructive }
+
 enum FBButtonSize { small, medium, large }
 
 class FBButton extends StatelessWidget {
@@ -33,9 +34,9 @@ class FBButton extends StatelessWidget {
       FBButtonSize.large => 52.0,
     };
     final (bg, fg, border) = switch (variant) {
-      FBButtonVariant.primary     => (primary500, white, null),
-      FBButtonVariant.secondary   => (primary100, primary500, null),
-      FBButtonVariant.ghost       => (Colors.transparent, primary500, primary300),
+      FBButtonVariant.primary => (primary500, white, null),
+      FBButtonVariant.secondary => (primary100, primary500, null),
+      FBButtonVariant.ghost => (Colors.transparent, primary500, primary300),
       FBButtonVariant.destructive => (error500, white, null),
     };
 
@@ -52,20 +53,27 @@ class FBButton extends StatelessWidget {
             foregroundColor: fg,
             shape: RoundedRectangleBorder(
               borderRadius: radiusPill,
-              side: border != null ? BorderSide(color: border) : BorderSide.none,
+              side: border != null
+                  ? BorderSide(color: border)
+                  : BorderSide.none,
             ),
             padding: const EdgeInsets.symmetric(horizontal: sp24),
           ),
           child: loading
               ? SizedBox(
-                  width: 20, height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: fg))
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: fg),
+                )
               : Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (icon != null) ...[icon!, const SizedBox(width: sp8)],
-                    Text(label, style: AppTextStyles.labelLarge.copyWith(color: fg)),
+                    Text(
+                      label,
+                      style: AppTextStyles.labelLarge.copyWith(color: fg),
+                    ),
                   ],
                 ),
         ),

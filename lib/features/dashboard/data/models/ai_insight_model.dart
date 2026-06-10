@@ -2,10 +2,7 @@ class AiInsightModel {
   final String message;
   final String type;
 
-  const AiInsightModel({
-    required this.message,
-    required this.type,
-  });
+  const AiInsightModel({required this.message, required this.type});
 
   factory AiInsightModel.fromJson(Map<String, dynamic> json) {
     return AiInsightModel(

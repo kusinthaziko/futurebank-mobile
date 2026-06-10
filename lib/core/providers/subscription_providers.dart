@@ -52,115 +52,133 @@ const _groupBalanceSub = r'''
   }
 ''';
 
-final balanceSubscriptionProvider =
-    StreamProvider.autoDispose.family<AccountModel, String>((ref, accountId) {
-  final token = _tokenFromAuth(ref.watch(authProvider));
-  final client = ref.read(graphQLClientProvider(token));
-  return client
-      .subscribe(SubscriptionOptions(
-        document: gql(_balanceChangedSub),
-        variables: {'accountId': accountId},
-      ))
-      .where((r) => !r.hasException && r.data != null)
-      .map((r) => AccountModel.fromJson({
-            'id': r.data!['balanceChanged']['id'],
-            'accountNumber': '',
-            'accountType': 'savings',
-            'balance': r.data!['balanceChanged']['balance'],
-            'currency': r.data!['balanceChanged']['currency'],
-            'status': 'active',
-            'interestRate': '0',
-          }));
-});
+final balanceSubscriptionProvider = StreamProvider.autoDispose
+    .family<AccountModel, String>((ref, accountId) {
+      final token = _tokenFromAuth(ref.watch(authProvider));
+      final client = ref.read(graphQLClientProvider(token));
+      return client
+          .subscribe(
+            SubscriptionOptions(
+              document: gql(_balanceChangedSub),
+              variables: {'accountId': accountId},
+            ),
+          )
+          .where((r) => !r.hasException && r.data != null)
+          .map(
+            (r) => AccountModel.fromJson({
+              'id': r.data!['balanceChanged']['id'],
+              'accountNumber': '',
+              'accountType': 'savings',
+              'balance': r.data!['balanceChanged']['balance'],
+              'currency': r.data!['balanceChanged']['currency'],
+              'status': 'active',
+              'interestRate': '0',
+            }),
+          );
+    });
 
-final transactionSubscriptionProvider =
-    StreamProvider.autoDispose.family<TxModel, String>((ref, accountId) {
-  final token = _tokenFromAuth(ref.watch(authProvider));
-  final client = ref.read(graphQLClientProvider(token));
-  return client
-      .subscribe(SubscriptionOptions(
-        document: gql(_transactionUpdatedSub),
-        variables: {'accountId': accountId},
-      ))
-      .where((r) => !r.hasException && r.data != null)
-      .map((r) {
-        final t = r.data!['transactionUpdated'];
-        return TxModel.fromJson({
-          'id': t['id'], 'reference': t['reference'],
-          'description': t['description'], 'amount': t['amount'],
-          'transactionType': t['transaction_type'],
-          'status': t['status'], 'insertedAt': t['inserted_at'],
-        });
-      });
-});
+final transactionSubscriptionProvider = StreamProvider.autoDispose
+    .family<TxModel, String>((ref, accountId) {
+      final token = _tokenFromAuth(ref.watch(authProvider));
+      final client = ref.read(graphQLClientProvider(token));
+      return client
+          .subscribe(
+            SubscriptionOptions(
+              document: gql(_transactionUpdatedSub),
+              variables: {'accountId': accountId},
+            ),
+          )
+          .where((r) => !r.hasException && r.data != null)
+          .map((r) {
+            final t = r.data!['transactionUpdated'];
+            return TxModel.fromJson({
+              'id': t['id'],
+              'reference': t['reference'],
+              'description': t['description'],
+              'amount': t['amount'],
+              'transactionType': t['transaction_type'],
+              'status': t['status'],
+              'insertedAt': t['inserted_at'],
+            });
+          });
+    });
 
-final loanStatusSubscriptionProvider =
-    StreamProvider.autoDispose.family<LoanModel, String>((ref, loanId) {
-  final token = _tokenFromAuth(ref.watch(authProvider));
-  final client = ref.read(graphQLClientProvider(token));
-  return client
-      .subscribe(SubscriptionOptions(
-        document: gql(_loanStatusSub),
-        variables: {'loanId': loanId},
-      ))
-      .where((r) => !r.hasException && r.data != null)
-      .map((r) {
-        final d = r.data!['loanStatusChanged'];
-        return LoanModel.fromJson({
-          'id': d['id'], 'status': d['status'], 'decided_at': d['decided_at'],
-          'amountRequested': '0', 'purpose': '',
-          'repaymentPeriodWeeks': 0, 'interestRate': '0',
-        });
-      });
-});
+final loanStatusSubscriptionProvider = StreamProvider.autoDispose
+    .family<LoanModel, String>((ref, loanId) {
+      final token = _tokenFromAuth(ref.watch(authProvider));
+      final client = ref.read(graphQLClientProvider(token));
+      return client
+          .subscribe(
+            SubscriptionOptions(
+              document: gql(_loanStatusSub),
+              variables: {'loanId': loanId},
+            ),
+          )
+          .where((r) => !r.hasException && r.data != null)
+          .map((r) {
+            final d = r.data!['loanStatusChanged'];
+            return LoanModel.fromJson({
+              'id': d['id'],
+              'status': d['status'],
+              'decided_at': d['decided_at'],
+              'amountRequested': '0',
+              'purpose': '',
+              'repaymentPeriodWeeks': 0,
+              'interestRate': '0',
+            });
+          });
+    });
 
 final notificationSubscriptionProvider =
     StreamProvider.autoDispose<Map<String, dynamic>>((ref) {
-  final token = _tokenFromAuth(ref.watch(authProvider));
-  final client = ref.read(graphQLClientProvider(token));
-  return client
-      .subscribe(SubscriptionOptions(document: gql(_newNotificationSub)))
-      .where((r) => !r.hasException && r.data != null)
-      .map((r) => r.data!['newNotification'] as Map<String, dynamic>);
-});
+      final token = _tokenFromAuth(ref.watch(authProvider));
+      final client = ref.read(graphQLClientProvider(token));
+      return client
+          .subscribe(SubscriptionOptions(document: gql(_newNotificationSub)))
+          .where((r) => !r.hasException && r.data != null)
+          .map((r) => r.data!['newNotification'] as Map<String, dynamic>);
+    });
 
-final challengeLeaderboardSubscriptionProvider =
-    StreamProvider.autoDispose.family<List<LeaderboardEntry>, String>(
-        (ref, challengeId) {
-  final token = _tokenFromAuth(ref.watch(authProvider));
-  final client = ref.read(graphQLClientProvider(token));
-  return client
-      .subscribe(SubscriptionOptions(
-        document: gql(_challengeLeaderboardSub),
-        variables: {'challengeId': challengeId},
-      ))
-      .where((r) => !r.hasException && r.data != null)
-      .map((r) {
-        final list = r.data!['challengeLeaderboardUpdated'] as List;
-        return list.map((e) => LeaderboardEntry.fromJson(e)).toList();
-      });
-});
+final challengeLeaderboardSubscriptionProvider = StreamProvider.autoDispose
+    .family<List<LeaderboardEntry>, String>((ref, challengeId) {
+      final token = _tokenFromAuth(ref.watch(authProvider));
+      final client = ref.read(graphQLClientProvider(token));
+      return client
+          .subscribe(
+            SubscriptionOptions(
+              document: gql(_challengeLeaderboardSub),
+              variables: {'challengeId': challengeId},
+            ),
+          )
+          .where((r) => !r.hasException && r.data != null)
+          .map((r) {
+            final list = r.data!['challengeLeaderboardUpdated'] as List;
+            return list.map((e) => LeaderboardEntry.fromJson(e)).toList();
+          });
+    });
 
-final groupBalanceSubscriptionProvider =
-    StreamProvider.autoDispose.family<AccountModel, String>((ref, groupId) {
-  final token = _tokenFromAuth(ref.watch(authProvider));
-  final client = ref.read(graphQLClientProvider(token));
-  return client
-      .subscribe(SubscriptionOptions(
-        document: gql(_groupBalanceSub),
-        variables: {'groupId': groupId},
-      ))
-      .where((r) => !r.hasException && r.data != null)
-      .map((r) {
-        final d = r.data!['groupBalanceUpdated'];
-        return AccountModel.fromJson({
-          'id': d['id'],
-          'accountNumber': '',
-          'accountType': 'group',
-          'balance': d['balance'],
-          'currency': d['currency'],
-          'status': 'active',
-          'interestRate': '0',
-        });
-      });
-});
+final groupBalanceSubscriptionProvider = StreamProvider.autoDispose
+    .family<AccountModel, String>((ref, groupId) {
+      final token = _tokenFromAuth(ref.watch(authProvider));
+      final client = ref.read(graphQLClientProvider(token));
+      return client
+          .subscribe(
+            SubscriptionOptions(
+              document: gql(_groupBalanceSub),
+              variables: {'groupId': groupId},
+            ),
+          )
+          .where((r) => !r.hasException && r.data != null)
+          .map((r) {
+            final d = r.data!['groupBalanceUpdated'];
+            return AccountModel.fromJson({
+              'id': d['id'],
+              'accountNumber': '',
+              'accountType': 'group',
+              'balance': d['balance'],
+              'currency': d['currency'],
+              'status': 'active',
+              'interestRate': '0',
+            });
+          });
+    });

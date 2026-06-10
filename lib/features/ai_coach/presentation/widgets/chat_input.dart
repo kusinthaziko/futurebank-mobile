@@ -58,41 +58,45 @@ class _ChatInputState extends State<ChatInput> {
       ),
       child: SafeArea(
         top: false,
-        child: Row(children: [
-          IconButton(
-            icon: Icon(
-              _isListening ? Icons.mic : Icons.mic_none,
-              color: _isListening ? error500 : gray500,
-            ),
-            onPressed: widget.disabled ? null : _toggleVoice,
-          ),
-          const SizedBox(width: sp8),
-          Expanded(
-            child: TextField(
-              controller: _ctrl,
-              enabled: !widget.disabled,
-              textInputAction: TextInputAction.send,
-              onSubmitted: widget.disabled ? null : (_) => _send(),
-              decoration: InputDecoration(
-                hintText: 'Ask anything...',
-                hintStyle: AppTextStyles.bodyMedium.copyWith(color: gray500),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.zero,
-                isDense: true,
+        child: Row(
+          children: [
+            IconButton(
+              icon: Icon(
+                _isListening ? Icons.mic : Icons.mic_none,
+                color: _isListening ? error500 : gray500,
               ),
-              style: AppTextStyles.bodyMedium,
+              onPressed: widget.disabled ? null : _toggleVoice,
             ),
-          ),
-          const SizedBox(width: sp8),
-          widget.disabled
-              ? const SizedBox(
-                  width: 24, height: 24,
-                  child: CircularProgressIndicator(strokeWidth: 2))
-              : IconButton(
-                  icon: const Icon(Icons.send, color: primary500),
-                  onPressed: _send,
+            const SizedBox(width: sp8),
+            Expanded(
+              child: TextField(
+                controller: _ctrl,
+                enabled: !widget.disabled,
+                textInputAction: TextInputAction.send,
+                onSubmitted: widget.disabled ? null : (_) => _send(),
+                decoration: InputDecoration(
+                  hintText: 'Ask anything...',
+                  hintStyle: AppTextStyles.bodyMedium.copyWith(color: gray500),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
+                  isDense: true,
                 ),
-        ]),
+                style: AppTextStyles.bodyMedium,
+              ),
+            ),
+            const SizedBox(width: sp8),
+            widget.disabled
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : IconButton(
+                    icon: const Icon(Icons.send, color: primary500),
+                    onPressed: _send,
+                  ),
+          ],
+        ),
       ),
     );
   }

@@ -21,7 +21,8 @@ class LoanModel with _$LoanModel {
     String? disbursedAt,
   }) = _LoanModel;
 
-  factory LoanModel.fromJson(Map<String, dynamic> json) => _$LoanModelFromJson(json);
+  factory LoanModel.fromJson(Map<String, dynamic> json) =>
+      _$LoanModelFromJson(json);
 }
 
 @freezed

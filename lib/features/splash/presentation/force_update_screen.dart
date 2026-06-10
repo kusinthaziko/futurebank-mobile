@@ -18,7 +18,8 @@ class ForceUpdateScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 80, height: 80,
+                width: 80,
+                height: 80,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [primary700, primary500],
@@ -27,14 +28,24 @@ class ForceUpdateScreen extends StatelessWidget {
                   ),
                   borderRadius: radius16,
                 ),
-                child: const Center(child: Text('f', style: TextStyle(
-                  fontFamily: 'ClashDisplay', fontSize: 40,
-                  fontWeight: FontWeight.w700, color: Colors.white,
-                ))),
+                child: const Center(
+                  child: Text(
+                    'f',
+                    style: TextStyle(
+                      fontFamily: 'ClashDisplay',
+                      fontSize: 40,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ),
               const SizedBox(height: sp32),
-              Text('Update Required',
-                  style: AppTextStyles.titleLarge, textAlign: TextAlign.center),
+              Text(
+                'Update Required',
+                style: AppTextStyles.titleLarge,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: sp12),
               Text(
                 'A new version of futureBank is available. '
@@ -49,7 +60,10 @@ class ForceUpdateScreen extends StatelessWidget {
                   onPressed: () async {
                     final uri = Uri.parse(storeUrl);
                     if (await canLaunchUrl(uri)) {
-                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                      await launchUrl(
+                        uri,
+                        mode: LaunchMode.externalApplication,
+                      );
                     }
                   },
                   style: ElevatedButton.styleFrom(

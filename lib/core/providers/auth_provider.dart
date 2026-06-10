@@ -28,7 +28,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> login(
-    String accessToken, String refreshToken, String userId, {
+    String accessToken,
+    String refreshToken,
+    String userId, {
     String? institutionId,
     String? role,
   }) async {

@@ -48,30 +48,37 @@ class _CreateGoalScreenState extends ConsumerState<CreateGoalScreen> {
       return;
     }
     final target = _targetCtrl.text.trim();
-    if (target.isEmpty || double.tryParse(target) == null || double.parse(target) <= 0) {
+    if (target.isEmpty ||
+        double.tryParse(target) == null ||
+        double.parse(target) <= 0) {
       setState(() => _error = 'Enter a valid target amount');
       return;
     }
 
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final a = ref.read(authProvider);
       final t = a is Authenticated ? a.accessToken : null;
       final client = ref.read(graphQLClientProvider(t));
       final data = await ref.read(accountsProvider.future);
       final accountId = data.accounts.first.id;
-      final r = await client.mutate(MutationOptions(
-        document: gql(createSavingsGoalMutation),
-        variables: {
-          'input': {
-            'account_id': accountId,
-            'name': name,
-            'target_amount': target,
-            'category': _category,
-            if (_deadline != null) 'deadline': _deadline!.toIso8601String(),
+      final r = await client.mutate(
+        MutationOptions(
+          document: gql(createSavingsGoalMutation),
+          variables: {
+            'input': {
+              'account_id': accountId,
+              'name': name,
+              'target_amount': target,
+              'category': _category,
+              if (_deadline != null) 'deadline': _deadline!.toIso8601String(),
+            },
           },
-        },
-      ));
+        ),
+      );
       if (r.hasException) throw r.exception!;
       ref.invalidate(accountsProvider);
       if (mounted) context.pop();
@@ -95,61 +102,94 @@ class _CreateGoalScreenState extends ConsumerState<CreateGoalScreen> {
       appBar: AppBar(title: const Text('Create Savings Goal')),
       body: Padding(
         padding: const EdgeInsets.all(sp24),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          FBInput(label: 'Goal Name', hint: 'e.g. New Laptop',
-              controller: _nameCtrl),
-          const SizedBox(height: sp16),
-          FBInput(label: 'Target Amount (MWK)', hint: '500000',
-              controller: _targetCtrl, keyboardType: TextInputType.number),
-          const SizedBox(height: sp20),
-          Text('Category', style: AppTextStyles.labelMedium.copyWith(color: gray700)),
-          const SizedBox(height: sp8),
-          Wrap(
-            spacing: sp8,
-            runSpacing: sp8,
-            children: _categories.map((cat) => ChoiceChip(
-              label: Text(cat),
-              selected: _category == cat,
-              selectedColor: primary100,
-              labelStyle: AppTextStyles.labelMedium.copyWith(
-                color: _category == cat ? primary500 : gray700,
-              ),
-              onSelected: (_) => setState(() => _category = cat),
-            )).toList(),
-          ),
-          const SizedBox(height: sp20),
-          Text('Deadline', style: AppTextStyles.labelMedium.copyWith(color: gray700)),
-          const SizedBox(height: sp8),
-          InkWell(
-            onTap: _pickDate,
-            borderRadius: radius12,
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: sp16, vertical: sp12),
-              decoration: BoxDecoration(
-                border: Border.all(color: gray300, width: 1.5),
-                borderRadius: radius12,
-              ),
-              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                Text(
-                  _deadline != null
-                      ? '${_deadline!.day}/${_deadline!.month}/${_deadline!.year}'
-                      : 'Select a date',
-                  style: AppTextStyles.bodyLarge.copyWith(
-                    color: _deadline != null ? gray900 : gray500,
-                  ),
-                ),
-                const Icon(FbIcons.calendar, color: gray500, size: 18),
-              ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FBInput(
+              label: 'Goal Name',
+              hint: 'e.g. New Laptop',
+              controller: _nameCtrl,
             ),
-          ),
-          if (_error != null) ...[
+            const SizedBox(height: sp16),
+            FBInput(
+              label: 'Target Amount (MWK)',
+              hint: '500000',
+              controller: _targetCtrl,
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: sp20),
+            Text(
+              'Category',
+              style: AppTextStyles.labelMedium.copyWith(color: gray700),
+            ),
             const SizedBox(height: sp8),
-            Text(_error!, style: AppTextStyles.caption.copyWith(color: error500)),
+            Wrap(
+              spacing: sp8,
+              runSpacing: sp8,
+              children: _categories
+                  .map(
+                    (cat) => ChoiceChip(
+                      label: Text(cat),
+                      selected: _category == cat,
+                      selectedColor: primary100,
+                      labelStyle: AppTextStyles.labelMedium.copyWith(
+                        color: _category == cat ? primary500 : gray700,
+                      ),
+                      onSelected: (_) => setState(() => _category = cat),
+                    ),
+                  )
+                  .toList(),
+            ),
+            const SizedBox(height: sp20),
+            Text(
+              'Deadline',
+              style: AppTextStyles.labelMedium.copyWith(color: gray700),
+            ),
+            const SizedBox(height: sp8),
+            InkWell(
+              onTap: _pickDate,
+              borderRadius: radius12,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: sp16,
+                  vertical: sp12,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(color: gray300, width: 1.5),
+                  borderRadius: radius12,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      _deadline != null
+                          ? '${_deadline!.day}/${_deadline!.month}/${_deadline!.year}'
+                          : 'Select a date',
+                      style: AppTextStyles.bodyLarge.copyWith(
+                        color: _deadline != null ? gray900 : gray500,
+                      ),
+                    ),
+                    const Icon(FbIcons.calendar, color: gray500, size: 18),
+                  ],
+                ),
+              ),
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: sp8),
+              Text(
+                _error!,
+                style: AppTextStyles.caption.copyWith(color: error500),
+              ),
+            ],
+            const Spacer(),
+            FBButton(
+              label: 'Create Goal',
+              onPressed: _create,
+              loading: _loading,
+            ),
           ],
-          const Spacer(),
-          FBButton(label: 'Create Goal', onPressed: _create, loading: _loading),
-        ]),
+        ),
       ),
     );
   }
