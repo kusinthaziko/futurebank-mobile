@@ -82,7 +82,7 @@ jobs:
         run: echo "$KEYSTORE_BASE64" | base64 -d > android/key.jks
 
       - name: Build APKs
-        run: flutter build apk --release --split-per-abi
+        run: flutter build apk --release --split-per-abi --dart-define=API_URL=https://futurebank-api.onrender.com/api/graphql --dart-define=WS_URL=wss://futurebank-api.onrender.com:443/socket/websocket
         env:
           FB_KEYSTORE_PATH: ${{ secrets.FB_KEYSTORE_PATH || '' }}
           FB_KEYSTORE_PASSWORD: ${{ secrets.FB_KEYSTORE_PASSWORD || '' }}
@@ -141,7 +141,7 @@ jobs:
         run: echo "$KEYSTORE_BASE64" | base64 -d > android/key.jks
 
       - name: Build AAB
-        run: flutter build appbundle --release
+        run: flutter build appbundle --release --dart-define=API_URL=https://futurebank-api.onrender.com/api/graphql --dart-define=WS_URL=wss://futurebank-api.onrender.com:443/socket/websocket
         env:
           FB_KEYSTORE_PATH: ${{ secrets.FB_KEYSTORE_PATH || '' }}
           FB_KEYSTORE_PASSWORD: ${{ secrets.FB_KEYSTORE_PASSWORD || '' }}

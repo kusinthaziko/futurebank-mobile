@@ -43,6 +43,20 @@ class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
     final authState = ref.watch(authProvider);
+    // Show splash while auth resolves (prevents queries with null token)
+    if (authState is Loading) {
+      return MaterialApp(
+        title: 'futureBank',
+        theme: buildAppTheme(),
+        darkTheme: buildDarkAppTheme(),
+        themeMode: ThemeMode.system,
+        home: const Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        ),
+        debugShowCheckedModeBanner: false,
+      );
+    }
+
     final token = switch (authState) {
       Authenticated(:final accessToken) => accessToken,
       _ => null,
