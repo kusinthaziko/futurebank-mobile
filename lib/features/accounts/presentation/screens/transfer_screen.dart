@@ -27,7 +27,10 @@ const _transferMutation = r'''
 
 const _findRecipientQuery = r'''
   query FindRecipient($studentId: String!, $institutionId: ID!) {
-    institution { students(studentId: $studentId) { id fullName } }
+    findRecipient(student_id: $studentId, institution_id: $institutionId) {
+      account_id
+      full_name
+    }
   }
 ''';
 
@@ -71,11 +74,11 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
       variables: {'studentId': studentId, 'institutionId': institutionId},
     ));
     if (!r.hasException && r.data != null) {
-      final students = r.data!['institution']?['students'] as List? ?? [];
-      if (students.isNotEmpty) {
+      final recipient = r.data!['findRecipient'];
+      if (recipient != null) {
         setState(() {
-          _recipientName = students.first['fullName'];
-          _recipientAccountId = students.first['id'];
+          _recipientName = recipient['full_name'];
+          _recipientAccountId = recipient['account_id'];
         });
       } else {
         setState(() => _recipientName = null);

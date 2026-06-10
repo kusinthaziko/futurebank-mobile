@@ -249,21 +249,6 @@ class ProfileScreen extends ConsumerWidget {
               ])),
             ],
 
-            // Admin panel link (shown for admin roles)
-            if (role == 'admin' || role == 'super_admin' || role == 'finance_manager') ...[
-              const SizedBox(height: sp16),
-              FBCard(
-                onTap: () => context.push('/admin'),
-                child: const Row(children: [
-                  Icon(Icons.admin_panel_settings, color: primary500),
-                  SizedBox(width: sp12),
-                  Text('Admin Panel', style: AppTextStyles.labelLarge),
-                  Spacer(),
-                  Icon(Icons.chevron_right, color: gray500),
-                ]),
-              ),
-            ],
-
             const SizedBox(height: sp24),
             FBButton(
               label: 'Sign Out',
