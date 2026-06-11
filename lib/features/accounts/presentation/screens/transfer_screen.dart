@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/graphql/client.dart';
 import '../../../../core/providers/security_provider.dart';
@@ -16,8 +15,8 @@ import '../../../../core/design_system/tokens/icons.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/widgets/error_view.dart';
-import '../../../../features/auth/domain/auth_state.dart';
 import '../../../../core/widgets/animations/success_celebration.dart';
+import '../../../auth/domain/auth_state.dart';
 import '../../../dashboard/domain/providers.dart' show dashboardProvider;
 import '../../domain/providers.dart';
 
@@ -35,8 +34,16 @@ const _transferMutation = r'''
 const _findRecipientQuery = r'''
   query FindRecipient($studentId: String!, $institutionId: ID!) {
     findRecipient(student_id: $studentId, institution_id: $institutionId) {
-      account_id
-      full_name
+      account_id full_name
+    }
+  }
+''';
+
+const _meQuery = r'''
+  query Me {
+    me {
+      kyc_level
+      kyc_status
     }
   }
 ''';
@@ -54,11 +61,36 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
   bool _loading = false;
   String? _error, _recipientName, _recipientAccountId;
   double? _availableBalance;
+  bool _kycChecked = false;
+  bool _kycValid = false;
 
   @override
   void initState() {
     super.initState();
     _loadBalance();
+    _checkKyc();
+  }
+
+  Future<void> _checkKyc() async {
+    final a = ref.read(authProvider);
+    final t = a is Authenticated ? a.accessToken : null;
+    if (t == null) return;
+
+    final client = ref.read(graphQLClientProvider(t));
+    final r = await client.query(QueryOptions(document: gql(_meQuery)));
+    if (!r.hasException && r.data != null) {
+      final me = r.data!['me'];
+      final level = me['kyc_level'] as int? ?? 0;
+      setState(() {
+        _kycChecked = true;
+        _kycValid = level >= 1;
+      });
+    } else {
+      setState(() {
+        _kycChecked = true;
+        _kycValid = false;
+      });
+    }
   }
 
   Future<void> _loadBalance() async {
@@ -96,34 +128,12 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
     }
   }
 
-  void _openQrScanner() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (_) => SizedBox(
-        height: MediaQuery.of(context).size.height * 0.6,
-        child: Column(
-          children: [
-            AppBar(title: const Text('Scan QR Code')),
-            Expanded(
-              child: MobileScanner(
-                onDetect: (capture) {
-                  final barcode = capture.barcodes.firstOrNull;
-                  if (barcode?.rawValue != null) {
-                    Navigator.of(context).pop();
-                    _recipientId.text = barcode!.rawValue!;
-                    _lookupRecipient(barcode.rawValue!);
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  Future<void> _openQrScanner() async {
+    final result = await context.push<String>('/qr-scanner');
+    if (result != null && result.isNotEmpty && mounted) {
+      _recipientId.text = result;
+      _lookupRecipient(result);
+    }
   }
 
   Future<void> _submit() async {
@@ -217,102 +227,194 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
   @override
   Widget build(BuildContext context) {
     final amt = double.tryParse(_amount.text) ?? 0;
-    final exceedsBalance =
-        _availableBalance != null && amt > _availableBalance!;
+    final exceedsBalance = _availableBalance != null && amt > _availableBalance!;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Transfer')),
-      body: Padding(
-        padding: const EdgeInsets.all(sp24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    if (_kycChecked && !_kycValid) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Transfer')),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(sp32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  child: FBInput(
-                    label: 'Recipient Student ID',
-                    hint: '2024/CS/001',
-                    controller: _recipientId,
-                    error: _recipientId.text.isNotEmpty
-                        ? validateStudentId(_recipientId.text)
-                        : null,
-                    onChanged: _lookupRecipient,
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: warning100,
+                    borderRadius: BorderRadius.circular(36),
                   ),
+                  child: const Icon(FbIcons.shield, color: warning500, size: 32),
                 ),
-                const SizedBox(width: sp8),
-                GestureDetector(
-                  onTap: _openQrScanner,
-                  child: Container(
-                    width: 44,
-                    height: 44,
-                    margin: const EdgeInsets.only(top: 22),
-                    decoration: BoxDecoration(
-                      color: primary100,
-                      borderRadius: radius12,
-                    ),
-                    child: const Icon(
-                      FbIcons.qrCode,
-                      color: primary500,
-                      size: 22,
-                    ),
+                const SizedBox(height: sp24),
+                Text(
+                  'Identity Verification Required',
+                  style: AppTextStyles.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: sp12),
+                Text(
+                  'Please complete your KYC verification to send money. '
+                  'This is required by the Reserve Bank of Malawi.',
+                  style: AppTextStyles.bodyMedium.copyWith(color: gray700),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: sp32),
+                FBButton(
+                  label: 'Complete KYC',
+                  onPressed: () => context.push('/auth/kyc'),
+                ),
+                const SizedBox(height: sp12),
+                TextButton(
+                  onPressed: () => context.pop(),
+                  child: Text(
+                    'Go Back',
+                    style: AppTextStyles.labelMedium.copyWith(color: gray500),
                   ),
                 ),
               ],
             ),
-            if (_recipientName != null) ...[
-              const SizedBox(height: sp8),
+          ),
+        ),
+      );
+    }
+
+    if (!_kycChecked) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Transfer')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Transfer')),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: const EdgeInsets.all(sp24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Row(
                 children: [
-                  const Icon(FbIcons.checkCircle, color: success500, size: 14),
-                  const SizedBox(width: sp4),
-                  Text(
-                    '$_recipientName',
-                    style: AppTextStyles.labelMedium.copyWith(
-                      color: success500,
+                  Expanded(
+                    child: FBInput(
+                      label: 'Recipient Student ID',
+                      hint: '2024/CS/001',
+                      controller: _recipientId,
+                      error: _recipientId.text.isNotEmpty
+                          ? validateStudentId(_recipientId.text)
+                          : null,
+                      onChanged: _lookupRecipient,
+                    ),
+                  ),
+                  const SizedBox(width: sp8),
+                  GestureDetector(
+                    onTap: _openQrScanner,
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      margin: const EdgeInsets.only(top: 22),
+                      decoration: BoxDecoration(
+                        color: primary100,
+                        borderRadius: radius12,
+                      ),
+                      child: const Icon(
+                        FbIcons.qrCode,
+                        color: primary500,
+                        size: 22,
+                      ),
                     ),
                   ),
                 ],
               ),
-            ],
-            const SizedBox(height: sp16),
-            FBInput(
-              label: 'Amount (MWK)',
-              hint: '1000',
-              controller: _amount,
-              keyboardType: TextInputType.number,
-              error: _amount.text.isNotEmpty
-                  ? validateAmount(_amount.text)
-                  : null,
-            ),
-            if (exceedsBalance) ...[
-              const SizedBox(height: sp4),
-              Text(
-                'Exceeds available balance',
-                style: AppTextStyles.caption.copyWith(color: error500),
+              if (_recipientName != null) ...[
+                const SizedBox(height: sp8),
+                Row(
+                  children: [
+                    const Icon(FbIcons.checkCircle, color: success500, size: 14),
+                    const SizedBox(width: sp4),
+                    Text(
+                      _recipientName!,
+                      style: AppTextStyles.labelMedium.copyWith(
+                        color: success500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: sp16),
+              FBInput(
+                label: 'Amount (MWK)',
+                hint: '1000',
+                controller: _amount,
+                keyboardType: TextInputType.number,
+                error: _amount.text.isNotEmpty
+                    ? validateAmount(_amount.text)
+                    : null,
               ),
-            ],
-            const SizedBox(height: sp16),
-            FBInput(label: 'Description (optional)', controller: _desc),
-            if (_error != null) ...[
-              const SizedBox(height: sp8),
-              ShakeWidget(
-                shake: true,
-                child: Text(
-                  _error!,
+              if (exceedsBalance) ...[
+                const SizedBox(height: sp4),
+                Text(
+                  'Exceeds available balance',
                   style: AppTextStyles.caption.copyWith(color: error500),
                 ),
+              ] else ...[
+                if (_amount.text.isNotEmpty && _error == null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: sp4),
+                    child: Text(
+                      'You will send: MWK ${_amount.text}',
+                      style: AppTextStyles.caption.copyWith(color: gray500),
+                    ),
+                  ),
+              ],
+              const SizedBox(height: sp16),
+              FBInput(label: 'Description (optional)', controller: _desc),
+              const SizedBox(height: sp24),
+              if (_error != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: sp16),
+                  child: ShakeWidget(
+                    shake: true,
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: sp16,
+                        vertical: sp12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: error100,
+                        borderRadius: radius12,
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(FbIcons.warning, color: error500, size: 18),
+                          const SizedBox(width: sp8),
+                          Expanded(
+                            child: Text(
+                              _error!,
+                              style: AppTextStyles.caption.copyWith(
+                                color: error500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              FBButton(
+                label: 'Send Money',
+                onPressed:
+                    _recipientName != null && !exceedsBalance ? _submit : null,
+                loading: _loading,
               ),
+              const SizedBox(height: sp24),
             ],
-            const Spacer(),
-            FBButton(
-              label: 'Send Money',
-              onPressed: _recipientName != null && !exceedsBalance
-                  ? _submit
-                  : null,
-              loading: _loading,
-            ),
-          ],
+          ),
         ),
       ),
     );

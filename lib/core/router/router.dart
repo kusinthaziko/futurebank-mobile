@@ -33,6 +33,7 @@ import '../../features/profile/presentation/screens/passport_screen.dart';
 import '../../features/profile/presentation/screens/about_screen.dart';
 import '../../features/accounts/presentation/screens/deposit_screen.dart';
 import '../../features/accounts/presentation/screens/transfer_screen.dart';
+import '../../features/accounts/presentation/screens/qr_scanner_screen.dart';
 import '../../features/accounts/presentation/screens/account_detail_screen.dart';
 import '../../features/accounts/presentation/screens/receipt_screen.dart';
 import '../../features/accounts/presentation/screens/create_goal_screen.dart';
@@ -218,6 +219,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (_, s) => _buildPageWithTransition(
           AccountDetailScreen(accountId: s.pathParameters['id']!),
         ),
+      ),
+      GoRoute(
+        path: '/qr-scanner',
+        pageBuilder: (_, __) =>
+            _buildPageWithTransition(const QrScannerScreen()),
       ),
       GoRoute(
         path: '/receipt/:id',
