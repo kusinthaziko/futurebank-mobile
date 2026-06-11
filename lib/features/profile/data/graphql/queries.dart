@@ -32,6 +32,7 @@ const String updateSettingsMutation = r'''
     $show_on_leaderboard: Boolean
     $public_profile: Boolean
     $notifications_enabled: Boolean
+    $blur_balance_enabled: Boolean
     $full_name: String
     $phone: String
   ) {
@@ -39,10 +40,12 @@ const String updateSettingsMutation = r'''
       show_on_leaderboard: $show_on_leaderboard
       public_profile: $public_profile
       notifications_enabled: $notifications_enabled
+      blur_balance_enabled: $blur_balance_enabled
       full_name: $full_name
       phone: $phone
     ) {
-      id full_name email show_on_leaderboard public_profile notifications_enabled
+      id full_name email show_on_leaderboard public_profile
+      notifications_enabled blur_balance_enabled
     }
   }
 ''';

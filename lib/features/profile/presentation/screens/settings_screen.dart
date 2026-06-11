@@ -3,21 +3,21 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import '../../../../core/design_system/components/fb_button.dart';
-import '../../../../core/providers/security_provider.dart';
-import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/graphql/client.dart';
+import '../../../../core/design_system/components/fb_button.dart';
 import '../../data/graphql/queries.dart';
 import '../../domain/providers.dart';
+import '../widgets/settings_section_header.dart';
+import '../widgets/biometric_switch.dart';
 import '../widgets/change_password_dialog.dart';
 import '../widgets/revoke_sessions_dialog.dart';
+import '../widgets/sign_out_dialog.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
-
   @override
   ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
 }
@@ -26,66 +26,46 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _showOnLeaderboard = true;
   bool _publicProfile = false;
   bool _notifications = true;
+  bool _blurBalance = false;
   bool _saving = false;
 
   @override
   Widget build(BuildContext context) {
-    final profileAsync = ref.watch(profileProvider);
-    final did = profileAsync.asData?.value.user.blockchainDid;
+    final did = ref.watch(profileProvider).asData?.value.user.blockchainDid;
+    final kycLevel = ref.watch(profileProvider).asData?.value.user.kycLevel ?? 0;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
         padding: const EdgeInsets.all(sp16),
         children: [
-          const _SectionHeader('Security'),
+          const SettingsSectionHeader('Security'),
           const SizedBox(height: sp8),
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.lock_outline),
             title: const Text('Change Password'),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => showDialog(
-              context: context,
-              builder: (_) => const ChangePasswordDialog(),
-            ),
+            onTap: () => showDialog(context: context, builder: (_) => const ChangePasswordDialog()),
           ),
-          const _BiometricSwitch(),
+          const BiometricSwitch(),
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.devices),
             title: const Text('Active Sessions'),
             trailing: TextButton(
-              onPressed: () => showDialog(
-                context: context,
-                builder: (_) => const RevokeSessionsDialog(),
-              ),
+              onPressed: () => showDialog(context: context, builder: (_) => const RevokeSessionsDialog()),
               child: const Text('Revoke All'),
             ),
           ),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.timer_outlined),
-            title: const Text('Auto-lock timeout'),
-            trailing: DropdownButton<int>(
-              value: 5,
-              underline: const SizedBox(),
-              items: const [
-                DropdownMenuItem(value: 1, child: Text('1 min')),
-                DropdownMenuItem(value: 5, child: Text('5 min')),
-                DropdownMenuItem(value: 15, child: Text('15 min')),
-              ],
-              onChanged: (_) {},
-            ),
-          ),
           const Divider(height: sp32),
-          const _SectionHeader('Privacy'),
+          const SettingsSectionHeader('Privacy'),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
             secondary: const Icon(Icons.blur_on),
             title: const Text('Blur balance on home'),
-            value: false,
-            onChanged: (_) {},
+            value: _blurBalance,
+            onChanged: (v) => _updateSetting('blur_balance_enabled', v),
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
@@ -102,39 +82,34 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             onChanged: (v) => _updateSetting('public_profile', v),
           ),
           const Divider(height: sp32),
-          const _SectionHeader('Identity'),
-          if (did != null) ...[
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.badge_outlined),
-              title: const Text('My DID'),
-              subtitle: Text(_truncateDid(did), style: AppTextStyles.caption),
-              trailing: IconButton(
-                icon: const Icon(Icons.copy, size: 18),
-                onPressed: () {
+          const SettingsSectionHeader('Identity'),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.badge_outlined),
+            title: const Text('My DID'),
+            subtitle: Text(_truncateDid(did ?? ''), style: AppTextStyles.caption),
+            trailing: IconButton(
+              icon: const Icon(Icons.copy, size: 18),
+              onPressed: () {
+                if (did != null) {
                   Clipboard.setData(ClipboardData(text: did));
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(const SnackBar(content: Text('DID copied!')));
-                },
-              ),
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('DID copied!')));
+                }
+              },
             ),
-          ],
+          ),
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.verified_user_outlined),
             title: const Text('KYC Status'),
-            subtitle: Text(
-              'Level ${profileAsync.asData?.value.user.kycLevel ?? 0}',
-              style: AppTextStyles.caption,
-            ),
+            subtitle: Text('Level $kycLevel', style: AppTextStyles.caption),
             trailing: TextButton(
               onPressed: () => context.push('/auth/kyc'),
               child: const Text('Upgrade'),
             ),
           ),
           const Divider(height: sp32),
-          const _SectionHeader('App'),
+          const SettingsSectionHeader('App'),
           const ListTile(
             contentPadding: EdgeInsets.zero,
             leading: Icon(Icons.language),
@@ -154,12 +129,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: const Text('Help & FAQ'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              Clipboard.setData(const ClipboardData(
-                text: 'https://kusinthaziko.github.io/futurebank-pages/help',
-              ));
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Help URL copied')),
-              );
+              Clipboard.setData(const ClipboardData(text: 'https://kusinthaziko.github.io/futurebank-pages/help'));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Help URL copied')));
             },
           ),
           ListTile(
@@ -170,16 +141,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/about'),
           ),
-          if (_saving)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: sp8),
-              child: LinearProgressIndicator(),
-            ),
+          if (_saving) const Padding(
+            padding: EdgeInsets.symmetric(vertical: sp8),
+            child: LinearProgressIndicator(),
+          ),
           const SizedBox(height: sp32),
           FBButton(
             label: 'Sign Out',
             variant: FBButtonVariant.destructive,
-            onPressed: () => _confirmLogout(context),
+            onPressed: () => showDialog(context: context, builder: (_) => const SignOutDialog()),
           ),
           const SizedBox(height: sp32),
         ],
@@ -193,10 +163,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       if (field == 'show_on_leaderboard') _showOnLeaderboard = value;
       if (field == 'public_profile') _publicProfile = value;
       if (field == 'notifications_enabled') _notifications = value;
+      if (field == 'blur_balance_enabled') _blurBalance = value;
     });
     try {
-      final token = ref.read(accessTokenProvider);
-      final client = ref.read(graphQLClientProvider(token));
+      final client = ref.read(graphQLClientProvider(ref.read(accessTokenProvider)));
       await client.mutate(MutationOptions(
         document: gql(updateSettingsMutation),
         variables: {field: value},
@@ -206,93 +176,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         if (field == 'show_on_leaderboard') _showOnLeaderboard = !value;
         if (field == 'public_profile') _publicProfile = !value;
         if (field == 'notifications_enabled') _notifications = !value;
+        if (field == 'blur_balance_enabled') _blurBalance = !value;
       });
     } finally {
       setState(() => _saving = false);
     }
   }
 
-  void _confirmLogout(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          FBButton(
-            label: 'Sign Out',
-            variant: FBButtonVariant.destructive,
-            onPressed: () async {
-              Navigator.pop(ctx);
-              await ref.read(authProvider.notifier).logout();
-              if (context.mounted) context.go('/auth/login');
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   String _truncateDid(String did) {
     final parts = did.split(':');
     if (parts.length < 4) return did;
     return 'did:fb:${parts[2]}:****${parts.last.substring(parts.last.length.clamp(4, parts.last.length) - 4)}';
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  const _SectionHeader(this.title);
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: sp4),
-    child: Text(title, style: AppTextStyles.labelLarge.copyWith(color: gray500)),
-  );
-}
-
-class _BiometricSwitch extends ConsumerStatefulWidget {
-  const _BiometricSwitch();
-  @override
-  ConsumerState<_BiometricSwitch> createState() => _BiometricSwitchState();
-}
-
-class _BiometricSwitchState extends ConsumerState<_BiometricSwitch> {
-  bool _enabled = false;
-  bool _available = false;
-  bool _loaded = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    final bio = ref.read(biometricServiceProvider);
-    final available = await bio.isAvailable();
-    final enabled = available ? await bio.isEnabled() : false;
-    if (mounted) setState(() { _enabled = enabled; _available = available; _loaded = true; });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!_loaded || !_available) return const SizedBox.shrink();
-    return SwitchListTile(
-      contentPadding: EdgeInsets.zero,
-      secondary: const Icon(Icons.fingerprint),
-      title: const Text('Biometric'),
-      subtitle: const Text('Use fingerprint / face to sign in'),
-      value: _enabled,
-      onChanged: (v) async {
-        final bio = ref.read(biometricServiceProvider);
-        if (v) { final ok = await bio.authenticate('Enable biometric sign in'); if (!ok) return; }
-        await bio.setEnabled(v);
-        if (mounted) setState(() => _enabled = v);
-      },
-    );
   }
 }
