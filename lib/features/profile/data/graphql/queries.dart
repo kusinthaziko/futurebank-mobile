@@ -20,9 +20,49 @@ const String myBadgesQuery = r'''
 ''';
 
 const String updateProfileMutation = r'''
-  mutation UpdateProfile($avatar_url: String!) {
+  mutation UpdateProfile($avatar_url: String) {
     updateProfile(avatar_url: $avatar_url) {
       id avatar_url
+    }
+  }
+''';
+
+const String updateSettingsMutation = r'''
+  mutation UpdateSettings(
+    $show_on_leaderboard: Boolean
+    $public_profile: Boolean
+    $notifications_enabled: Boolean
+    $full_name: String
+    $phone: String
+  ) {
+    updateProfile(
+      show_on_leaderboard: $show_on_leaderboard
+      public_profile: $public_profile
+      notifications_enabled: $notifications_enabled
+      full_name: $full_name
+      phone: $phone
+    ) {
+      id full_name email show_on_leaderboard public_profile notifications_enabled
+    }
+  }
+''';
+
+const String changePasswordMutation = r'''
+  mutation ChangePassword($old_password: String!, $new_password: String!) {
+    changePassword(old_password: $old_password, new_password: $new_password)
+  }
+''';
+
+const String revokeAllSessionsMutation = r'''
+  mutation RevokeAllSessions {
+    revokeAllSessions
+  }
+''';
+
+const String mySessionsQuery = r'''
+  query MySessions {
+    mySessions {
+      id device_fingerprint ip_address inserted_at expires_at
     }
   }
 ''';
