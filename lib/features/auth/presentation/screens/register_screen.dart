@@ -120,7 +120,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       final dob = _dateOfBirth!;
       final dobStr =
           '${dob.year}-${dob.month.toString().padLeft(2, '0')}-${dob.day.toString().padLeft(2, '0')}';
-      final result = await AuthMutations.register(ref, {
+      final result = await AuthMutations.register(ref, input: {
         'full_name': _fullName.text.trim(),
         'student_id': _studentId.text.trim(),
         'date_of_birth': dobStr,
