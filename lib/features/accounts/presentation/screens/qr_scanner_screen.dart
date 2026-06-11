@@ -5,6 +5,8 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
+import '../widgets/scanner_chip.dart';
+import '../widgets/scanner_overlay_painter.dart';
 
 class QrScannerScreen extends StatefulWidget {
   const QrScannerScreen({super.key});
@@ -81,7 +83,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
             builder: (context, child) {
               return CustomPaint(
                 size: size,
-                painter: _ScannerOverlayPainter(
+                painter: ScannerOverlayPainter(
                   scanRect: Rect.fromLTWH(scanLeft, scanTop, scanSize, scanSize),
                   cornerColor: gold500,
                   scanLineY: scanTop + scanSize * _scanPosition.value,
@@ -145,14 +147,14 @@ class _QrScannerScreenState extends State<QrScannerScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _ActionChip(
+              ScannerChip(
                 icon: PhosphorIconsRegular.sun,
                 label: 'Flash',
                 onTap: _toggleTorch,
                 active: _torchOn,
               ),
               const SizedBox(width: 20),
-              _ActionChip(
+              ScannerChip(
                 icon: PhosphorIconsRegular.keyboard,
                 label: 'Enter Manually',
                 onTap: () => Navigator.of(context).pop(''),
@@ -163,114 +165,4 @@ class _QrScannerScreenState extends State<QrScannerScreen>
       ),
     );
   }
-}
-
-class _ActionChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final bool active;
-
-  const _ActionChip({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.active = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: active ? gold500.withValues(alpha: 0.3) : white.withValues(alpha: 0.12),
-      borderRadius: BorderRadius.circular(24),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(24),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: active ? gold500 : white, size: 18),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: AppTextStyles.caption.copyWith(color: active ? gold500 : white),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ScannerOverlayPainter extends CustomPainter {
-  final Rect scanRect;
-  final Color cornerColor;
-  final double scanLineY;
-  final double scanLineWidth;
-  final double scanLineLeft;
-
-  _ScannerOverlayPainter({
-    required this.scanRect,
-    required this.cornerColor,
-    required this.scanLineY,
-    required this.scanLineWidth,
-    required this.scanLineLeft,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.black.withValues(alpha: 0.55);
-    canvas.drawPath(
-      Path()
-        ..fillType = PathFillType.evenOdd
-        ..addRect(Rect.largest)
-        ..addRRect(RRect.fromRectAndRadius(scanRect, const Radius.circular(16))),
-      paint,
-    );
-
-    const cornerLen = 28.0;
-    final cornerPaint = Paint()
-      ..color = cornerColor
-      ..strokeWidth = 3.5
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final corners = [
-      (scanRect.topLeft, 1.0, 1.0),
-      (scanRect.topRight, -1.0, 1.0),
-      (scanRect.bottomLeft, 1.0, -1.0),
-      (scanRect.bottomRight, -1.0, -1.0),
-    ];
-
-    for (final (pt, dx, dy) in corners) {
-      canvas.drawLine(pt, Offset(pt.dx + dx * cornerLen, pt.dy), cornerPaint);
-      canvas.drawLine(pt, Offset(pt.dx, pt.dy + dy * cornerLen), cornerPaint);
-    }
-
-    final linePaint = Paint()
-      ..color = gold500.withValues(alpha: 0.6)
-      ..strokeWidth = 2.0
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
-    canvas.drawLine(
-      Offset(scanLineLeft + 16, scanLineY),
-      Offset(scanLineLeft + scanLineWidth - 16, scanLineY),
-      linePaint,
-    );
-
-    final glowPaint = Paint()
-      ..color = gold500.withValues(alpha: 0.15)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
-    canvas.drawLine(
-      Offset(scanLineLeft + 16, scanLineY),
-      Offset(scanLineLeft + scanLineWidth - 16, scanLineY),
-      glowPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_ScannerOverlayPainter old) =>
-      old.scanRect != scanRect || old.scanLineY != scanLineY;
 }
