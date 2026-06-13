@@ -9,6 +9,22 @@ import 'models/savings_goal_model.dart';
 import 'models/challenge_model.dart';
 import 'models/ai_insight_model.dart';
 
+/// GraphQL `:decimal` fields are serialized as JSON strings (e.g. "0.85"),
+/// while integers arrive as numbers. These coercers tolerate String, num,
+/// and null so a missing/typed value can never crash model parsing.
+double _toDouble(dynamic v) {
+  if (v is num) return v.toDouble();
+  if (v is String) return double.tryParse(v) ?? 0.0;
+  return 0.0;
+}
+
+int _toInt(dynamic v) {
+  if (v is int) return v;
+  if (v is num) return v.toInt();
+  if (v is String) return int.tryParse(v) ?? double.tryParse(v)?.toInt() ?? 0;
+  return 0;
+}
+
 class DashboardRepository {
   final GraphQLClient _client;
   final CacheService _cacheService;
@@ -69,12 +85,10 @@ class DashboardRepository {
         recentTransactions: const [],
         healthScore: hsRaw != null
             ? HealthScoreModel.fromJson({
-                'score': hsRaw['score'] ?? 0,
-                'savingsConsistency':
-                    (hsRaw['savings_consistency'] as num?)?.toDouble() ?? 0.0,
-                'loanRepaymentRate':
-                    (hsRaw['loan_repayment_rate'] as num?)?.toDouble() ?? 0.0,
-                'challengeCompletions': hsRaw['challenge_completions'] ?? 0,
+                'score': _toInt(hsRaw['score']),
+                'savingsConsistency': _toDouble(hsRaw['savings_consistency']),
+                'loanRepaymentRate': _toDouble(hsRaw['loan_repayment_rate']),
+                'challengeCompletions': _toInt(hsRaw['challenge_completions']),
               })
             : null,
       );

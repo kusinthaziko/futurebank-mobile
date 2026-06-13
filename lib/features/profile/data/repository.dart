@@ -4,6 +4,21 @@ import '../../../core/services/cache_service.dart';
 import 'graphql/queries.dart';
 import 'models/profile_models.dart';
 
+/// GraphQL `:decimal` fields serialize as JSON strings (e.g. "0.85"); ints
+/// arrive as numbers. Tolerate String/num/null so parsing can't crash.
+double _toDouble(dynamic v) {
+  if (v is num) return v.toDouble();
+  if (v is String) return double.tryParse(v) ?? 0.0;
+  return 0.0;
+}
+
+int _toInt(dynamic v) {
+  if (v is int) return v;
+  if (v is num) return v.toInt();
+  if (v is String) return int.tryParse(v) ?? double.tryParse(v)?.toInt() ?? 0;
+  return 0;
+}
+
 class ProfileRepository {
   final GraphQLClient _client;
   final CacheService _cacheService;
@@ -32,7 +47,7 @@ class ProfileRepository {
       if (r.hasException) throw r.exception!;
 
       final me = r.data!['me'] as Map<String, dynamic>;
-      final hs = r.data!['financialHealthScore'] as Map<String, dynamic>;
+      final hs = r.data!['financialHealthScore'] as Map<String, dynamic>?;
 
       final profile = ProfileData(
         user: UserProfile.fromJson({
@@ -45,12 +60,12 @@ class ProfileRepository {
           'avatarUrl': me['avatar_url'],
         }),
         healthScore: HealthScoreData.fromJson({
-          'score': hs['score'],
-          'savingsConsistency': (hs['savings_consistency'] as num).toDouble(),
-          'loanRepaymentRate': (hs['loan_repayment_rate'] as num).toDouble(),
-          'challengeCompletions': hs['challenge_completions'],
-          'accountAgeDays': hs['account_age_days'] ?? 0,
-          'kycLevel': hs['kyc_level'],
+          'score': _toInt(hs?['score']),
+          'savingsConsistency': _toDouble(hs?['savings_consistency']),
+          'loanRepaymentRate': _toDouble(hs?['loan_repayment_rate']),
+          'challengeCompletions': _toInt(hs?['challenge_completions']),
+          'accountAgeDays': _toInt(hs?['account_age_days']),
+          'kycLevel': _toInt(hs?['kyc_level'] ?? me['kyc_level']),
         }),
       );
 
