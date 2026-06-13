@@ -64,7 +64,18 @@ class _CreateGoalScreenState extends ConsumerState<CreateGoalScreen> {
       final t = a is Authenticated ? a.accessToken : null;
       final client = ref.read(graphQLClientProvider(t));
       final data = await ref.read(accountsProvider.future);
-      final accountId = data.accounts.first.id;
+      if (data.accounts.isEmpty) {
+        if (mounted) {
+          setState(() => _error = 'No account available for this goal.');
+        }
+        return;
+      }
+      final accountId = data.accounts
+          .firstWhere(
+            (a) => a.accountType == 'savings',
+            orElse: () => data.accounts.first,
+          )
+          .id;
       final r = await client.mutate(
         MutationOptions(
           document: gql(createSavingsGoalMutation),

@@ -68,8 +68,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       final loc = state.matchedLocation;
       final isPublic =
           loc == '/' || loc.startsWith('/auth') || loc == '/onboarding';
+      // Routes that an already-authenticated user must NOT see (pre-login only).
+      // Post-login auth steps (kyc, verify-email, biometric-setup) stay reachable.
+      final isPreLoginOnly =
+          loc == '/auth/login' ||
+          loc == '/auth/register' ||
+          loc == '/auth/forgot-password' ||
+          loc == '/onboarding';
       if (!isAuth && !isPublic) return '/auth/login';
-      if (isAuth && (isPublic && loc != '/')) return '/home';
+      if (isAuth && isPreLoginOnly) return '/home';
       return null;
     },
     routes: [

@@ -64,6 +64,12 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
   bool _kycChecked = false;
   bool _kycValid = false;
 
+  // Idempotency key is stable across retries of the SAME transfer so a lost
+  // response (network blip) cannot cause a double-spend. It is regenerated only
+  // when the transfer parameters change (a genuinely different transfer).
+  String? _idempotencyKey;
+  String? _idempotencyForSignature;
+
   @override
   void initState() {
     super.initState();
@@ -96,10 +102,11 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
   Future<void> _loadBalance() async {
     try {
       final data = await ref.read(accountsProvider.future);
-      final savings = data.accounts.firstWhere(
-        (a) => a.accountType == 'savings',
-      );
-      setState(() => _availableBalance = double.tryParse(savings.balance));
+      final savings = data.accounts
+          .where((a) => a.accountType == 'savings')
+          .toList();
+      if (savings.isEmpty) return;
+      setState(() => _availableBalance = double.tryParse(savings.first.balance));
     } catch (_) {}
   }
 
@@ -161,21 +168,34 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
     });
     try {
       final data = await ref.read(accountsProvider.future);
-      final fromId = data.accounts
-          .firstWhere((a) => a.accountType == 'savings')
-          .id;
+      final savings = data.accounts
+          .where((a) => a.accountType == 'savings')
+          .toList();
+      if (savings.isEmpty) {
+        setState(() => _error = 'No savings account available to send from.');
+        return;
+      }
+      final fromId = savings.first.id;
       final a = ref.read(authProvider);
       final t = a is Authenticated ? a.accessToken : null;
       final client = ref.read(graphQLClientProvider(t));
-      final idempotencyKey = const Uuid().v4();
+      final toId = _recipientAccountId ?? '';
+      final desc = _desc.text.isEmpty ? null : _desc.text;
+      // Reuse the key when retrying the identical transfer; new key otherwise.
+      final signature = '$fromId|$toId|${_amount.text}|${desc ?? ''}';
+      if (_idempotencyKey == null || _idempotencyForSignature != signature) {
+        _idempotencyKey = const Uuid().v4();
+        _idempotencyForSignature = signature;
+      }
+      final idempotencyKey = _idempotencyKey!;
       final r = await client.mutate(
         MutationOptions(
           document: gql(_transferMutation),
           variables: {
             'fromAccountId': fromId,
-            'toAccountId': _recipientAccountId ?? '',
+            'toAccountId': toId,
             'amount': _amount.text,
-            'description': _desc.text.isEmpty ? null : _desc.text,
+            'description': desc,
             'idempotencyKey': idempotencyKey,
           },
         ),

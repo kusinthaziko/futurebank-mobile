@@ -7,6 +7,7 @@ import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../../../../features/auth/domain/auth_state.dart';
 import '../../domain/providers.dart';
 
@@ -24,6 +25,7 @@ class _LoanApplyScreenState extends ConsumerState<LoanApplyScreen> {
   int _weeks = 4;
   bool _agreed = false;
   bool _loading = false;
+  String? _error;
 
   static const _purposes = [
     'Tuition',
@@ -41,7 +43,10 @@ class _LoanApplyScreenState extends ConsumerState<LoanApplyScreen> {
   double get _totalInterest => _totalRepayment - _amount;
 
   Future<void> _submit() async {
-    setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final auth = ref.read(authProvider);
       final token = auth is Authenticated ? auth.accessToken : null;
@@ -53,13 +58,18 @@ class _LoanApplyScreenState extends ConsumerState<LoanApplyScreen> {
       );
       ref.invalidate(loansProvider);
       if (mounted) context.go('/loans');
+    } catch (e) {
+      if (mounted) setState(() => _error = ErrorView.messageFor(e));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
   bool get _canProceed => switch (_step) {
-    0 => true,
+    0 =>
+      _purpose != 'Other' ||
+          (_customDescription.trim().isNotEmpty &&
+              _customDescription.length <= 200),
     1 => true,
     _ => _agreed,
   };
@@ -76,6 +86,21 @@ class _LoanApplyScreenState extends ConsumerState<LoanApplyScreen> {
             const SizedBox(height: sp20),
             Expanded(child: _buildStep()),
             const SizedBox(height: sp16),
+            if (_error != null) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(sp12),
+                margin: const EdgeInsets.only(bottom: sp12),
+                decoration: BoxDecoration(
+                  color: error100,
+                  borderRadius: radius12,
+                ),
+                child: Text(
+                  _error!,
+                  style: AppTextStyles.caption.copyWith(color: error500),
+                ),
+              ),
+            ],
             Row(
               children: [
                 if (_step > 0) ...[
@@ -214,7 +239,7 @@ class _LoanApplyScreenState extends ConsumerState<LoanApplyScreen> {
             error: _customDescription.length > 200
                 ? 'Maximum 200 characters'
                 : null,
-            onChanged: (v) => _customDescription = v,
+            onChanged: (v) => setState(() => _customDescription = v),
           ),
         ],
       ],

@@ -48,9 +48,16 @@ class _DepositScreenState extends ConsumerState<DepositScreen> {
     });
     try {
       final data = await ref.read(accountsProvider.future);
-      final accountId = data.accounts
-          .firstWhere((a) => a.accountType == 'savings')
-          .id;
+      final savings = data.accounts
+          .where((a) => a.accountType == 'savings')
+          .toList();
+      if (savings.isEmpty) {
+        if (mounted) {
+          setState(() => _error = 'No savings account found for deposit.');
+        }
+        return;
+      }
+      final accountId = savings.first.id;
       final auth = ref.read(authProvider);
       final token = auth is Authenticated ? auth.accessToken : null;
       final client = ref.read(graphQLClientProvider(token));
