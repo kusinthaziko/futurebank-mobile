@@ -3,16 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/graphql/client.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/design_system/components/fb_button.dart';
+import '../../../../features/dashboard/domain/providers.dart'
+    show balanceBlurredProvider;
 import '../../data/graphql/queries.dart';
 import '../../domain/providers.dart';
 import '../widgets/settings_section_header.dart';
-import '../widgets/biometric_switch.dart';
 import '../widgets/change_password_dialog.dart';
 import '../widgets/revoke_sessions_dialog.dart';
 import '../widgets/sign_out_dialog.dart';
@@ -29,6 +31,43 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _notifications = true;
   bool _blurBalance = false;
   bool _saving = false;
+
+  static const _settingsQuery = r'''
+    query MySettings {
+      me {
+        show_on_leaderboard public_profile
+        notifications_enabled blur_balance_enabled
+      }
+    }
+  ''';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    try {
+      final client =
+          ref.read(graphQLClientProvider(ref.read(accessTokenProvider)));
+      final r = await client.query(QueryOptions(
+        document: gql(_settingsQuery),
+        fetchPolicy: FetchPolicy.networkOnly,
+      ));
+      if (!mounted || r.hasException || r.data?['me'] == null) return;
+      final me = r.data!['me'] as Map<String, dynamic>;
+      setState(() {
+        _showOnLeaderboard = me['show_on_leaderboard'] as bool? ?? true;
+        _publicProfile = me['public_profile'] as bool? ?? false;
+        _notifications = me['notifications_enabled'] as bool? ?? true;
+        _blurBalance = me['blur_balance_enabled'] as bool? ?? false;
+      });
+      ref.read(balanceBlurredProvider.notifier).state = _blurBalance;
+    } catch (_) {
+      // Non-fatal: toggles fall back to defaults if settings can't load.
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +88,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => showDialog(context: context, builder: (_) => const ChangePasswordDialog()),
           ),
-          const BiometricSwitch(),
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.devices),
@@ -128,10 +166,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.help_outline),
             title: const Text('Help & FAQ'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {
-              Clipboard.setData(const ClipboardData(text: 'https://kusinthaziko.github.io/futurebank-pages/help'));
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Help URL copied')));
+            trailing: const Icon(Icons.open_in_new),
+            onTap: () async {
+              final uri = Uri.parse(
+                  'https://kusinthaziko.github.io/futurebank-pages/help');
+              if (!await launchUrl(uri,
+                  mode: LaunchMode.externalApplication)) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Could not open help page')),
+                  );
+                }
+              }
             },
           ),
           ListTile(
@@ -166,12 +212,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       if (field == 'notifications_enabled') _notifications = value;
       if (field == 'blur_balance_enabled') _blurBalance = value;
     });
+    if (field == 'blur_balance_enabled') {
+      ref.read(balanceBlurredProvider.notifier).state = value;
+    }
 
     void revert() {
       if (field == 'show_on_leaderboard') _showOnLeaderboard = !value;
       if (field == 'public_profile') _publicProfile = !value;
       if (field == 'notifications_enabled') _notifications = !value;
       if (field == 'blur_balance_enabled') _blurBalance = !value;
+      if (field == 'blur_balance_enabled') {
+        ref.read(balanceBlurredProvider.notifier).state = !value;
+      }
     }
 
     try {

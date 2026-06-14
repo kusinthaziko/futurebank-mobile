@@ -20,6 +20,11 @@ String? _userId(AuthState auth) => switch (auth) {
   _ => null,
 };
 
+/// Whether the home balance is shown blurred. Driven by both the on-card
+/// eye toggle and the "Blur balance on home" setting; seeded from the user's
+/// persisted `blur_balance_enabled` preference.
+final balanceBlurredProvider = StateProvider<bool>((ref) => false);
+
 final dashboardRepositoryProvider =
     Provider.family<DashboardRepository, String?>(
       (ref, token) => DashboardRepository(

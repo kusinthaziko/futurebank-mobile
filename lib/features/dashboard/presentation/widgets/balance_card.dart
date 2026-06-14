@@ -10,15 +10,13 @@ import '../../../../core/widgets/animations/card_lift.dart';
 import '../../data/models/dashboard_data.dart';
 import '../../domain/providers.dart';
 
-final _balanceBlurredProvider = StateProvider<bool>((ref) => false);
-
 class BalanceCard extends ConsumerWidget {
   final AccountModel account;
   const BalanceCard({super.key, required this.account});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final blurred = ref.watch(_balanceBlurredProvider);
+    final blurred = ref.watch(balanceBlurredProvider);
     final balanceSub = ref.watch(balanceSubscriptionProvider(account.id));
     final liveBalance = balanceSub.whenOrNull(data: (a) => a.balance);
     final displayBalance = liveBalance ?? account.balance;
@@ -119,7 +117,7 @@ class BalanceCard extends ConsumerWidget {
                               onTap: () =>
                                   ref
                                           .read(
-                                            _balanceBlurredProvider.notifier,
+                                            balanceBlurredProvider.notifier,
                                           )
                                           .state =
                                       !blurred,

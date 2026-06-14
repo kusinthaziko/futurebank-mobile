@@ -1,19 +1,13 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
 
+/// Controls Android FLAG_SECURE (screenshot / recents-preview prevention)
+/// via the native method channel. Uses reference counting so nested
+/// protected screens behave correctly. No-op on non-Android platforms.
 class SecurityService {
   static const _channel = MethodChannel('com.futurebank.app/window');
-  static const _autoLockDuration = Duration(minutes: 5);
 
-  DateTime? _lastActiveTime;
   int _secureFlagCount = 0;
-
-  bool get isAutoLockDue {
-    if (_lastActiveTime == null) return false;
-    return DateTime.now().difference(_lastActiveTime!) >= _autoLockDuration;
-  }
-
-  void markActive() => _lastActiveTime = DateTime.now();
 
   Future<void> enableScreenshotPrevention() async {
     _secureFlagCount++;
@@ -24,7 +18,7 @@ class SecurityService {
   }
 
   Future<void> disableScreenshotPrevention() async {
-    _secureFlagCount--;
+    if (_secureFlagCount > 0) _secureFlagCount--;
     if (_secureFlagCount > 0 || !Platform.isAndroid) return;
     try {
       await _channel.invokeMethod('clearFlagSecure');

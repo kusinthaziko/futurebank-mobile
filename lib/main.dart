@@ -5,7 +5,6 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'core/design_system/theme/app_theme.dart';
 import 'core/router/router.dart';
 import 'core/providers/auth_provider.dart';
-import 'core/providers/security_provider.dart';
 import 'core/graphql/client.dart';
 import 'features/auth/domain/auth_state.dart';
 
@@ -22,26 +21,13 @@ class App extends ConsumerStatefulWidget {
   ConsumerState<App> createState() => _AppState();
 }
 
-class _AppState extends ConsumerState<App> with WidgetsBindingObserver {
+class _AppState extends ConsumerState<App> {
   Timer? _refreshTimer;
-  // bool _refreshStarted = false;  // kept for future use
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
 
   @override
   void dispose() {
     _refreshTimer?.cancel();
-    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    ref.read(autoLockProvider.notifier).onAppLifecycleChange(state);
   }
 
   void _onAuthChange(AuthState? prev, AuthState next) {

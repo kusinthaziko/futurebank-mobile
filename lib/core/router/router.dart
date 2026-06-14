@@ -10,7 +10,6 @@ import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/kyc_screen.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/verify_email_screen.dart';
-import '../../features/auth/presentation/screens/biometric_setup_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
@@ -69,7 +68,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isPublic =
           loc == '/' || loc.startsWith('/auth') || loc == '/onboarding';
       // Routes that an already-authenticated user must NOT see (pre-login only).
-      // Post-login auth steps (kyc, verify-email, biometric-setup) stay reachable.
+      // Post-login auth steps (kyc, verify-email) stay reachable while authed.
       final isPreLoginOnly =
           loc == '/auth/login' ||
           loc == '/auth/register' ||
@@ -112,11 +111,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (_, s) => _buildPageWithTransition(
           VerifyEmailScreen(email: s.uri.queryParameters['email']),
         ),
-      ),
-      GoRoute(
-        path: '/auth/biometric-setup',
-        pageBuilder: (_, __) =>
-            _buildPageWithTransition(const BiometricSetupScreen()),
       ),
       ShellRoute(
         builder: (_, __, child) => MainShell(child: child),

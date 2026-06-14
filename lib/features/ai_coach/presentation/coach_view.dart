@@ -10,7 +10,6 @@ import '../../../core/design_system/tokens/colors.dart';
 import '../../../core/design_system/tokens/dimensions.dart';
 import '../../../core/design_system/tokens/typography.dart';
 import 'widgets/chat_input.dart';
-import 'widgets/weekly_insights.dart';
 
 class CoachView extends StatelessWidget {
   final SurfaceController surfaceHost;
@@ -29,15 +28,6 @@ class CoachView extends StatelessWidget {
     return BlocBuilder<CoachBloc, CoachState>(
       builder: (ctx, state) => Column(
         children: [
-          if (state.weeklyInsight != null)
-            const WeeklyInsightsCard(
-              amountSaved: 'MWK 3,200',
-              savingsChange: '\u2191 18%',
-              topSpendCategory: 'Data bundles',
-              topSpendAmount: 'MWK 800',
-              loanStatus: 'On track',
-              healthScoreChange: '720 (\u2191 15 pts)',
-            ),
           Expanded(
             child: state.allMessages.isEmpty
                 ? _buildWelcome(ctx)

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/design_system/components/fb_button.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
@@ -82,13 +81,6 @@ class BadgeEarnedScreen extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              FBButton(
-                label: 'Share',
-                variant: FBButtonVariant.secondary,
-                icon: const Icon(Icons.share),
-                onPressed: () {},
-              ),
-              const SizedBox(height: sp12),
               TextButton(
                 onPressed: () => context.go('/profile'),
                 child: Text(

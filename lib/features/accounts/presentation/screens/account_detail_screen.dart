@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:fl_chart/fl_chart.dart';
 import '../../../../core/design_system/components/fb_card_input.dart';
 import '../../../../core/design_system/components/fb_misc.dart';
 import '../../../../core/design_system/components/fb_button.dart';
@@ -114,10 +113,6 @@ class AccountDetailScreen extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: sp24),
-              const Text('Balance (30 days)', style: AppTextStyles.titleMedium),
-              const SizedBox(height: sp12),
-              SizedBox(height: 180, child: _BalanceChart(accountId: accountId)),
-              const SizedBox(height: sp20),
               const Text(
                 'Recent Transactions',
                 style: AppTextStyles.titleMedium,
@@ -160,43 +155,6 @@ class _StatCard extends StatelessWidget {
             Text(label, style: AppTextStyles.caption.copyWith(color: gray500)),
             const SizedBox(height: sp4),
             Text(value, style: AppTextStyles.labelLarge),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _BalanceChart extends ConsumerWidget {
-  final String accountId;
-  const _BalanceChart({required this.accountId});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return FBCard(
-      child: LineChart(
-        LineChartData(
-          gridData: const FlGridData(show: false),
-          titlesData: const FlTitlesData(show: false),
-          borderData: FlBorderData(show: false),
-          lineBarsData: [
-            LineChartBarData(
-              spots: List.generate(
-                30,
-                (i) => FlSpot(
-                  i.toDouble(),
-                  1000 + (i * 50) + (i.isEven ? 200 : -100).toDouble(),
-                ),
-              ),
-              isCurved: true,
-              color: primary500,
-              barWidth: 2,
-              dotData: const FlDotData(show: false),
-              belowBarData: BarAreaData(
-                show: true,
-                color: primary500.withAlpha(30),
-              ),
-            ),
           ],
         ),
       ),

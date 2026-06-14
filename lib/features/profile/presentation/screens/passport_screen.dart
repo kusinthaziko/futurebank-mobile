@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import '../../../../core/design_system/components/fb_button.dart';
 import '../../../../core/design_system/components/fb_card_input.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
@@ -288,13 +287,6 @@ class _CredentialsTab extends StatelessWidget {
                           ],
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text(
-                          'View ↗',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -357,12 +349,6 @@ class _VerifyTab extends StatelessWidget {
                     },
                   ),
                 ],
-              ),
-              const SizedBox(height: sp12),
-              FBButton(
-                label: 'Verify on Blockchain',
-                variant: FBButtonVariant.secondary,
-                onPressed: () {},
               ),
             ],
           ),

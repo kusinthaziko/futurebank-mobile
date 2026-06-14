@@ -1,6 +1,5 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import '../../../../core/design_system/tokens/dimensions.dart';
 
 /// Renders the live camera preview or a loading spinner while initializing.
 class CameraViewfinder extends StatelessWidget {

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/graphql/client.dart';
-import '../../../../core/providers/security_provider.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/animations/shake_widget.dart';
 import '../../../../core/design_system/components/fb_button.dart';
@@ -159,10 +158,6 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
       setState(() => _error = 'Insufficient balance');
       return;
     }
-
-    final bio = ref.read(biometricServiceProvider);
-    final ok = await bio.authenticate('Confirm transfer');
-    if (!ok) return;
 
     setState(() {
       _loading = true;

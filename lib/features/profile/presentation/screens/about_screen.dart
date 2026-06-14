@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/design_system/tokens/colors.dart';
 import '../../../../core/design_system/tokens/dimensions.dart';
@@ -69,9 +70,14 @@ class AboutScreen extends StatelessWidget {
                 const SizedBox(height: sp12),
                 Text('futureBank', style: AppTextStyles.titleLarge),
                 const SizedBox(height: sp4),
-                Text(
-                  'Version 1.0.0',
-                  style: AppTextStyles.caption.copyWith(color: gray500),
+                FutureBuilder<PackageInfo>(
+                  future: PackageInfo.fromPlatform(),
+                  builder: (_, snap) => Text(
+                    snap.hasData
+                        ? 'Version ${snap.data!.version}+${snap.data!.buildNumber}'
+                        : 'Version …',
+                    style: AppTextStyles.caption.copyWith(color: gray500),
+                  ),
                 ),
                 const SizedBox(height: sp4),
                 Container(

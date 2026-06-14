@@ -127,12 +127,26 @@ class _GroupsTab extends StatelessWidget {
   }
 }
 
-class ChallengesList extends ConsumerWidget {
+class ChallengesList extends ConsumerStatefulWidget {
   final List challenges;
   const ChallengesList({super.key, required this.challenges});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChallengesList> createState() => _ChallengesListState();
+}
+
+class _ChallengesListState extends ConsumerState<ChallengesList> {
+  String _filter = 'All';
+
+  @override
+  Widget build(BuildContext context) {
+    const filters = ['All', 'Active', 'Upcoming', 'Completed'];
+    final challenges = _filter == 'All'
+        ? widget.challenges
+        : widget.challenges
+            .where((c) =>
+                (c.status as String?)?.toLowerCase() == _filter.toLowerCase())
+            .toList();
     return Column(
       children: [
         Padding(
@@ -141,13 +155,14 @@ class ChallengesList extends ConsumerWidget {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _FilterChip(label: 'All', selected: true, onTap: () {}),
-                const SizedBox(width: sp8),
-                _FilterChip(label: 'Active', selected: false, onTap: () {}),
-                const SizedBox(width: sp8),
-                _FilterChip(label: 'Upcoming', selected: false, onTap: () {}),
-                const SizedBox(width: sp8),
-                _FilterChip(label: 'Completed', selected: false, onTap: () {}),
+                for (final f in filters) ...[
+                  _FilterChip(
+                    label: f,
+                    selected: _filter == f,
+                    onTap: () => setState(() => _filter = f),
+                  ),
+                  const SizedBox(width: sp8),
+                ],
               ],
             ),
           ),

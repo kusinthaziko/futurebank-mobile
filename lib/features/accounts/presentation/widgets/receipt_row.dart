@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../../core/design_system/tokens/colors.dart';
-import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 
 /// A label-value row used in the receipt screen with optional copy, bold, status formatting.
