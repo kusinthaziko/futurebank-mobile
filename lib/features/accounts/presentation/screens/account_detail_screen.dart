@@ -28,10 +28,11 @@ class AccountDetailScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => ErrorView(error: e),
         data: (data) {
-          final account = data.accounts.firstWhere(
-            (a) => a.id == accountId,
-            orElse: () => data.accounts.first,
-          );
+          final matches = data.accounts.where((a) => a.id == accountId);
+          if (matches.isEmpty) {
+            return const Center(child: Text('Account not found'));
+          }
+          final account = matches.first;
           final balance = double.tryParse(account.balance) ?? 0;
           final rate = double.tryParse(account.interestRate) ?? 0;
           final monthlyInterest = balance * (rate / 100) / 12;

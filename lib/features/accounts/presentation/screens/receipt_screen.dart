@@ -92,7 +92,10 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
             return ErrorView(error: snap.error ?? snap.data!.exception!);
           }
 
-          final tx = snap.data!.data!['transaction'] as Map<String, dynamic>;
+          final tx = snap.data?.data?['transaction'] as Map<String, dynamic>?;
+          if (tx == null) {
+            return const Center(child: Text('Receipt not found'));
+          }
           final from = tx['fromAccount'] as Map<String, dynamic>?;
           final to = tx['toAccount'] as Map<String, dynamic>?;
 

@@ -7,6 +7,7 @@ import '../../../../core/design_system/tokens/dimensions.dart';
 import '../../../../core/design_system/tokens/typography.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/graphql/client.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../../../../core/design_system/components/fb_button.dart';
 import '../../data/graphql/queries.dart';
 import '../../domain/providers.dart';
@@ -165,21 +166,37 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       if (field == 'notifications_enabled') _notifications = value;
       if (field == 'blur_balance_enabled') _blurBalance = value;
     });
+
+    void revert() {
+      if (field == 'show_on_leaderboard') _showOnLeaderboard = !value;
+      if (field == 'public_profile') _publicProfile = !value;
+      if (field == 'notifications_enabled') _notifications = !value;
+      if (field == 'blur_balance_enabled') _blurBalance = !value;
+    }
+
     try {
       final client = ref.read(graphQLClientProvider(ref.read(accessTokenProvider)));
-      await client.mutate(MutationOptions(
+      final result = await client.mutate(MutationOptions(
         document: gql(updateSettingsMutation),
         variables: {field: value},
       ));
-    } catch (_) {
-      setState(() {
-        if (field == 'show_on_leaderboard') _showOnLeaderboard = !value;
-        if (field == 'public_profile') _publicProfile = !value;
-        if (field == 'notifications_enabled') _notifications = !value;
-        if (field == 'blur_balance_enabled') _blurBalance = !value;
-      });
+      if (result.hasException) {
+        setState(revert);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(ErrorView.messageFor(result.exception!))),
+          );
+        }
+      }
+    } catch (e) {
+      setState(revert);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(ErrorView.messageFor(e))),
+        );
+      }
     } finally {
-      setState(() => _saving = false);
+      if (mounted) setState(() => _saving = false);
     }
   }
 

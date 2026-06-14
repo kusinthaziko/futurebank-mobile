@@ -36,10 +36,11 @@ class LoanDetailScreen extends ConsumerWidget {
           error: (e, _) =>
               ErrorView(error: e, onRetry: () => ref.refresh(loansProvider)),
           data: (data) {
-            final loan = data.loans.firstWhere(
-              (l) => l.id == loanId,
-              orElse: () => data.loans.first,
-            );
+            final matches = data.loans.where((l) => l.id == loanId);
+            if (matches.isEmpty) {
+              return const Center(child: Text('Loan not found'));
+            }
+            final loan = matches.first;
 
             final isActive = loan.status == 'active';
             final isRejected = loan.status == 'rejected';
@@ -98,7 +99,9 @@ class LoanDetailScreen extends ConsumerWidget {
                     onPressed: () => showMakeRepaymentSheet(
                       context,
                       loanId: loan.id,
-                      nextAmount: ((totalAmount) / loan.repaymentPeriodWeeks)
+                      nextAmount: (loan.repaymentPeriodWeeks > 0
+                              ? totalAmount / loan.repaymentPeriodWeeks
+                              : totalAmount)
                           .toStringAsFixed(0),
                       walletBalance: '0',
                     ),

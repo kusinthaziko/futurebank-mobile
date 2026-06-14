@@ -4,6 +4,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import '../../../../core/design_system/components/fb_button.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/graphql/client.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../../data/graphql/queries.dart';
 
 class ChangePasswordDialog extends ConsumerWidget {
@@ -71,13 +72,21 @@ class ChangePasswordDialog extends ConsumerWidget {
             try {
               final token = ref.read(accessTokenProvider);
               final client = ref.read(graphQLClientProvider(token));
-              await client.mutate(MutationOptions(
+              final result = await client.mutate(MutationOptions(
                 document: gql(changePasswordMutation),
                 variables: {
                   'old_password': oldCtrl.text,
                   'new_password': newCtrl.text,
                 },
               ));
+              if (result.hasException) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(ErrorView.messageFor(result.exception!))),
+                  );
+                }
+                return;
+              }
               if (context.mounted) Navigator.pop(context);
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -85,9 +94,11 @@ class ChangePasswordDialog extends ConsumerWidget {
                 );
               }
             } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error: ${e.toString()}')),
-              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(ErrorView.messageFor(e))),
+                );
+              }
             }
           },
         ),

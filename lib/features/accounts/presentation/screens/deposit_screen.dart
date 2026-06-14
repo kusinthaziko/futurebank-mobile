@@ -129,11 +129,12 @@ class _DepositScreenState extends ConsumerState<DepositScreen> {
     }
     return Scaffold(
       appBar: AppBar(title: const Text('Deposit')),
-      body: Padding(
-        padding: const EdgeInsets.all(sp24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(sp24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             FBInput(
               label: 'Amount',
               hint: '5000',
@@ -180,13 +181,14 @@ class _DepositScreenState extends ConsumerState<DepositScreen> {
                 ],
               ),
             ),
-            const Spacer(),
+            const SizedBox(height: sp32),
             FBButton(
               label: 'Request Deposit',
               onPressed: _submit,
               loading: _loading,
             ),
           ],
+        ),
         ),
       ),
     );

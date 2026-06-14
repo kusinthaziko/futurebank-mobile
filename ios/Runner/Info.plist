@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>App</string>
+	<string>futureBank</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,13 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>app</string>
+	<string>futureBank</string>
+	<key>NSCameraUsageDescription</key>
+	<string>futureBank needs camera access to capture your identity documents for KYC verification, take your profile photo, and scan payment QR codes.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>futureBank needs photo library access so you can upload identity documents and a profile photo.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>futureBank uses Face ID to confirm it is you before authorizing transactions and unlocking the app.</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

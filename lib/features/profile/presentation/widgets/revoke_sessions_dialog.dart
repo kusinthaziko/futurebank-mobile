@@ -4,6 +4,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import '../../../../core/design_system/components/fb_button.dart';
 import '../../../../core/providers/auth_provider.dart';
 import '../../../../core/graphql/client.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../../data/graphql/queries.dart';
 
 class RevokeSessionsDialog extends ConsumerWidget {
@@ -28,17 +29,26 @@ class RevokeSessionsDialog extends ConsumerWidget {
             try {
               final token = ref.read(accessTokenProvider);
               final client = ref.read(graphQLClientProvider(token));
-              await client.mutate(MutationOptions(
+              final result = await client.mutate(MutationOptions(
                 document: gql(revokeAllSessionsMutation),
               ));
+              if (!context.mounted) return;
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(result.hasException
+                      ? ErrorView.messageFor(result.exception!)
+                      : 'All other devices have been signed out.'),
+                ),
+              );
             } catch (e) {
               if (context.mounted) {
+                Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error: ${e.toString()}')),
+                  SnackBar(content: Text(ErrorView.messageFor(e))),
                 );
               }
             }
-            if (context.mounted) Navigator.pop(context);
           },
         ),
       ],

@@ -111,11 +111,12 @@ class _CreateGoalScreenState extends ConsumerState<CreateGoalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Create Savings Goal')),
-      body: Padding(
-        padding: const EdgeInsets.all(sp24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(sp24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             FBInput(
               label: 'Goal Name',
               hint: 'e.g. New Laptop',
@@ -193,13 +194,14 @@ class _CreateGoalScreenState extends ConsumerState<CreateGoalScreen> {
                 style: AppTextStyles.caption.copyWith(color: error500),
               ),
             ],
-            const Spacer(),
+            const SizedBox(height: sp32),
             FBButton(
               label: 'Create Goal',
               onPressed: _create,
               loading: _loading,
             ),
           ],
+        ),
         ),
       ),
     );

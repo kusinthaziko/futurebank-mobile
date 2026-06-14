@@ -22,7 +22,7 @@ class _CloudinarySignature {
 class CloudinaryService {
   static const _baseUrl = String.fromEnvironment(
     'API_URL',
-    defaultValue: 'http://localhost:4000',
+    defaultValue: 'https://futurebank-api.onrender.com',
   );
 
   /// Upload an image with optional Cloudinary transformation.

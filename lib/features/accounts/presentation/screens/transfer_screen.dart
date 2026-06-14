@@ -84,6 +84,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
 
     final client = ref.read(graphQLClientProvider(t));
     final r = await client.query(QueryOptions(document: gql(_meQuery)));
+    if (!mounted) return;
     if (!r.hasException && r.data != null) {
       final me = r.data!['me'];
       final level = me['kyc_level'] as int? ?? 0;
@@ -122,6 +123,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
         variables: {'studentId': studentId, 'institutionId': institutionId},
       ),
     );
+    if (!mounted) return;
     if (!r.hasException && r.data != null) {
       final recipient = r.data!['findRecipient'];
       if (recipient != null) {
