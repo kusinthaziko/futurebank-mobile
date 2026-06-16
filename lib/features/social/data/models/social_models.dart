@@ -82,12 +82,12 @@ class GroupDetailModel {
         goal: json['goal'] as String?,
         groupType: json['groupType'] as String? ?? 'Savings Circle',
         topContributors:
-            (json['top_contributors'] as List?)
+            (json['topContributors'] as List?)
                 ?.map((e) => Contributor.fromJson(e as Map<String, dynamic>))
                 .toList() ??
             [],
-        recentActivity:
-            (json['recent_activity'] as List?)
+            recentActivity:
+                (json['recentActivity'] as List?)
                 ?.map((e) => GroupActivity.fromJson(e as Map<String, dynamic>))
                 .toList() ??
             [],

@@ -36,9 +36,9 @@ class TransactionRepository {
             'reference': t['reference'],
             'description': t['description'],
             'amount': t['amount'],
-            'transactionType': t['transaction_type'],
+            'transactionType': t['transactionType'],
             'status': t['status'],
-            'insertedAt': t['inserted_at'],
+            'insertedAt': t['insertedAt'],
           }),
         )
         .toList();
@@ -63,9 +63,9 @@ class TransactionRepository {
             'reference': t['reference'],
             'description': t['description'],
             'amount': t['amount'],
-            'transactionType': t['transaction_type'],
+            'transactionType': t['transactionType'],
             'status': t['status'],
-            'insertedAt': t['inserted_at'],
+            'insertedAt': t['insertedAt'],
           }),
         )
         .toList();

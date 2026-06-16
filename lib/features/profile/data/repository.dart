@@ -102,9 +102,9 @@ class ProfileRepository {
         .cast<Map<String, dynamic>>()
         .map(
           (b) => BadgeModel.fromJson({
-            'badgeId': b['badge_id'],
+            'badgeId': b['badgeId'],
             'name': b['name'],
-            'awardedAt': b['awarded_at'],
+            'awardedAt': b['awardedAt'],
           }),
         )
         .toList();

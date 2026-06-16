@@ -58,10 +58,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       if (!mounted || r.hasException || r.data?['me'] == null) return;
       final me = r.data!['me'] as Map<String, dynamic>;
       setState(() {
-        _showOnLeaderboard = me['show_on_leaderboard'] as bool? ?? true;
-        _publicProfile = me['public_profile'] as bool? ?? false;
-        _notifications = me['notifications_enabled'] as bool? ?? true;
-        _blurBalance = me['blur_balance_enabled'] as bool? ?? false;
+        _showOnLeaderboard = me['showOnLeaderboard'] as bool? ?? true;
+        _publicProfile = me['publicProfile'] as bool? ?? false;
+        _notifications = me['notificationsEnabled'] as bool? ?? true;
+        _blurBalance = me['blurBalanceEnabled'] as bool? ?? false;
       });
       ref.read(balanceBlurredProvider.notifier).state = _blurBalance;
     } catch (_) {
