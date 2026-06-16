@@ -22,9 +22,9 @@ import '../../domain/providers.dart';
 const _transferMutation = r'''
   mutation Transfer($fromAccountId: ID!, $toAccountId: ID!, $amount: Decimal!,
                     $description: String, $idempotencyKey: String) {
-    transfer(from_account_id: $fromAccountId, to_account_id: $toAccountId,
+    transfer(fromAccountId: $fromAccountId, toAccountId: $toAccountId,
              amount: $amount, description: $description,
-             idempotency_key: $idempotencyKey) {
+             idempotencyKey: $idempotencyKey) {
       id reference status
     }
   }
@@ -32,8 +32,8 @@ const _transferMutation = r'''
 
 const _findRecipientQuery = r'''
   query FindRecipient($studentId: String!, $institutionId: ID!) {
-    findRecipient(student_id: $studentId, institution_id: $institutionId) {
-      account_id full_name
+    findRecipient(studentId: $studentId, institutionId: $institutionId) {
+      accountId fullName
     }
   }
 ''';

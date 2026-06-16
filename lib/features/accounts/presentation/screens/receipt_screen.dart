@@ -18,10 +18,8 @@ import '../widgets/receipt_row.dart';
 const _receiptQuery = r'''
   query Receipt($id: ID!) {
     transaction(id: $id) {
-      id reference description amount transaction_type status inserted_at
-      fromAccount { id accountNumber }
-      toAccount { id accountNumber }
-      blockchainTxHash
+      id reference description amount transactionType status insertedAt
+      fromAccountId toAccountId
     }
   }
 ''';
@@ -96,8 +94,8 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
           if (tx == null) {
             return const Center(child: Text('Receipt not found'));
           }
-          final from = tx['fromAccount'] as Map<String, dynamic>?;
-          final to = tx['toAccount'] as Map<String, dynamic>?;
+          final fromId = tx['fromAccountId'] as String?;
+          final toId = tx['toAccountId'] as String?;
 
           return ListView(
             padding: const EdgeInsets.all(sp24),
@@ -122,17 +120,17 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
                 copyable: true,
               ),
               const Divider(height: sp24),
-              if (from != null) ...[
+              if (fromId != null) ...[
                 ReceiptRow(
                   label: 'From',
-                  value: from['accountNumber'] as String? ?? '',
+                  value: fromId ?? '',
                 ),
                 const Divider(height: sp24),
               ],
-              if (to != null) ...[
+              if (toId != null) ...[
                 ReceiptRow(
                   label: 'To',
-                  value: to['accountNumber'] as String? ?? '',
+                  value: toId ?? '',
                 ),
                 const Divider(height: sp24),
               ],

@@ -69,9 +69,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final result = await client.mutate(MutationOptions(
       document: gql(r'''
         mutation RefreshToken($refreshToken: String!) {
-          refresh_token(refresh_token: $refreshToken) {
-            access_token
-            refresh_token
+          refreshToken(refreshToken: $refreshToken) {
+            accessToken
+            refreshToken
           }
         }
       '''),

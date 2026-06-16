@@ -7,8 +7,8 @@ import '../domain/coach_bloc.dart' as domain;
 
 const _askCoachMutation = r'''
   mutation AskCoach($message: String!, $sessionId: String) {
-    askCoach(message: $message, session_id: $sessionId) {
-      content session_id
+    askCoach(message: $message, sessionId: $sessionId) {
+      content sessionId
     }
   }
 ''';

@@ -10,8 +10,8 @@ class ReceiptPdfService {
   /// Generates a PDF document from transaction data.
   static Future<Uint8List> generatePdf(Map<String, dynamic> tx) async {
     final pdf = pw.Document();
-    final from = tx['fromAccount'] as Map<String, dynamic>?;
-    final to = tx['toAccount'] as Map<String, dynamic>?;
+    final fromId = tx['fromAccountId'] as String?;
+    final toId = tx['toAccountId'] as String?;
 
     pdf.addPage(
       pw.Page(
@@ -37,9 +37,9 @@ class ReceiptPdfService {
             pw.Divider(),
             pw.SizedBox(height: 20),
             _pdfRow('Reference', tx['reference'] ?? ''),
-            _pdfRow('Date', _formatDate(tx['inserted_at'] ?? '')),
-            if (from != null) _pdfRow('From', from['accountNumber'] ?? ''),
-            if (to != null) _pdfRow('To', to['accountNumber'] ?? ''),
+            _pdfRow('Date', _formatDate(tx['insertedAt'] ?? '')),
+            if (fromId != null) _pdfRow('From', fromId),
+            if (toId != null) _pdfRow('To', toId),
             pw.SizedBox(height: 20),
             pw.Container(
               padding: pw.EdgeInsets.all(16),
