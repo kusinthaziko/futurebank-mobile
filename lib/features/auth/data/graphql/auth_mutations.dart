@@ -48,7 +48,7 @@ class AuthMutations {
   static const _submitKYCMutation = r'''
     mutation SubmitKYC($input: KYCInput!) {
       submitKyc(input: $input) {
-        id kyc_level status
+        kyc_level status
       }
     }
   ''';

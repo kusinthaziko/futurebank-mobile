@@ -1,6 +1,6 @@
 const String searchTransactionsQuery = r'''
-  query SearchTransactions($accountId: ID!, $query: String!) {
-    searchTransactions(accountId: $accountId, query: $query) {
+  query SearchTransactions($query: String!) {
+    searchTransactions(query: $query) {
       id reference description amount transaction_type status inserted_at
     }
   }
