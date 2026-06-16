@@ -41,20 +41,20 @@ class AccountRepository {
 
       AccountModel map(Map<String, dynamic> a) => AccountModel.fromJson({
         'id': a['id'],
-        'accountNumber': a['account_number'],
-        'accountType': a['account_type'],
+        'accountNumber': a['accountNumber'],
+        'accountType': a['accountType'],
         'balance': a['balance'],
         'currency': a['currency'],
         'status': a['status'],
-        'interestRate': a['interest_rate'],
+        'interestRate': a['interestRate'],
       });
 
       SavingsGoalModel mapGoal(Map<String, dynamic> g) =>
           SavingsGoalModel.fromJson({
             'id': g['id'],
             'name': g['name'],
-            'targetAmount': g['target_amount'],
-            'currentAmount': g['current_amount'],
+            'targetAmount': g['targetAmount'],
+            'currentAmount': g['currentAmount'],
             'deadline': g['deadline'],
             'category': g['category'],
             'status': g['status'],
@@ -133,9 +133,9 @@ class AccountRepository {
               'reference': t['reference'],
               'description': t['description'],
               'amount': t['amount'],
-              'transactionType': t['transaction_type'],
+              'transactionType': t['transactionType'],
               'status': t['status'],
-              'insertedAt': t['inserted_at'],
+              'insertedAt': t['insertedAt'],
             }),
           )
           .toList();

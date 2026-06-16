@@ -52,20 +52,20 @@ class ProfileRepository {
       final profile = ProfileData(
         user: UserProfile.fromJson({
           'id': me['id'],
-          'fullName': me['full_name'],
+          'fullName': me['fullName'],
           'email': me['email'],
-          'kycLevel': me['kyc_level'],
-          'kycStatus': me['kyc_status'],
-          'financialHealthScore': me['financial_health_score'],
-          'avatarUrl': me['avatar_url'],
+          'kycLevel': me['kycLevel'],
+          'kycStatus': me['kycStatus'],
+          'financialHealthScore': me['financialHealthScore'],
+          'avatarUrl': me['avatarUrl'],
         }),
         healthScore: HealthScoreData.fromJson({
           'score': _toInt(hs?['score']),
-          'savingsConsistency': _toDouble(hs?['savings_consistency']),
-          'loanRepaymentRate': _toDouble(hs?['loan_repayment_rate']),
-          'challengeCompletions': _toInt(hs?['challenge_completions']),
-          'accountAgeDays': _toInt(hs?['account_age_days']),
-          'kycLevel': _toInt(hs?['kyc_level'] ?? me['kyc_level']),
+          'savingsConsistency': _toDouble(hs?['savingsConsistency']),
+          'loanRepaymentRate': _toDouble(hs?['loanRepaymentRate']),
+          'challengeCompletions': _toInt(hs?['challengeCompletions']),
+          'accountAgeDays': _toInt(hs?['accountAgeDays']),
+          'kycLevel': _toInt(hs?['kycLevel'] ?? me['kycLevel']),
         }),
       );
 

@@ -3,20 +3,20 @@ const String myLoansQuery = r'''
     myLoans {
       id
       status
-      amount_requested
-      amount_approved
+      amountRequested
+      amountApproved
       purpose
-      repayment_period_weeks
-      interest_rate
-      ai_risk_score
-      ai_risk_summary
-      submitted_at
-      decided_at
-      disbursed_at
+      repaymentPeriodWeeks
+      interestRate
+      aiRiskScore
+      aiRiskSummary
+      submittedAt
+      decidedAt
+      disbursedAt
     }
     loanEligibility {
       eligible
-      max_amount
+      maxAmount
       reason
     }
   }
@@ -26,12 +26,12 @@ const String repaymentScheduleQuery = r'''
   query RepaymentSchedule($loanId: ID!) {
     repaymentSchedule(loanId: $loanId) {
       id
-      instalment_number
-      due_date
-      amount_due
-      amount_paid
+      instalmentNumber
+      dueDate
+      amountDue
+      amountPaid
       status
-      paid_at
+      paidAt
     }
   }
 ''';
@@ -41,7 +41,7 @@ const String applyLoanMutation = r'''
     applyForLoan(
       amount: $amount
       purpose: $purpose
-      repayment_period_weeks: $weeks
+      repaymentPeriodWeeks: $weeks
     ) {
       id
       status

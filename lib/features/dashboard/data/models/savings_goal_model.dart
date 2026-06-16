@@ -27,8 +27,8 @@ class SavingsGoalModel {
     return SavingsGoalModel(
       id: json['id'] as String,
       name: json['name'] as String,
-      targetAmount: json['target_amount'] as String,
-      currentAmount: json['current_amount'] as String,
+      targetAmount: json['targetAmount'] as String,
+      currentAmount: json['currentAmount'] as String,
       deadline: json['deadline'] as String?,
       category: json['category'] as String? ?? 'Personal',
       status: json['status'] as String? ?? 'active',

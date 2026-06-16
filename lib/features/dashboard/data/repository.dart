@@ -70,25 +70,25 @@ class DashboardRepository {
           result.data!['financialHealthScore'] as Map<String, dynamic>?;
 
       final primaryAccount = accounts.firstWhere(
-        (a) => a['account_type'] == 'savings',
+        (a) => a['accountType'] == 'savings',
         orElse: () => accounts.first,
       );
 
       final dashboard = DashboardData(
         user: UserModel.fromJson({
           'id': me['id'],
-          'fullName': me['full_name'],
-          'financialHealthScore': me['financial_health_score'] ?? 0,
-          'kycLevel': me['kyc_level'] ?? 0,
+          'fullName': me['fullName'],
+          'financialHealthScore': me['financialHealthScore'] ?? 0,
+          'kycLevel': me['kycLevel'] ?? 0,
         }),
         primaryAccount: AccountModel.fromJson(primaryAccount),
         recentTransactions: const [],
         healthScore: hsRaw != null
             ? HealthScoreModel.fromJson({
                 'score': _toInt(hsRaw['score']),
-                'savingsConsistency': _toDouble(hsRaw['savings_consistency']),
-                'loanRepaymentRate': _toDouble(hsRaw['loan_repayment_rate']),
-                'challengeCompletions': _toInt(hsRaw['challenge_completions']),
+                'savingsConsistency': _toDouble(hsRaw['savingsConsistency']),
+                'loanRepaymentRate': _toDouble(hsRaw['loanRepaymentRate']),
+                'challengeCompletions': _toInt(hsRaw['challengeCompletions']),
               })
             : null,
       );
@@ -164,9 +164,9 @@ class DashboardRepository {
               'reference': t['reference'],
               'description': t['description'],
               'amount': t['amount'],
-              'transactionType': t['transaction_type'],
+              'transactionType': t['transactionType'],
               'status': t['status'],
-              'insertedAt': t['inserted_at'],
+              'insertedAt': t['insertedAt'],
             }),
           )
           .toList();

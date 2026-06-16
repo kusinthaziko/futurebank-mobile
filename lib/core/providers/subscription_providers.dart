@@ -21,27 +21,27 @@ const _balanceChangedSub = r'''
 const _transactionUpdatedSub = r'''
   subscription TxUpdated($accountId: ID!) {
     transactionUpdated(accountId: $accountId) {
-      id reference description amount transaction_type status inserted_at
+      id reference description amount transactionType status insertedAt
     }
   }
 ''';
 
 const _loanStatusSub = r'''
   subscription LoanStatus($loanId: ID!) {
-    loanStatusChanged(loanId: $loanId) { id status decided_at }
+    loanStatusChanged(loanId: $loanId) { id status decidedAt }
   }
 ''';
 
 const _newNotificationSub = r'''
   subscription NewNotification {
-    newNotification { id type title body read inserted_at }
+    newNotification { id type title body read insertedAt }
   }
 ''';
 
 const _challengeLeaderboardSub = r'''
   subscription LeaderboardUpdated($challengeId: ID!) {
     challengeLeaderboardUpdated(challengeId: $challengeId) {
-      user_id full_name score rank
+      userId fullName score rank
     }
   }
 ''';
@@ -96,9 +96,9 @@ final transactionSubscriptionProvider = StreamProvider.autoDispose
               'reference': t['reference'],
               'description': t['description'],
               'amount': t['amount'],
-              'transactionType': t['transaction_type'],
+              'transactionType': t['transactionType'],
               'status': t['status'],
-              'insertedAt': t['inserted_at'],
+              'insertedAt': t['insertedAt'],
             });
           });
     });
@@ -120,7 +120,7 @@ final loanStatusSubscriptionProvider = StreamProvider.autoDispose
             return LoanModel.fromJson({
               'id': d['id'],
               'status': d['status'],
-              'decided_at': d['decided_at'],
+              'decidedAt': d['decidedAt'],
               'amountRequested': '0',
               'purpose': '',
               'repaymentPeriodWeeks': 0,

@@ -86,7 +86,7 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
     if (!mounted) return;
     if (!r.hasException && r.data != null) {
       final me = r.data!['me'];
-      final level = me['kyc_level'] as int? ?? 0;
+      final level = me['kycLevel'] as int? ?? 0;
       setState(() {
         _kycChecked = true;
         _kycValid = level >= 1;
@@ -127,8 +127,8 @@ class _TransferScreenState extends ConsumerState<TransferScreen> {
       final recipient = r.data!['findRecipient'];
       if (recipient != null) {
         setState(() {
-          _recipientName = recipient['full_name'];
-          _recipientAccountId = recipient['account_id'];
+          _recipientName = recipient['fullName'];
+          _recipientAccountId = recipient['accountId'];
         });
       } else {
         setState(() => _recipientName = null);

@@ -9,7 +9,7 @@ class InstitutionsQuery {
         id
         name
         domain
-        logo_url
+        logoUrl
         verified
       }
     }

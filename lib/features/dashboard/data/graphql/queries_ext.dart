@@ -1,7 +1,7 @@
 const String dashboardExtrasQuery = r'''
   query DashboardExtras($accountId: ID!) {
     savingsGoals {
-      id name target_amount current_amount deadline category status
+      id name targetAmount currentAmount deadline category status
     }
     aiInsight(accountId: $accountId) {
       summary recommendation

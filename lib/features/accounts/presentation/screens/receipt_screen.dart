@@ -111,7 +111,7 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
               ),
               const SizedBox(height: sp4),
               Text(
-                tx['transaction_type'] as String? ?? 'Transfer',
+                tx['transactionType'] as String? ?? 'Transfer',
                 style: AppTextStyles.bodyMedium.copyWith(color: gray500),
                 textAlign: TextAlign.center,
               ),
@@ -144,7 +144,7 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
               const Divider(height: sp24),
               ReceiptRow(
                 label: 'Date',
-                value: _formatDate(tx['inserted_at'] as String? ?? ''),
+                value: _formatDate(tx['insertedAt'] as String? ?? ''),
               ),
               const Divider(height: sp24),
               ReceiptRow(

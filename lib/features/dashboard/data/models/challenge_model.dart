@@ -28,8 +28,8 @@ class ChallengeModel {
       description: json['description'] as String? ?? '',
       type: json['type'] as String? ?? 'savings',
       progress: (json['progress'] as num?)?.toDouble() ?? 0,
-      streakDays: json['streak_days'] as int?,
-      daysRemaining: (json['days_remaining'] as num?)?.toInt() ?? 0,
+      streakDays: json['streakDays'] as int?,
+      daysRemaining: (json['daysRemaining'] as num?)?.toInt() ?? 0,
       status: json['status'] as String? ?? 'active',
     );
   }

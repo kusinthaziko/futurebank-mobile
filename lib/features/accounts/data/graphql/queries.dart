@@ -1,10 +1,10 @@
 const String myAccountsQuery = r'''
   query MyAccounts {
     myAccounts {
-      id account_number account_type balance currency status interest_rate
+      id accountNumber accountType balance currency status interestRate
     }
     savingsGoals {
-      id name target_amount current_amount deadline category status
+      id name targetAmount currentAmount deadline category status
     }
   }
 ''';
@@ -12,7 +12,7 @@ const String myAccountsQuery = r'''
 const String transactionHistoryQuery = r'''
   query TxHistory($accountId: ID!, $limit: Int, $offset: Int) {
     transactionHistory(accountId: $accountId, limit: $limit, offset: $offset) {
-      id reference description amount transaction_type status inserted_at
+      id reference description amount transactionType status insertedAt
     }
   }
 ''';

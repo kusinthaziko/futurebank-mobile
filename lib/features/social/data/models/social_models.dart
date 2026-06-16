@@ -75,12 +75,12 @@ class GroupDetailModel {
         id: json['id'] as String,
         name: json['name'] as String,
         status: json['status'] as String? ?? 'active',
-        inviteCode: json['invite_code'] as String?,
-        poolAccountId: json['pool_account_id'] as String?,
-        poolBalance: json['pool_balance'] as String? ?? '0',
-        memberCount: json['member_count'] as int? ?? 0,
+        inviteCode: json['inviteCode'] as String?,
+        poolAccountId: json['poolAccountId'] as String?,
+        poolBalance: json['poolBalance'] as String? ?? '0',
+        memberCount: json['memberCount'] as int? ?? 0,
         goal: json['goal'] as String?,
-        groupType: json['group_type'] as String? ?? 'Savings Circle',
+        groupType: json['groupType'] as String? ?? 'Savings Circle',
         topContributors:
             (json['top_contributors'] as List?)
                 ?.map((e) => Contributor.fromJson(e as Map<String, dynamic>))
@@ -108,10 +108,10 @@ class Contributor {
   });
 
   factory Contributor.fromJson(Map<String, dynamic> json) => Contributor(
-    userId: json['user_id'] as String,
-    fullName: json['full_name'] as String,
-    totalContributed: json['total_contributed'] as String? ?? '0',
-    avatarUrl: json['avatar_url'] as String?,
+    userId: json['userId'] as String,
+    fullName: json['fullName'] as String,
+    totalContributed: json['totalContributed'] as String? ?? '0',
+    avatarUrl: json['avatarUrl'] as String?,
   );
 }
 
@@ -131,11 +131,11 @@ class GroupActivity {
   });
 
   factory GroupActivity.fromJson(Map<String, dynamic> json) => GroupActivity(
-    userId: json['user_id'] as String,
-    fullName: json['full_name'] as String,
+    userId: json['userId'] as String,
+    fullName: json['fullName'] as String,
     action: json['action'] as String,
     amount: json['amount'] as String? ?? '',
-    createdAt: json['created_at'] as String,
+    createdAt: json['createdAt'] as String,
   );
 }
 
@@ -173,13 +173,13 @@ class ChallengeDetailModel {
         id: json['id'] as String,
         title: json['title'] as String,
         description: json['description'] as String?,
-        challengeType: json['challenge_type'] as String,
-        rewardPoints: json['reward_points'] as int? ?? 0,
+        challengeType: json['challengeType'] as String,
+        rewardPoints: json['rewardPoints'] as int? ?? 0,
         status: json['status'] as String? ?? 'active',
-        endsAt: json['ends_at'] as String?,
-        participantCount: json['participant_count'] as int? ?? 0,
-        currentProgress: json['current_progress'] as int? ?? 0,
-        targetProgress: json['target_progress'] as int? ?? 1,
+        endsAt: json['endsAt'] as String?,
+        participantCount: json['participantCount'] as int? ?? 0,
+        currentProgress: json['currentProgress'] as int? ?? 0,
+        targetProgress: json['targetProgress'] as int? ?? 1,
         joined: json['joined'] as bool? ?? false,
         leaderboard:
             (json['leaderboard'] as List?)

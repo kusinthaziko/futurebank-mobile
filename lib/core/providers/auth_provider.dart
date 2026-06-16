@@ -78,11 +78,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
       variables: {'refreshToken': storedRefresh},
     ));
     if (result.hasException) return;
-    final data = result.data?['refresh_token'];
+    final data = result.data?['refreshToken'];
     if (data == null) return;
 
-    final newAccess = data['access_token'] as String;
-    final newRefresh = data['refresh_token'] as String;
+    final newAccess = data['accessToken'] as String;
+    final newRefresh = data['refreshToken'] as String;
 
     await _storage.write(key: 'access_token', value: newAccess);
     await _storage.write(key: 'refresh_token', value: newRefresh);

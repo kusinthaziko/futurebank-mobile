@@ -53,7 +53,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               result['accessToken'],
               result['refreshToken'],
               result['user']['id'],
-              institutionId: result['user']['institution_id'],
+              institutionId: result['user']['institutionId'],
             );
         if (mounted) context.go('/home');
       }

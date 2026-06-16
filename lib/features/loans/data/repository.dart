@@ -42,17 +42,17 @@ class LoanRepository {
             (l) => LoanModel.fromJson({
               'id': l['id'],
               'status': l['status'],
-              'amountRequested': l['amount_requested'],
-              'amountApproved': l['amount_approved'],
+              'amountRequested': l['amountRequested'],
+              'amountApproved': l['amountApproved'],
               'purpose': l['purpose'],
-              'repaymentPeriodWeeks': l['repayment_period_weeks'],
-              'interestRate': l['interest_rate'],
-              'aiRiskScore': l['ai_risk_score'],
-              'aiRiskSummary': l['ai_risk_summary'],
-              'blockchainContractHash': l['blockchain_contract_hash'],
-              'submittedAt': l['submitted_at'],
-              'decidedAt': l['decided_at'],
-              'disbursedAt': l['disbursed_at'],
+              'repaymentPeriodWeeks': l['repaymentPeriodWeeks'],
+              'interestRate': l['interestRate'],
+              'aiRiskScore': l['aiRiskScore'],
+              'aiRiskSummary': l['aiRiskSummary'],
+              'blockchainContractHash': l['blockchainContractHash'],
+              'submittedAt': l['submittedAt'],
+              'decidedAt': l['decidedAt'],
+              'disbursedAt': l['disbursedAt'],
             }),
           )
           .toList();
@@ -60,7 +60,7 @@ class LoanRepository {
       final e = result.data!['loanEligibility'] as Map<String, dynamic>;
       final eligibility = LoanEligibility.fromJson({
         'eligible': e['eligible'] ?? false,
-        'maxAmount': e['max_amount'] ?? '0',
+        'maxAmount': e['maxAmount'] ?? '0',
         'reason': e['reason'],
       });
 
@@ -110,12 +110,12 @@ class LoanRepository {
         .map(
           (r) => RepaymentInstalment.fromJson({
             'id': r['id'],
-            'instalmentNumber': r['instalment_number'],
-            'dueDate': r['due_date'],
-            'amountDue': r['amount_due'],
-            'amountPaid': r['amount_paid'],
+            'instalmentNumber': r['instalmentNumber'],
+            'dueDate': r['dueDate'],
+            'amountDue': r['amountDue'],
+            'amountPaid': r['amountPaid'],
             'status': r['status'],
-            'paidAt': r['paid_at'],
+            'paidAt': r['paidAt'],
           }),
         )
         .toList();

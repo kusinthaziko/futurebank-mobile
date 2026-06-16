@@ -1,7 +1,7 @@
 const String searchTransactionsQuery = r'''
   query SearchTransactions($query: String!) {
     searchTransactions(query: $query) {
-      id reference description amount transaction_type status inserted_at
+      id reference description amount transactionType status insertedAt
     }
   }
 ''';
@@ -23,7 +23,7 @@ const String transactionFilterQuery = r'''
       limit: $limit
       offset: $offset
     ) {
-      id reference description amount transaction_type status inserted_at
+      id reference description amount transactionType status insertedAt
     }
   }
 ''';
@@ -31,7 +31,7 @@ const String transactionFilterQuery = r'''
 const String transactionUpdatedSubscription = r'''
   subscription TxUpdated($accountId: ID!) {
     transactionUpdated(accountId: $accountId) {
-      id reference description amount transaction_type status inserted_at
+      id reference description amount transactionType status insertedAt
     }
   }
 ''';

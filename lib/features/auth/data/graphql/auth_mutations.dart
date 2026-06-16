@@ -8,7 +8,7 @@ class AuthMutations {
       login(input: { email: $email, password: $password }) {
         accessToken
         refreshToken
-        user { id full_name email kyc_level role institution_id }
+        user { id fullName email kycLevel role institutionId }
       }
     }
   ''';
@@ -18,20 +18,20 @@ class AuthMutations {
       register(input: $input) {
         accessToken
         refreshToken
-        user { id full_name email kyc_level role institution_id }
+        user { id fullName email kycLevel role institutionId }
       }
     }
   ''';
 
   static const _forgotPasswordMutation = r'''
     mutation ForgotPassword($email: String!) {
-      forgot_password(input: { email: $email })
+      forgotPassword(input: { email: $email })
     }
   ''';
 
   static const _verifyEmailMutation = r'''
     mutation VerifyEmail($code: String!, $email: String) {
-      verify_email(input: { code: $code, email: $email }) {
+      verifyEmail(input: { code: $code, email: $email }) {
         success
       }
     }
@@ -39,7 +39,7 @@ class AuthMutations {
 
   static const _resendVerificationMutation = r'''
     mutation ResendVerification($email: String) {
-      resend_verification_code(input: { email: $email }) {
+      resendVerificationCode(input: { email: $email }) {
         success
       }
     }
@@ -48,17 +48,17 @@ class AuthMutations {
   static const _submitKYCMutation = r'''
     mutation SubmitKYC($input: KYCInput!) {
       submitKyc(input: $input) {
-        kyc_level status
+        kycLevel status
       }
     }
   ''';
 
   static const _refreshTokenMutation = r'''
     mutation RefreshToken($refreshToken: String!) {
-      refresh_token(refresh_token: $refreshToken) {
-        access_token
-        refresh_token
-        user { id full_name email kyc_level role institution_id }
+      refreshToken(refreshToken: $refreshToken) {
+        accessToken
+        refreshToken
+        user { id fullName email kycLevel role institutionId }
       }
     }
   ''';
@@ -170,6 +170,6 @@ class AuthMutations {
     if (result.hasException) {
       throw result.exception!;
     }
-    return result.data?['refresh_token'];
+    return result.data?['refreshToken'];
   }
 }

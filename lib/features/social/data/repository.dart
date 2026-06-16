@@ -61,8 +61,8 @@ class SocialRepository {
               'id': g['id'],
               'name': g['name'],
               'status': g['status'],
-              'inviteCode': g['invite_code'],
-              'poolAccountId': g['pool_account_id'],
+              'inviteCode': g['inviteCode'],
+              'poolAccountId': g['poolAccountId'],
             }),
           )
           .toList();
@@ -72,10 +72,10 @@ class SocialRepository {
             (c) => ChallengeModel.fromJson({
               'id': c['id'],
               'title': c['title'],
-              'challengeType': c['challenge_type'],
-              'rewardPoints': c['reward_points'],
+              'challengeType': c['challengeType'],
+              'rewardPoints': c['rewardPoints'],
               'status': c['status'],
-              'endsAt': c['ends_at'],
+              'endsAt': c['endsAt'],
             }),
           )
           .toList();
@@ -83,8 +83,8 @@ class SocialRepository {
           .cast<Map<String, dynamic>>()
           .map(
             (e) => LeaderboardEntry.fromJson({
-              'userId': e['user_id'],
-              'fullName': e['full_name'],
+              'userId': e['userId'],
+              'fullName': e['fullName'],
               'score': e['score'],
               'rank': e['rank'],
             }),
@@ -258,8 +258,8 @@ class SocialRepository {
           .cast<Map<String, dynamic>>()
           .map(
             (e) => LeaderboardEntry.fromJson({
-              'userId': e['user_id'],
-              'fullName': e['full_name'],
+              'userId': e['userId'],
+              'fullName': e['fullName'],
               'score': e['score'],
               'rank': e['rank'],
             }),
@@ -335,7 +335,7 @@ class SocialRepository {
     return (
       id: g['id'] as String,
       name: g['name'] as String,
-      inviteCode: g['invite_code'] as String,
+      inviteCode: g['inviteCode'] as String,
     );
   }
 
